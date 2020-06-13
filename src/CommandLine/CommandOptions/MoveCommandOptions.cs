@@ -7,5 +7,10 @@ namespace Orang.CommandLine
         internal MoveCommandOptions()
         {
         }
+
+        protected override void WriteDiagnosticCore()
+        {
+            DiagnosticWriter.WriteMoveCommand(this);
+        }
     }
 }

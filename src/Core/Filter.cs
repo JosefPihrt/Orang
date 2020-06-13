@@ -11,10 +11,23 @@ namespace Orang
     public class Filter
     {
         public Filter(
+            string pattern,
+            bool isNegative = false) : this(pattern, RegexOptions.None, isNegative: isNegative)
+        {
+        }
+
+        public Filter(
+            string pattern,
+            RegexOptions options,
+            bool isNegative = false) : this(new Regex(pattern, options), isNegative: isNegative)
+        {
+        }
+
+        public Filter(
             Regex regex,
-            int groupNumber = -1,
             bool isNegative = false,
-            Func<Capture, bool> predicate = null)
+            int groupNumber = -1,
+            Func<Capture, bool>? predicate = null)
         {
             Regex = regex ?? throw new ArgumentNullException(nameof(regex));
 
@@ -31,21 +44,21 @@ namespace Orang
 
         public int GroupNumber { get; }
 
-        public Func<Capture, bool> Predicate { get; }
+        public Func<Capture, bool>? Predicate { get; }
 
         public string GroupName => Regex.GroupNameFromNumber(GroupNumber);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private string DebuggerDisplay => $"Negative = {IsNegative}  Group {GroupNumber}  {Regex}";
+        private string DebuggerDisplay => $"{nameof(IsNegative)} = {IsNegative}  {Regex}";
 
-        public Match Match(string input)
+        public Match? Match(string input)
         {
             Match match = Regex.Match(input);
 
             return Match(match);
         }
 
-        private Match Match(Match match)
+        internal Match? Match(Match match)
         {
             if (Predicate != null)
             {

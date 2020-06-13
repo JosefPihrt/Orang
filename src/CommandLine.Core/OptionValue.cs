@@ -14,7 +14,7 @@ namespace Orang
         protected OptionValue(
             string name,
             string helpValue,
-            string description = null,
+            string? description = null,
             bool hidden = false,
             bool canContainExpression = false)
         {
@@ -31,13 +31,13 @@ namespace Orang
 
         public string HelpValue { get; }
 
-        public string Description { get; }
+        public string? Description { get; }
 
         public bool Hidden { get; }
 
         public bool CanContainExpression { get; }
 
-        public static string GetDefaultHelpText<TEnum>(bool multiline = false)
+        public static string GetDefaultHelpText<TEnum>(bool multiline = false) where TEnum : struct
         {
             IEnumerable<string> values = Enum.GetValues(typeof(TEnum))
                 .Cast<TEnum>()

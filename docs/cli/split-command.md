@@ -44,7 +44,7 @@ Parts of the output to highlight\. Allowed values are n\[one\], s\[plit\], e\[mp
 
 **`[-i|--input] <INPUT>`**
 
-Text to search\.
+The input string to be searched\. Syntax is \<INPUT> \[\<INPUT\_OPTIONS>\]\. Allowed value is e\[scape\]\.
 
 **`[-m|--max-count] <NUM>`**
 

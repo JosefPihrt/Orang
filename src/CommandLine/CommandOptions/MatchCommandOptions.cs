@@ -7,5 +7,10 @@ namespace Orang.CommandLine
         internal MatchCommandOptions()
         {
         }
+
+        protected override void WriteDiagnosticCore()
+        {
+            DiagnosticWriter.WriteMatchCommand(this);
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace Orang.CommandLine
         [Option(shortName: OptionShortNames.Filter, longName: OptionNames.Filter,
             HelpText = "Filter string that should be used to filter results.",
             MetaValue = "<FILTER>")]
-        public string Filter { get; set; }
+        public string Filter { get; set; } = null!;
 
         public bool TryParse(CommonListCommandOptions options)
         {

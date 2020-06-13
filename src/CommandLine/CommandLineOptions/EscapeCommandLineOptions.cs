@@ -10,7 +10,7 @@ namespace Orang.CommandLine
         [Option(shortName: OptionShortNames.Input, longName: OptionNames.Input,
             HelpText = "Text to be escaped.",
             MetaValue = MetaValues.Input)]
-        public string Input { get; set; }
+        public string Input { get; set; } = null!;
 
         [Option(longName: OptionNames.CharGroup,
             HelpText = "Text is part of a character group.")]
@@ -26,13 +26,15 @@ namespace Orang.CommandLine
 
             if (input == null)
             {
-                input = ConsoleHelpers.ReadRedirectedInput();
+                string? redirectedInput = ConsoleHelpers.ReadRedirectedInput();
 
-                if (input == null)
+                if (redirectedInput == null)
                 {
                     Logger.WriteError("Input is missing.");
                     return false;
                 }
+
+                input = redirectedInput;
             }
 
             options.Input = input;

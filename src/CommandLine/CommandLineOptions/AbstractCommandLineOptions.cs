@@ -9,6 +9,6 @@ namespace Orang.CommandLine
         [Option(shortName: OptionShortNames.Verbosity, longName: OptionNames.Verbosity,
             HelpText = "The amount of information to display in the log.",
             MetaValue = MetaValues.Verbosity)]
-        public string Verbosity { get; set; }
+        public string Verbosity { get; set; } = null!;
     }
 }

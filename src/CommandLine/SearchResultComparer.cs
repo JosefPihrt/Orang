@@ -133,7 +133,7 @@ namespace Orang.CommandLine
         {
             public override int Compare(SearchResult x, SearchResult y)
             {
-                return string.Compare(x.FileMatch.NameMatch.Value, y.FileMatch.NameMatch.Value, StringComparison.CurrentCulture);
+                return string.Compare(x.FileMatch.NameMatch!.Value, y.FileMatch.NameMatch!.Value, StringComparison.CurrentCulture);
             }
         }
     }

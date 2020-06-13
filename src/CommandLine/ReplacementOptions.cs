@@ -10,6 +10,6 @@ namespace Orang.CommandLine
         None = 0,
         Literal = 1,
         FromFile = 1 << 1,
-        CharacterEscapes = 1 << 2,
+        Escape = 1 << 2,
     }
 }

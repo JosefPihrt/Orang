@@ -9,6 +9,7 @@ orang rename [<PATH>]
 [   --ask]
 [-a|--attributes]         <ATTRIBUTES>
 [   --attributes-to-skip] <ATTRIBUTES>
+[   --conflict]           <CONFLICT_RESOLUTION>
 [-c|--content]            <REGEX>
 [-y|--display]            <DISPLAY_OPTIONS>
 [-d|--dry-run]
@@ -51,6 +52,10 @@ File attributes that are required\. Allowed values are archive, compressed, d\[i
 
 File attributes that should be skipped\. Allowed values are archive, compressed, e\[mpty\], encrypted, h\[idden\], normal, offline, r\[ead\-only\], r\[eparse\]\-p\[oint\], s\[ystem\] and temporary\.
 
+**`[--conflict] <CONFLICT_RESOLUTION>`**
+
+Defines how to resolve conflict when a file/directory already exists\. Allowed values are a\[sk\], o\[verwrite\], suffix and s\[kip\]\.
+
 **`[-c|--content] <REGEX>`**
 
 Regular expression for files' content\. Syntax is \<PATTERN> \[\<PATTERN\_OPTIONS>\]\. Allowed values are compiled, c\[ulture\-\]i\[nvariant\], e\[cma\-\]s\[cript\], e\[nds\-\]w\[ith\], e\[quals\], n \[explicit\-capture\], f\[rom\-file\], g\[roup\]=\<GROUP\_NAME>, i\[gnore\-case\], x \[ignore\-pattern\-whitespace\], li\[st\], length=\<NUM>, l\[ist\-\]s\[eparator\], l\[iteral\], m\[ultiline\], ne\[gative\], r\[ight\-to\-left\], s\[ingleline\], s\[tarts\-\]w\[ith\], timeout=\<NUM>, w\[hole\-\]l\[ine\] and w\[hole\-word\]\.
@@ -81,7 +86,7 @@ Show command line help\.
 
 **`[-t|--highlight] <HIGHLIGHT>`**
 
-Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\], r\[eplacement\], e\[mpty\-\]s\[plit\] and e\[mpty\]\.
+Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\], r\[eplacement\] and e\[mpty\]\.
 
 **`[-i|--include-directory] <REGEX>`**
 
@@ -121,7 +126,7 @@ A filter for file properties\. Allowed values are c\[reation\-\]t\[ime\], m\[odi
 
 **`[-r|--replacement] <REPLACEMENT>`**
 
-Replacement pattern\. Syntax is \<REPLACEMENT> \[\<REPLACEMENT\_OPTIONS>\]\. Allowed values are f\[rom\-file\], l\[iteral\] and c\[haracter\-\]e\[scapes\]\.
+Replacement pattern\. Syntax is \<REPLACEMENT> \[\<REPLACEMENT\_OPTIONS>\]\. Allowed values are f\[rom\-file\], l\[iteral\] and e\[scape\]\.
 
 **`[-s|--sort] <SORT_OPTIONS>`**
 
@@ -166,7 +171,8 @@ Normalize file extensions to lowercase.
 #### Syntax
 
 ```
-orang rename --name ".*" equals part=extension ^
+orang rename ^
+ --name ".*" equals part=extension ^
  --modify to-lower
 ```
 

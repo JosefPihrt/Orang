@@ -15,9 +15,9 @@ namespace Orang.CommandLine
     internal sealed class SyncCommand : CommonCopyCommand<SyncCommandOptions>
     {
         private bool _isRightToLeft;
-        private HashSet<string> _destinationPaths;
-        private HashSet<string> _ignoredPaths;
-        private DirectoryData _directoryData;
+        private HashSet<string>? _destinationPaths;
+        private HashSet<string>? _ignoredPaths;
+        private DirectoryData? _directoryData;
 
         public SyncCommand(SyncCommandOptions options) : base(options)
         {
@@ -73,7 +73,7 @@ namespace Orang.CommandLine
             if (_ignoredPaths?.Contains(sourcePath) == true)
                 return;
 
-            string renamePath = null;
+            string? renamePath = null;
 
             ExecuteOperation();
 
@@ -135,11 +135,11 @@ namespace Orang.CommandLine
                             if (_directoryData == null)
                             {
                                 _directoryData = new DirectoryData();
-                                _directoryData.Load(Path.GetDirectoryName(destinationPath));
+                                _directoryData.Load(Path.GetDirectoryName(destinationPath)!);
                             }
-                            else if (!FileSystemHelpers.IsParentDirectory(_directoryData.Path, destinationPath))
+                            else if (!FileSystemHelpers.IsParentDirectory(_directoryData.Path!, destinationPath))
                             {
-                                _directoryData.Load(Path.GetDirectoryName(destinationPath));
+                                _directoryData.Load(Path.GetDirectoryName(destinationPath)!);
                             }
 
                             renamePath = _directoryData.FindRenamedFile(sourcePath);
@@ -395,7 +395,7 @@ namespace Orang.CommandLine
         private void RenameFile(SearchTelemetry telemetry, string sourcePath, string destinationPath, string indent)
         {
             //TODO: File.Exists(renamePath) ?
-            string renamePath = Path.Combine(Path.GetDirectoryName(destinationPath), Path.GetFileName(sourcePath));
+            string renamePath = Path.Combine(Path.GetDirectoryName(destinationPath)!, Path.GetFileName(sourcePath));
 
             WritePath(destinationPath, OperationKind.Rename, indent);
             WritePath(renamePath, OperationKind.None, indent);
@@ -535,7 +535,7 @@ namespace Orang.CommandLine
         [DebuggerDisplay("{DebuggerDisplay,nq}")]
         private class DirectoryData
         {
-            public string Path { get; private set; }
+            public string? Path { get; private set; }
 
             public List<FileData> Files { get; } = new List<FileData>();
 
@@ -550,15 +550,15 @@ namespace Orang.CommandLine
                 Files.AddRange(Directory.EnumerateFiles(path).Select(f => new FileData(f, File.GetLastWriteTimeUtc(f))));
             }
 
-            public string FindRenamedFile(string filePath)
+            public string? FindRenamedFile(string filePath)
             {
-                string renameFile = null;
+                string? renameFile = null;
 
                 DateTime modifiedTime = File.GetLastWriteTimeUtc(filePath);
 
                 long size = -1;
 
-                FileStream fs = null;
+                FileStream? fs = null;
 
                 try
                 {

@@ -15,7 +15,7 @@ namespace Orang.CommandLine
             string input,
             ReplaceOptions replaceOptions,
             TextWriter textWriter,
-            ContentWriterOptions options = null) : base(input, options)
+            ContentWriterOptions options) : base(input, options)
         {
             ReplaceOptions = replaceOptions;
             _textWriter = textWriter;

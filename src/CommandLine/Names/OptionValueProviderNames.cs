@@ -4,6 +4,7 @@ namespace Orang.CommandLine
 {
     internal static class OptionValueProviderNames
     {
+        public const string ConflictResolution_WithoutSuffix = nameof(ConflictResolution_WithoutSuffix);
         public const string ContentDisplayStyle_WithoutLineAndUnmatchedLines = nameof(ContentDisplayStyle_WithoutLineAndUnmatchedLines);
         public const string ContentDisplayStyle_WithoutUnmatchedLines = nameof(ContentDisplayStyle_WithoutUnmatchedLines);
         public const string DeleteHighlightOptions = nameof(DeleteHighlightOptions);
@@ -12,6 +13,8 @@ namespace Orang.CommandLine
         public const string FileSystemAttributesToSkip = nameof(FileSystemAttributesToSkip);
         public const string FindHighlightOptions = nameof(FindHighlightOptions);
         public const string MatchHighlightOptions = nameof(MatchHighlightOptions);
+        public const string NamePart_WithoutFullName = nameof(NamePart_WithoutFullName);
+        public const string NamePart_WithoutExtension = nameof(NamePart_WithoutExtension);
         public const string PathDisplayStyle_Rename = nameof(PathDisplayStyle_Rename);
         public const string PatternOptionsWithoutGroupAndNegative = nameof(PatternOptionsWithoutGroupAndNegative);
         public const string PatternOptionsWithoutGroupAndPartAndNegative = nameof(PatternOptionsWithoutGroupAndPartAndNegative);

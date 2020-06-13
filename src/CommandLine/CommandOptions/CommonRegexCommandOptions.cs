@@ -8,7 +8,7 @@ namespace Orang.CommandLine
         {
         }
 
-        public OutputDisplayFormat Format { get; internal set; }
+        public OutputDisplayFormat Format { get; internal set; } = null!;
 
         public bool IncludeSummary => Format.Includes(DisplayParts.Summary);
 

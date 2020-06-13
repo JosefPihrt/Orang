@@ -7,7 +7,7 @@ namespace Orang
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class SimpleOptionValue : OptionValue
     {
-        public SimpleOptionValue(string name, string value, string shortValue, string helpValue, string description = null, bool hidden = false, bool canContainExpression = false)
+        public SimpleOptionValue(string name, string value, string shortValue, string helpValue, string? description = null, bool hidden = false, bool canContainExpression = false)
             : base(name, helpValue, description, hidden, canContainExpression)
         {
             Value = value;
@@ -30,10 +30,10 @@ namespace Orang
 
         public static SimpleOptionValue Create<TEnum>(
             TEnum enumValue,
-            string value = null,
-            string shortValue = null,
-            string helpValue = null,
-            string description = null,
+            string? value = null,
+            string? shortValue = null,
+            string? helpValue = null,
+            string? description = null,
             bool hidden = false) where TEnum : struct
         {
             return Create(
@@ -47,10 +47,10 @@ namespace Orang
 
         public static SimpleOptionValue Create(
             string name,
-            string value = null,
-            string shortValue = null,
-            string helpValue = null,
-            string description = null,
+            string? value = null,
+            string? shortValue = null,
+            string? helpValue = null,
+            string? description = null,
             bool hidden = false,
             bool canContainExpression = false)
         {

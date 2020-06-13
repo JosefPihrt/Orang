@@ -8,9 +8,9 @@ namespace Orang.CommandLine
 {
     internal static class DialogResultMap
     {
-        private static ImmutableDictionary<string, DialogResult> _all;
-        private static ImmutableDictionary<string, DialogResult> _yesNoCancel;
-        private static ImmutableDictionary<string, DialogResult> _yesYesToAllCancel;
+        private static ImmutableDictionary<string, DialogResult>? _all;
+        private static ImmutableDictionary<string, DialogResult>? _yesNoCancel;
+        private static ImmutableDictionary<string, DialogResult>? _yesYesToAllCancel;
 
         public static ImmutableDictionary<string, DialogResult> All
         {

@@ -8,6 +8,11 @@ namespace Orang.CommandLine
         {
         }
 
-        public ModifyOptions ModifyOptions { get; internal set; }
+        public ModifyOptions ModifyOptions { get; internal set; } = null!;
+
+        protected override void WriteDiagnosticCore()
+        {
+            DiagnosticWriter.WriteFindCommand(this);
+        }
     }
 }

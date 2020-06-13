@@ -8,16 +8,15 @@ namespace Orang.CommandLine
     internal class EmptyContentWriter : ContentWriter
     {
         public EmptyContentWriter(
-            string input,
             ContentWriterOptions options,
-            IResultStorage resultStorage = null) : base(input, options)
+            IResultStorage? resultStorage = null) : base("", options)
         {
             ResultStorage = resultStorage;
         }
 
         protected override ValueWriter ValueWriter => throw new NotSupportedException();
 
-        public IResultStorage ResultStorage { get; }
+        public IResultStorage? ResultStorage { get; }
 
         protected override void WriteMatch(Capture capture)
         {

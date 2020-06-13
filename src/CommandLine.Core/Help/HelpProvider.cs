@@ -10,7 +10,7 @@ namespace Orang.CommandLine.Help
 {
     internal static class HelpProvider
     {
-        public static ImmutableArray<CommandItem> GetCommandItems(IEnumerable<Command> commands, Filter filter = null)
+        public static ImmutableArray<CommandItem> GetCommandItems(IEnumerable<Command> commands, Filter? filter = null)
         {
             if (!commands.Any())
                 return ImmutableArray<CommandItem>.Empty;
@@ -36,7 +36,7 @@ namespace Orang.CommandLine.Help
             return builder.ToImmutableArray();
         }
 
-        public static ImmutableArray<ArgumentItem> GetArgumentItems(IEnumerable<CommandArgument> arguments, Filter filter = null)
+        public static ImmutableArray<ArgumentItem> GetArgumentItems(IEnumerable<CommandArgument> arguments, Filter? filter = null)
         {
             int width = CalculateArgumentsWidths(arguments);
 
@@ -76,7 +76,7 @@ namespace Orang.CommandLine.Help
                 : builder.ToImmutableArray();
         }
 
-        public static ImmutableArray<OptionItem> GetOptionItems(IEnumerable<CommandOption> options, Filter filter = null)
+        public static ImmutableArray<OptionItem> GetOptionItems(IEnumerable<CommandOption> options, Filter? filter = null)
         {
             (int width1, int width2) = CalculateOptionsWidths(options);
 
@@ -120,7 +120,7 @@ namespace Orang.CommandLine.Help
                 if (!string.IsNullOrEmpty(option.MetaValue))
                 {
                     sb.Append(option.MetaValue);
-                    sb.AppendSpaces(width2 - option.MetaValue.Length);
+                    sb.AppendSpaces(width2 - option.MetaValue!.Length);
                 }
                 else
                 {
@@ -141,7 +141,7 @@ namespace Orang.CommandLine.Help
         public static ImmutableArray<OptionValueList> GetAllowedValues(
             IEnumerable<CommandOption> options,
             IEnumerable<OptionValueProvider> providers,
-            Filter filter = null)
+            Filter? filter = null)
         {
             providers = OptionValueProvider.GetProviders(options, providers).ToImmutableArray();
 
@@ -184,7 +184,7 @@ namespace Orang.CommandLine.Help
 
                 sb.Append(shortValue);
 
-                string description = optionValue.Description;
+                string? description = optionValue.Description;
 
                 if (!string.IsNullOrEmpty(description))
                 {

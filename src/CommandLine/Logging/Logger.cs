@@ -8,7 +8,7 @@ namespace Orang
     {
         public static ConsoleWriter ConsoleOut { get; } = ConsoleWriter.Instance;
 
-        public static TextWriterWithVerbosity Out { get; set; }
+        public static TextWriterWithVerbosity? Out { get; set; }
 
         public static void Write(char value)
         {
@@ -39,73 +39,73 @@ namespace Orang
             Out?.Write(value, repeatCount, verbosity);
         }
 
-        public static void Write(string value)
+        public static void Write(string? value)
         {
             ConsoleOut.Write(value);
             Out?.Write(value);
         }
 
-        public static void Write(string value, in ConsoleColors colors)
+        public static void Write(string? value, in ConsoleColors colors)
         {
             ConsoleOut.Write(value, colors);
             Out?.Write(value);
         }
 
-        public static void Write(string value, Verbosity verbosity)
+        public static void Write(string? value, Verbosity verbosity)
         {
             ConsoleOut.Write(value, verbosity: verbosity);
             Out?.Write(value, verbosity: verbosity);
         }
 
-        public static void Write(string value, in ConsoleColors colors, Verbosity verbosity)
+        public static void Write(string? value, in ConsoleColors colors, Verbosity verbosity)
         {
             ConsoleOut.Write(value, colors, verbosity);
             Out?.Write(value, verbosity: verbosity);
         }
 
-        public static void Write(string value, int startIndex, int length)
+        public static void Write(string? value, int startIndex, int length)
         {
             ConsoleOut.Write(value, startIndex, length);
             Out?.Write(value, startIndex, length);
         }
 
-        public static void Write(string value, int startIndex, int length, in ConsoleColors colors)
+        public static void Write(string? value, int startIndex, int length, in ConsoleColors colors)
         {
             ConsoleOut.Write(value.AsSpan(startIndex, length), colors);
             Out?.Write(value, startIndex, length);
         }
 
-        public static void Write(string value, int startIndex, int length, Verbosity verbosity)
+        public static void Write(string? value, int startIndex, int length, Verbosity verbosity)
         {
             ConsoleOut.Write(value, startIndex, length, verbosity);
             Out?.Write(value, startIndex, length, verbosity);
         }
 
-        public static void Write(string value, int startIndex, int length, in ConsoleColors colors, Verbosity verbosity)
+        public static void Write(string? value, int startIndex, int length, in ConsoleColors colors, Verbosity verbosity)
         {
             ConsoleOut.Write(value, startIndex, length, colors, verbosity);
             Out?.Write(value, startIndex, length, verbosity);
         }
 
-        public static void WriteIf(bool condition, string value)
+        public static void WriteIf(bool condition, string? value)
         {
             ConsoleOut.WriteIf(condition, value);
             Out?.WriteIf(condition, value);
         }
 
-        public static void WriteIf(bool condition, string value, in ConsoleColors colors)
+        public static void WriteIf(bool condition, string? value, in ConsoleColors colors)
         {
             ConsoleOut.WriteIf(condition, value, colors);
             Out?.WriteIf(condition, value);
         }
 
-        public static void WriteIf(bool condition, string value, in ConsoleColors colors, Verbosity verbosity)
+        public static void WriteIf(bool condition, string? value, in ConsoleColors colors, Verbosity verbosity)
         {
             ConsoleOut.WriteIf(condition, value, colors, verbosity);
             Out?.WriteIf(condition, value, verbosity);
         }
 
-        public static void Write(object value)
+        public static void Write(object? value)
         {
             ConsoleOut.Write(value);
             Out?.Write(value);
@@ -141,31 +141,31 @@ namespace Orang
             Out?.WriteLine(value);
         }
 
-        public static void WriteLine(string value)
+        public static void WriteLine(string? value)
         {
             ConsoleOut.WriteLine(value);
             Out?.WriteLine(value);
         }
 
-        public static void WriteLine(string value, in ConsoleColors colors)
+        public static void WriteLine(string? value, in ConsoleColors colors)
         {
             ConsoleOut.WriteLine(value, colors);
             Out?.WriteLine(value);
         }
 
-        public static void WriteLine(string value, Verbosity verbosity)
+        public static void WriteLine(string? value, Verbosity verbosity)
         {
             ConsoleOut.WriteLine(value, verbosity: verbosity);
             Out?.WriteLine(value, verbosity: verbosity);
         }
 
-        public static void WriteLine(string value, in ConsoleColors colors, Verbosity verbosity)
+        public static void WriteLine(string? value, in ConsoleColors colors, Verbosity verbosity)
         {
             ConsoleOut.WriteLine(value, colors, verbosity: verbosity);
             Out?.WriteLine(value, verbosity: verbosity);
         }
 
-        public static void WriteLineIf(bool condition, string value)
+        public static void WriteLineIf(bool condition, string? value)
         {
             ConsoleOut.WriteLineIf(condition, value);
             Out?.WriteLineIf(condition, value);
@@ -177,7 +177,7 @@ namespace Orang
             Out?.WriteLineIf(condition, value);
         }
 
-        public static void WriteLine(object value)
+        public static void WriteLine(object? value)
         {
             ConsoleOut.WriteLine(value);
             Out?.WriteLine(value);
@@ -185,7 +185,7 @@ namespace Orang
 
         public static void WriteWarning(
             Exception exception,
-            string message = null,
+            string? message = null,
             in ConsoleColors colors = default,
             Verbosity verbosity = Verbosity.Minimal)
         {
@@ -207,7 +207,7 @@ namespace Orang
 
         public static void WriteError(
             Exception exception,
-            string message = null)
+            string? message = null)
         {
             WriteError(message ?? exception.Message);
 

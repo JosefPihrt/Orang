@@ -10,10 +10,10 @@ set _msbuildPath=%_visualStudioPath%\MSBuild\Current\Bin
 "%_roslynatorPath%\CommandLine\bin\Release\net472\roslynator" fix "..\src\Orang.sln" ^
  --msbuild-path "%_msbuildPath%" ^
  --analyzer-assemblies ^
-  "%_roslynatorPath%\Analyzers.CodeFixes\bin\Release\netstandard1.3\Roslynator.CSharp.Analyzers.dll" ^
-  "%_roslynatorPath%\Analyzers.CodeFixes\bin\Release\netstandard1.3\Roslynator.CSharp.Analyzers.CodeFixes.dll" ^
-  "%_roslynatorPath%\Formatting.Analyzers.CodeFixes\bin\Release\netstandard1.3\Roslynator.Formatting.Analyzers.dll" ^
-  "%_roslynatorPath%\Formatting.Analyzers.CodeFixes\bin\Release\netstandard1.3\Roslynator.Formatting.Analyzers.CodeFixes.dll" ^
+  "%_roslynatorPath%\Analyzers.CodeFixes\bin\Release\netstandard2.0\Roslynator.CSharp.Analyzers.dll" ^
+  "%_roslynatorPath%\Analyzers.CodeFixes\bin\Release\netstandard2.0\Roslynator.CSharp.Analyzers.CodeFixes.dll" ^
+  "%_roslynatorPath%\Formatting.Analyzers.CodeFixes\bin\Release\netstandard2.0\Roslynator.Formatting.Analyzers.dll" ^
+  "%_roslynatorPath%\Formatting.Analyzers.CodeFixes\bin\Release\netstandard2.0\Roslynator.Formatting.Analyzers.CodeFixes.dll" ^
   "%_microsoftAnalyzersPath%\Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" ^
   "%_microsoftAnalyzersPath%\Microsoft.CodeAnalysis.CSharp.Features.dll" ^
   "%_microsoftAnalyzersPath%\Microsoft.CodeAnalysis.EditorFeatures.dll" ^

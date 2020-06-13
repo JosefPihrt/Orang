@@ -8,7 +8,7 @@ Orang is a cross-platform command-line tool for:
 * [moving](docs/cli/move-command.md) files and directories,
 * [renaming](docs/cli/rename-command.md) files and directories,
 * [deleting](docs/cli/delete-command.md) files, directories or its content,
-* executing [Regex](https://docs.microsoft.com/cs-cz/dotnet/api/system.text.regularexpressions.regex?view=netcore-2.2) functions such as [match](docs/cli/match-command.md) or [split](docs/cli/split-command.md)
+* executing [Regex](https://docs.microsoft.com/cs-cz/dotnet/api/system.text.regularexpressions.regex?view=netcore-3.0) functions such as [match](docs/cli/match-command.md) or [split](docs/cli/split-command.md)
 
 All these commands are powered with [.NET regular expression engine](https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expressions).
 
@@ -23,7 +23,7 @@ dotnet tool install -g orang.dotnet.cli
 To install non-alpha version run:
 
 ```
-dotnet tool install -g orang.dotnet.cli --version 0.1.0-rc
+dotnet tool install -g orang.dotnet.cli --version <VERSION>
 ```
 
 To update Orang run:
@@ -32,7 +32,7 @@ To update Orang run:
 dotnet tool update -g orang.dotnet.cli
 ```
 
-Note: Orang requires [.NET Core Runtime](https://dotnet.microsoft.com/download) 2.1 or higher.
+Note: Orang requires [.NET Core Runtime](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) 3.0 or higher.
 
 ## How to Use
 
@@ -56,19 +56,19 @@ For a list of all commands please see [Orang Command-Line Reference](docs/cli/RE
 For a full list of commands, parameters and parameter values run:
 
 ```
-orang help [command] [-v]
+orang help [command] [-v d]
 ```
 
-For a full manual run:
+For a full [manual](docs/cli/manual.txt) run:
 
 ```
-orang help -m [-v]
+orang help -m [-v d]
 ```
 
 For a full list of .NET regular expressions syntax run:
 
 ```
-orang list-syntax
+orang list-patterns
 ```
 
 ## Features

@@ -12,7 +12,7 @@ namespace Orang.CommandLine
         [Option(longName: OptionNames.Conflict,
             HelpText = "Action to choose if a file or directory exists in one directory and it is missing in the second directory.",
             MetaValue = MetaValues.SyncConflictResolution)]
-        public string Conflict { get; set; }
+        public string Conflict { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.DryRun, longName: OptionNames.DryRun,
             HelpText = "Display which files or directories should be copied/deleted but do not actually copy/delete any file or directory.")]
@@ -23,7 +23,7 @@ namespace Orang.CommandLine
             Required = true,
             HelpText = "A right (second) directory to be synchronized with the left (first) directory.",
             MetaValue = MetaValues.DirectoryPath)]
-        public string Right { get; set; }
+        public string Right { get; set; } = null!;
 
         public bool TryParse(SyncCommandOptions options)
         {
@@ -43,7 +43,7 @@ namespace Orang.CommandLine
             if (!TryParseAsEnumFlags(Compare, OptionNames.Compare, out FileCompareOptions compareOptions, FileCompareOptions.Attributes | FileCompareOptions.Content | FileCompareOptions.ModifiedTime | FileCompareOptions.Size, OptionValueProviders.FileCompareOptionsProvider))
                 return false;
 
-            if (!TryEnsureFullPath(Right, out string rightDirectory))
+            if (!TryEnsureFullPath(Right, out string? rightDirectory))
                 return false;
 
             if (!TryParseAsEnum(Conflict, OptionNames.Conflict, out SyncConflictResolution conflictResolution, defaultValue: SyncConflictResolution.LeftWins, provider: OptionValueProviders.SyncConflictResolutionProvider))

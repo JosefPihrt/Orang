@@ -28,7 +28,7 @@ namespace Orang
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay => $"{((Foreground != null) ? Foreground.ToString() : "None")}  {((Background != null) ? Background.ToString() : "None")}";
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is ConsoleColors colors
                 && Equals(colors);

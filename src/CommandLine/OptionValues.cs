@@ -8,8 +8,8 @@ namespace Orang.CommandLine
     {
         public static readonly SimpleOptionValue ConflictResolution_Ask = SimpleOptionValue.Create(ConflictResolution.Ask, description: "Ask when a file or already exists.");
         public static readonly SimpleOptionValue ConflictResolution_Overwrite = SimpleOptionValue.Create(ConflictResolution.Overwrite, description: "Overwrite a file when it already exists.");
-        public static readonly SimpleOptionValue ConflictResolution_Rename = SimpleOptionValue.Create(ConflictResolution.Rename, description: "Create new file name if it already exists.");
         public static readonly SimpleOptionValue ConflictResolution_Skip = SimpleOptionValue.Create(ConflictResolution.Skip, description: "Do not copy or move a file if it already exists.");
+        public static readonly SimpleOptionValue ConflictResolution_Suffix = SimpleOptionValue.Create(ConflictResolution.Suffix, shortValue: "", description: "Add suffix to file name if it already exists.");
 
         public static readonly SimpleOptionValue ContentDisplayStyle_AllLines = SimpleOptionValue.Create(ContentDisplayStyle.AllLines, description: "Display all lines.");
         public static readonly SimpleOptionValue ContentDisplayStyle_Line = SimpleOptionValue.Create(ContentDisplayStyle.Line, description: "Display entire line containing the matched value.");
@@ -45,6 +45,11 @@ namespace Orang.CommandLine
 
         public static readonly SimpleOptionValue ModifyFlags_Except = SimpleOptionValue.Create(ModifyFlags.Except, shortValue: "", description: "Return values from first file except values from second file.");
         public static readonly SimpleOptionValue ModifyFlags_Intersect = SimpleOptionValue.Create(ModifyFlags.Intersect, shortValue: "", description: "Return values that were found in all files.");
+
+        public static readonly SimpleOptionValue NamePart_Extension = SimpleOptionValue.Create(FileNamePart.Extension, description: "Search in file extension.");
+        public static readonly SimpleOptionValue NamePart_FullName = SimpleOptionValue.Create(FileNamePart.FullName, description: "Search in full path.");
+        public static readonly SimpleOptionValue NamePart_Name = SimpleOptionValue.Create(FileNamePart.Name, description: "Search in file name and its extension.");
+        public static readonly SimpleOptionValue NamePart_NameWithoutExtension = SimpleOptionValue.Create(FileNamePart.NameWithoutExtension, shortValue: "w", description: "Search in file name without extension.");
 
         public static readonly SimpleOptionValue Output_Append = SimpleOptionValue.Create("Append", description: "If the file exists output will be appended to the end of the file.");
 

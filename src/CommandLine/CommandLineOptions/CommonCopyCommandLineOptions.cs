@@ -10,7 +10,7 @@ namespace Orang.CommandLine
         [Option(longName: OptionNames.Compare,
             HelpText = "File properties to be compared.",
             MetaValue = MetaValues.CompareOptions)]
-        public IEnumerable<string> Compare { get; set; }
+        public IEnumerable<string> Compare { get; set; } = null!;
 
         public bool TryParse(CommonCopyCommandOptions options)
         {

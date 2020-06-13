@@ -2,7 +2,7 @@
 
 using System;
 
-namespace Orang.CommandLine
+namespace Orang
 {
     [Flags]
     internal enum ModifyFunctions

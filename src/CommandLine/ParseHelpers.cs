@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using Orang.CommandLine.Help;
 using Orang.Expressions;
 using Orang.FileSystem;
+using Orang.Text.RegularExpressions;
 using static Orang.Logger;
 
 namespace Orang.CommandLine
@@ -21,23 +22,36 @@ namespace Orang.CommandLine
         public static bool TryParseFileProperties(
             IEnumerable<string> values,
             string optionName,
-            out FilePropertyFilter filter)
+            out FilterPredicate<DateTime>? creationTimePredicate,
+            out FilterPredicate<DateTime>? modifiedTimePredicate,
+            out FilterPredicate<long>? sizePredicate)
         {
-            filter = null;
-            Func<long, bool> sizePredicate = null;
-            Func<DateTime, bool> creationTimePredicate = null;
-            Func<DateTime, bool> modifiedTimePredicate = null;
+            creationTimePredicate = null;
+            modifiedTimePredicate = null;
+            sizePredicate = null;
 
             foreach (string value in values)
             {
-                Expression expression = null;
-                OptionValue optionValue = null;
+                Expression? expression = null;
+                OptionValue? optionValue = null;
 
                 try
                 {
                     expression = Expression.Parse(value);
 
-                    if (OptionValues.FileProperty_Size.IsKeyOrShortKey(expression.Identifier))
+                    if (OptionValues.FileProperty_CreationTime.IsKeyOrShortKey(expression.Identifier))
+                    {
+                        optionValue = OptionValues.FileProperty_CreationTime;
+
+                        creationTimePredicate = new FilterPredicate<DateTime>(expression, PredicateHelpers.GetDateTimePredicate(expression));
+                    }
+                    else if (OptionValues.FileProperty_ModifiedTime.IsKeyOrShortKey(expression.Identifier))
+                    {
+                        optionValue = OptionValues.FileProperty_ModifiedTime;
+
+                        modifiedTimePredicate = new FilterPredicate<DateTime>(expression, PredicateHelpers.GetDateTimePredicate(expression));
+                    }
+                    else if (OptionValues.FileProperty_Size.IsKeyOrShortKey(expression.Identifier))
                     {
                         optionValue = OptionValues.FileProperty_Size;
 
@@ -47,19 +61,7 @@ namespace Orang.CommandLine
                             return false;
                         }
 
-                        sizePredicate = PredicateHelpers.GetLongPredicate(expression);
-                    }
-                    else if (OptionValues.FileProperty_CreationTime.IsKeyOrShortKey(expression.Identifier))
-                    {
-                        optionValue = OptionValues.FileProperty_CreationTime;
-
-                        creationTimePredicate = PredicateHelpers.GetDateTimePredicate(expression);
-                    }
-                    else if (OptionValues.FileProperty_ModifiedTime.IsKeyOrShortKey(expression.Identifier))
-                    {
-                        optionValue = OptionValues.FileProperty_ModifiedTime;
-
-                        modifiedTimePredicate = PredicateHelpers.GetDateTimePredicate(expression);
+                        sizePredicate = new FilterPredicate<long>(expression, PredicateHelpers.GetLongPredicate(expression));
                     }
                     else
                     {
@@ -83,23 +85,18 @@ namespace Orang.CommandLine
                 }
             }
 
-            filter = new FilePropertyFilter(
-                sizePredicate: sizePredicate,
-                creationTimePredicate: creationTimePredicate,
-                modifiedTimePredicate: modifiedTimePredicate);
-
             return true;
         }
 
         public static bool TryParseSortOptions(
             IEnumerable<string> values,
             string optionName,
-            out SortOptions sortOptions)
+            out SortOptions? sortOptions)
         {
             sortOptions = null;
             int maxCount = 0;
 
-            List<string> options = null;
+            List<string>? options = null;
 
             if (!values.Any())
                 return true;
@@ -137,7 +134,7 @@ namespace Orang.CommandLine
                 ? SortDirection.Descending
                 : SortDirection.Ascending;
 
-            List<SortDescriptor> descriptors = null;
+            List<SortDescriptor>? descriptors = null;
 
             foreach (SortFlags flag in flags)
             {
@@ -196,14 +193,14 @@ namespace Orang.CommandLine
         public static bool TryParseModifyOptions(
             IEnumerable<string> values,
             string optionName,
-            out ModifyOptions modifyOptions,
+            [NotNullWhen(true)] out ModifyOptions? modifyOptions,
             out bool aggregateOnly)
         {
             modifyOptions = null;
             aggregateOnly = false;
 
             var sortProperty = ValueSortProperty.None;
-            List<string> options = null;
+            List<string>? options = null;
 
             foreach (string value in values)
             {
@@ -302,9 +299,9 @@ namespace Orang.CommandLine
         public static bool TryParseReplaceOptions(
             IEnumerable<string> values,
             string optionName,
-            string replacement,
-            MatchEvaluator matchEvaluator,
-            out ReplaceOptions replaceOptions)
+            string? replacement,
+            MatchEvaluator? matchEvaluator,
+            [NotNullWhen(true)] out ReplaceOptions? replaceOptions)
         {
             replaceOptions = null;
             var replaceFlags = ReplaceFlags.None;
@@ -329,11 +326,20 @@ namespace Orang.CommandLine
             if ((replaceFlags & ReplaceFlags.ToUpper) != 0)
                 functions |= ReplaceFunctions.ToUpper;
 
-            replaceOptions = new ReplaceOptions(
-                replacement: replacement,
-                matchEvaluator: matchEvaluator,
-                functions: functions,
-                cultureInvariant: (replaceFlags & ReplaceFlags.CultureInvariant) != 0);
+            if (matchEvaluator != null)
+            {
+                replaceOptions = new ReplaceOptions(
+                    matchEvaluator: matchEvaluator,
+                    functions: functions,
+                    cultureInvariant: (replaceFlags & ReplaceFlags.CultureInvariant) != 0);
+            }
+            else
+            {
+                replaceOptions = new ReplaceOptions(
+                    replacement: replacement,
+                    functions: functions,
+                    cultureInvariant: (replaceFlags & ReplaceFlags.CultureInvariant) != 0);
+            }
 
             return true;
         }
@@ -347,10 +353,10 @@ namespace Orang.CommandLine
             out LineContext lineContext,
             out DisplayParts displayParts,
             out ImmutableArray<FileProperty> fileProperties,
-            out string indent,
-            out string separator,
-            OptionValueProvider contentDisplayStyleProvider = null,
-            OptionValueProvider pathDisplayStyleProvider = null)
+            out string? indent,
+            out string? separator,
+            OptionValueProvider? contentDisplayStyleProvider = null,
+            OptionValueProvider? pathDisplayStyleProvider = null)
         {
             contentDisplayStyle = null;
             pathDisplayStyle = null;
@@ -361,7 +367,7 @@ namespace Orang.CommandLine
             indent = null;
             separator = null;
 
-            ImmutableArray<FileProperty>.Builder builder = null;
+            ImmutableArray<FileProperty>.Builder? builder = null;
 
             foreach (string value in values)
             {
@@ -473,9 +479,9 @@ namespace Orang.CommandLine
         public static bool TryParseOutputOptions(
             IEnumerable<string> values,
             string optionName,
-            out string path,
+            out string? path,
             out Verbosity verbosity,
-            out Encoding encoding,
+            [NotNullWhen(true)] out Encoding? encoding,
             out bool append)
         {
             path = null;
@@ -530,89 +536,9 @@ namespace Orang.CommandLine
             return true;
         }
 
-        public static bool TryParseRegex(
-            string pattern,
-            RegexOptions regexOptions,
-            TimeSpan matchTimeout,
-            string patternOptionName,
-            out Regex regex)
-        {
-            regex = null;
-
-            if (pattern == null)
-                return false;
-
-            try
-            {
-                regex = new Regex(pattern, regexOptions, matchTimeout);
-                return true;
-            }
-            catch (ArgumentException ex)
-            {
-                WriteError(ex, $"Could not parse '{OptionNames.GetHelpText(patternOptionName)}' value: {ex.Message}");
-                return false;
-            }
-        }
-
-        internal static bool TryParseRegexOptions(
-            IEnumerable<string> options,
-            string optionsParameterName,
-            out RegexOptions regexOptions,
-            out PatternOptions patternOptions,
-            PatternOptions includedPatternOptions = PatternOptions.None,
-            OptionValueProvider provider = null)
-        {
-            regexOptions = RegexOptions.None;
-
-            if (!TryParseAsEnumFlags(options, optionsParameterName, out patternOptions, provider: provider ?? OptionValueProviders.PatternOptionsProvider))
-                return false;
-
-            Debug.Assert((patternOptions & (PatternOptions.CaseSensitive | PatternOptions.IgnoreCase)) != (PatternOptions.CaseSensitive | PatternOptions.IgnoreCase));
-
-            if ((patternOptions & PatternOptions.CaseSensitive) != 0)
-            {
-                includedPatternOptions &= ~PatternOptions.IgnoreCase;
-            }
-            else if ((patternOptions & PatternOptions.IgnoreCase) != 0)
-            {
-                includedPatternOptions &= ~PatternOptions.CaseSensitive;
-            }
-
-            patternOptions |= includedPatternOptions;
-
-            if ((patternOptions & PatternOptions.Compiled) != 0)
-                regexOptions |= RegexOptions.Compiled;
-
-            if ((patternOptions & PatternOptions.CultureInvariant) != 0)
-                regexOptions |= RegexOptions.CultureInvariant;
-
-            if ((patternOptions & PatternOptions.ECMAScript) != 0)
-                regexOptions |= RegexOptions.ECMAScript;
-
-            if ((patternOptions & PatternOptions.ExplicitCapture) != 0)
-                regexOptions |= RegexOptions.ExplicitCapture;
-
-            if ((patternOptions & PatternOptions.IgnoreCase) != 0)
-                regexOptions |= RegexOptions.IgnoreCase;
-
-            if ((patternOptions & PatternOptions.IgnorePatternWhitespace) != 0)
-                regexOptions |= RegexOptions.IgnorePatternWhitespace;
-
-            if ((patternOptions & PatternOptions.Multiline) != 0)
-                regexOptions |= RegexOptions.Multiline;
-
-            if ((patternOptions & PatternOptions.RightToLeft) != 0)
-                regexOptions |= RegexOptions.RightToLeft;
-
-            if ((patternOptions & PatternOptions.Singleline) != 0)
-                regexOptions |= RegexOptions.Singleline;
-
-            return true;
-        }
-
         public static bool TryParseReplacement(
             IEnumerable<string> values,
-            out string replacement)
+            out string? replacement)
         {
             if (!values.Any())
             {
@@ -626,7 +552,7 @@ namespace Orang.CommandLine
                 return false;
 
             if ((options & ReplacementOptions.FromFile) != 0
-                && !FileSystemHelpers.TryReadAllText(replacement, out replacement))
+                && !FileSystemHelpers.TryReadAllText(replacement, out replacement, ex => WriteError(ex)))
             {
                 return false;
             }
@@ -634,7 +560,7 @@ namespace Orang.CommandLine
             if ((options & ReplacementOptions.Literal) != 0)
                 replacement = RegexEscape.EscapeSubstitution(replacement);
 
-            if ((options & ReplacementOptions.CharacterEscapes) != 0)
+            if ((options & ReplacementOptions.Escape) != 0)
                 replacement = RegexEscape.ConvertCharacterEscapes(replacement);
 
             return true;
@@ -652,18 +578,18 @@ namespace Orang.CommandLine
             if (!TryParseAsEnumFlags(values.Skip(1), OptionNames.Input, out InputOptions options, InputOptions.None, OptionValueProviders.InputOptionsProvider))
                 return false;
 
-            if ((options & InputOptions.CharacterEscapes) != 0)
+            if ((options & InputOptions.Escape) != 0)
                 input = RegexEscape.ConvertCharacterEscapes(input);
 
             return true;
         }
 
         public static bool TryParseAsEnumFlags<TEnum>(
-            IEnumerable<string> values,
+            IEnumerable<string>? values,
             string optionName,
             out TEnum result,
             TEnum? defaultValue = null,
-            OptionValueProvider provider = null) where TEnum : struct
+            OptionValueProvider? provider = null) where TEnum : struct
         {
             result = (TEnum)(object)0;
 
@@ -693,11 +619,11 @@ namespace Orang.CommandLine
         }
 
         public static bool TryParseAsEnumValues<TEnum>(
-            IEnumerable<string> values,
+            IEnumerable<string>? values,
             string optionName,
             out ImmutableArray<TEnum> result,
             ImmutableArray<TEnum> defaultValue = default,
-            OptionValueProvider provider = null) where TEnum : struct
+            OptionValueProvider? provider = null) where TEnum : struct
         {
             if (values?.Any() != true)
             {
@@ -726,7 +652,7 @@ namespace Orang.CommandLine
             string optionName,
             out TEnum result,
             TEnum? defaultValue = null,
-            OptionValueProvider provider = null) where TEnum : struct
+            OptionValueProvider? provider = null) where TEnum : struct
         {
             if (!TryParseAsEnum(value, out result, defaultValue, provider))
             {
@@ -743,7 +669,7 @@ namespace Orang.CommandLine
             string value,
             out TEnum result,
             TEnum? defaultValue = null,
-            OptionValueProvider provider = default) where TEnum : struct
+            OptionValueProvider? provider = default) where TEnum : struct
         {
             if (value == null
                 && defaultValue != null)
@@ -768,11 +694,11 @@ namespace Orang.CommandLine
         }
 
         // https://docs.microsoft.com/en-us/dotnet/api/system.text.encoding#remarks
-        public static bool TryParseEncoding(string name, out Encoding encoding)
+        public static bool TryParseEncoding(string name, [NotNullWhen(true)] out Encoding? encoding)
         {
             if (name == "utf-8-no-bom")
             {
-                encoding = EncodingHelpers.UTF8NoBom;
+                encoding = Text.EncodingHelpers.UTF8NoBom;
                 return true;
             }
 
@@ -838,7 +764,7 @@ namespace Orang.CommandLine
             return true;
         }
 
-        private static bool TryParseCount(string value, out int count, string value2 = null)
+        private static bool TryParseCount(string value, out int count, string? value2 = null)
         {
             if (int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out count))
                 return true;
@@ -884,7 +810,7 @@ namespace Orang.CommandLine
 
             foreach (string path in paths)
             {
-                if (!TryEnsureFullPath(path, out string fullPath))
+                if (!TryEnsureFullPath(path, out string? fullPath))
                     return false;
 
                 builder.Add(fullPath);
@@ -894,45 +820,42 @@ namespace Orang.CommandLine
             return true;
         }
 
-        public static bool TryEnsureFullPath(string path, out string result)
+        public static bool TryEnsureFullPath(string path, [NotNullWhen(true)] out string? fullPath)
         {
             try
             {
-                if (!Path.IsPathRooted(path))
-                    path = Path.GetFullPath(path);
-
-                result = path;
+                fullPath = FileSystemHelpers.EnsureFullPath(path);
                 return true;
             }
             catch (ArgumentException ex)
             {
                 WriteError($"Path '{path}' is invalid: {ex.Message}.");
-                result = null;
+                fullPath = null;
                 return false;
             }
         }
 
-        internal static void WriteOptionError(string value, string optionName, OptionValueProvider provider = null)
+        internal static void WriteOptionError(string value, string optionName, OptionValueProvider? provider = null)
         {
             WriteOptionError(value, optionName, OptionValueProviders.GetHelpText(provider, multiline: true));
         }
 
-        private static void WriteOptionError(string value, string optionName, string allowedValues)
+        private static void WriteOptionError(string value, string optionName, string? allowedValues)
         {
             WriteParseError(value, OptionNames.GetHelpText(optionName), allowedValues);
         }
 
-        internal static void WriteOptionValueError(string value, OptionValue optionValue, OptionValueProvider provider = null)
+        internal static void WriteOptionValueError(string value, OptionValue optionValue, OptionValueProvider? provider = null)
         {
             WriteOptionValueError(value, optionValue, OptionValueProviders.GetHelpText(provider, multiline: true));
         }
 
-        internal static void WriteOptionValueError(string value, OptionValue optionValue, string allowedValues)
+        internal static void WriteOptionValueError(string value, OptionValue optionValue, string? allowedValues)
         {
             WriteParseError(value, optionValue.HelpValue, allowedValues);
         }
 
-        private static void WriteParseError(string value, string optionText, string allowedValues)
+        private static void WriteParseError(string value, string optionText, string? allowedValues)
         {
             string message = $"Option '{optionText}' has invalid value '{value}'.";
 
@@ -954,7 +877,7 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            if (!FilterParser.TryParse(name, OptionNames.Name, OptionValueProviders.PatternOptionsProvider, out Filter nameFilter, out NamePartKind namePart, allowNull: true))
+            if (!FilterParser.TryParse(name, OptionNames.Name, OptionValueProviders.PatternOptionsProvider, out Filter? nameFilter, out FileNamePart namePart, allowNull: true))
                 return false;
 
             options.AskMode = askMode;

@@ -16,7 +16,7 @@ namespace Orang.Syntax
 
         public static IEnumerable<SyntaxItem> Load()
         {
-            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine("Resources", "RegexSyntax.xml"));
+            string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, Path.Combine("Resources", "RegexSyntax.xml"));
 
             return XDocument.Load(path)
                 .Root

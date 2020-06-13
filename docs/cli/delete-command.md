@@ -80,7 +80,7 @@ Show command line help\.
 
 **`[-t|--highlight] <HIGHLIGHT>`**
 
-Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\], e\[mpty\-\]s\[plit\] and e\[mpty\]\.
+Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\] and e\[mpty\]\.
 
 **`[-i|--include-directory] <REGEX>`**
 

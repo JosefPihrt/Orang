@@ -19,5 +19,10 @@ namespace Orang.CommandLine
         public RegexOptions RegexOptions { get; internal set; }
 
         public ImmutableArray<SyntaxSection> Sections { get; internal set; }
+
+        protected override void WriteDiagnosticCore()
+        {
+            DiagnosticWriter.WriteListPatternsCommand(this);
+        }
     }
 }

@@ -8,16 +8,16 @@ namespace Orang.CommandLine
 {
     internal class LineReplacementWriter : LineContentWriter
     {
-        private readonly TextWriter _textWriter;
+        private readonly TextWriter? _textWriter;
         private int _writerIndex;
-        private ValueWriter _valueWriter;
-        private ValueWriter _replacementValueWriter;
+        private ValueWriter? _valueWriter;
+        private ValueWriter? _replacementValueWriter;
 
         public LineReplacementWriter(
             string input,
             ReplaceOptions replaceOptions,
-            ContentWriterOptions options = null,
-            TextWriter textWriter = null) : base(input, options)
+            ContentWriterOptions options,
+            TextWriter? textWriter = null) : base(input, options)
         {
             ReplaceOptions = replaceOptions;
             _textWriter = textWriter;

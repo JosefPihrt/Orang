@@ -21,10 +21,15 @@ namespace Orang.CommandLine
             HelpText = "Ask for a permission to rename file or directory.")]
         public bool Ask { get; set; }
 
+        [Option(longName: OptionNames.Conflict,
+            HelpText = "Defines how to resolve conflict when a file/directory already exists.",
+            MetaValue = MetaValues.ConflictResolution)]
+        public string Conflict { get; set; } = null!;
+
         [Option(shortName: OptionShortNames.Content, longName: OptionNames.Content,
             HelpText = "Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
-        public IEnumerable<string> Content { get; set; }
+        public IEnumerable<string> Content { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.DryRun, longName: OptionNames.DryRun,
             HelpText = "Display which files or directories should be renamed but do not actually rename any file or directory.")]
@@ -33,7 +38,7 @@ namespace Orang.CommandLine
         [Option(longName: OptionNames.Evaluator,
             HelpText = "Path to the evaluator method to compute replacements. The format is \"LibraryPath,FullTypeName.MethodName\".",
             MetaValue = MetaValues.Evaluator)]
-        public string Evaluator { get; set; }
+        public string Evaluator { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.MaxCount, longName: OptionNames.MaxCount,
             HelpText = "Stop renaming after specified number is reached.",
@@ -43,18 +48,18 @@ namespace Orang.CommandLine
         [Option(longName: OptionNames.Modify,
             HelpText = "Functions to modify result.",
             MetaValue = MetaValues.ReplaceModify)]
-        public IEnumerable<string> Modify { get; set; }
+        public IEnumerable<string> Modify { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.Name, longName: OptionNames.Name,
             Required = true,
             HelpText = "Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
-        public IEnumerable<string> Name { get; set; }
+        public IEnumerable<string> Name { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.Replacement, longName: OptionNames.Replacement,
             HelpText = "Replacement pattern. Syntax is <REPLACEMENT> [<REPLACEMENT_OPTIONS>].",
             MetaValue = MetaValues.Replacement)]
-        public IEnumerable<string> Replacement { get; set; }
+        public IEnumerable<string> Replacement { get; set; } = null!;
 
         public bool TryParse(RenameCommandOptions options)
         {
@@ -68,22 +73,16 @@ namespace Orang.CommandLine
             if (!TryParseAsEnumFlags(Highlight, OptionNames.Highlight, out HighlightOptions highlightOptions, defaultValue: HighlightOptions.Replacement, provider: OptionValueProviders.RenameHighlightOptionsProvider))
                 return false;
 
-            if (!FilterParser.TryParse(Name, OptionNames.Name, OptionValueProviders.PatternOptionsWithoutGroupAndNegativeProvider, out Filter nameFilter, out NamePartKind namePart))
+            if (!FilterParser.TryParse(Name, OptionNames.Name, OptionValueProviders.PatternOptionsWithoutGroupAndNegativeProvider, out Filter? nameFilter, out FileNamePart namePart, namePartProvider: OptionValueProviders.NamePartKindProvider_WithoutFullName))
                 return false;
 
-            if (namePart == NamePartKind.FullName)
-            {
-                WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Options)}' has invalid value '{OptionValueProviders.NamePartKindProvider.GetValue(nameof(NamePartKind.FullName)).HelpValue}'.");
-                return false;
-            }
-
-            if (!FilterParser.TryParse(Content, OptionNames.Content, OptionValueProviders.PatternOptionsWithoutPartProvider, out Filter contentFilter, allowNull: true))
+            if (!FilterParser.TryParse(Content, OptionNames.Content, OptionValueProviders.PatternOptionsWithoutPartProvider, out Filter? contentFilter, allowNull: true))
                 return false;
 
-            if (!TryParseReplacement(Replacement, out string replacement))
+            if (!TryParseReplacement(Replacement, out string? replacement))
                 return false;
 
-            if (!DelegateFactory.TryCreateMatchEvaluator(Evaluator, out MatchEvaluator matchEvaluator))
+            if (!DelegateFactory.TryCreateMatchEvaluator(Evaluator, out MatchEvaluator? matchEvaluator))
                 return false;
 
             if (replacement != null && matchEvaluator != null)
@@ -92,7 +91,10 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            if (!TryParseReplaceOptions(Modify, OptionNames.Modify, replacement, matchEvaluator, out ReplaceOptions replaceOptions))
+            if (!TryParseReplaceOptions(Modify, OptionNames.Modify, replacement, matchEvaluator, out ReplaceOptions? replaceOptions))
+                return false;
+
+            if (!TryParseAsEnum(Conflict, OptionNames.Conflict, out ConflictResolution conflictResolution, defaultValue: ConflictResolution.Ask, provider: OptionValueProviders.ConflictResolutionProvider_WithoutSuffix))
                 return false;
 
             if (!TryParseDisplay(
@@ -104,8 +106,8 @@ namespace Orang.CommandLine
                 lineContext: out LineContext lineContext,
                 displayParts: out DisplayParts displayParts,
                 fileProperties: out ImmutableArray<FileProperty> fileProperties,
-                indent: out string indent,
-                separator: out string separator,
+                indent: out string? indent,
+                separator: out string? separator,
                 contentDisplayStyleProvider: OptionValueProviders.ContentDisplayStyleProvider,
                 pathDisplayStyleProvider: OptionValueProviders.PathDisplayStyleProvider_Rename))
             {
@@ -138,6 +140,7 @@ namespace Orang.CommandLine
             options.NamePart = namePart;
             options.ContentFilter = contentFilter;
             options.MaxMatchingFiles = MaxCount;
+            options.ConflictResolution = conflictResolution;
 
             return true;
         }

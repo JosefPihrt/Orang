@@ -11,8 +11,8 @@ namespace Orang.CommandLine
     {
         public SearchContext(
             SearchTelemetry telemetry,
-            ProgressReporter progress = null,
-            List<SearchResult> results = null,
+            ProgressReporter? progress = null,
+            List<SearchResult>? results = null,
             in CancellationToken cancellationToken = default)
         {
             Telemetry = telemetry ?? throw new ArgumentNullException(nameof(telemetry));
@@ -23,21 +23,14 @@ namespace Orang.CommandLine
 
         public SearchTelemetry Telemetry { get; }
 
-        public ProgressReporter Progress { get; }
+        public ProgressReporter? Progress { get; }
 
-        public List<SearchResult> Results { get; }
+        public List<SearchResult>? Results { get; }
 
-        public Dictionary<string, long> DirectorySizeMap { get; set; }
+        public Dictionary<string, long>? DirectorySizeMap { get; set; }
 
         public CancellationToken CancellationToken { get; }
 
         public TerminationReason TerminationReason { get; set; }
-
-        public void AddResult(FileMatch match, string baseDirectoryPath)
-        {
-            var result = new SearchResult(match, baseDirectoryPath);
-
-            Results.Add(result);
-        }
     }
 }

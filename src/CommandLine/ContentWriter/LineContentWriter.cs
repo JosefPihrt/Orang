@@ -10,26 +10,26 @@ namespace Orang.CommandLine
         protected int _solIndex;
         protected int _eolIndex;
         protected int _lineNumber;
-        private ValueWriter _valueWriter;
+        private ValueWriter? _valueWriter;
 
         public LineContentWriter(
             string input,
-            ContentWriterOptions options = null,
-            IResultStorage storage = null) : this(input, ContentTextWriter.Default, options, storage)
+            ContentWriterOptions options,
+            IResultStorage? storage = null) : this(input, ContentTextWriter.Default, options, storage)
         {
         }
 
         public LineContentWriter(
             string input,
-            ContentTextWriter writer,
-            ContentWriterOptions options = null,
-            IResultStorage storage = null) : base(input, writer, options)
+            ContentTextWriter? writer,
+            ContentWriterOptions options,
+            IResultStorage? storage = null) : base(input, writer, options)
         {
             ResultStorage = storage;
             MatchingLineCount = 0;
         }
 
-        public IResultStorage ResultStorage { get; }
+        public IResultStorage? ResultStorage { get; }
 
         protected override ValueWriter ValueWriter
         {

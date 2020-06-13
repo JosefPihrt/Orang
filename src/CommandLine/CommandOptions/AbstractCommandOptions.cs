@@ -4,5 +4,13 @@ namespace Orang.CommandLine
 {
     internal abstract class AbstractCommandOptions
     {
+        internal void WriteDiagnostic()
+        {
+            DiagnosticWriter.WriteStart();
+            WriteDiagnosticCore();
+            DiagnosticWriter.WriteEnd();
+        }
+
+        protected abstract void WriteDiagnosticCore();
     }
 }

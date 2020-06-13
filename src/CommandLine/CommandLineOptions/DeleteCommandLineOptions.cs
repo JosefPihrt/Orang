@@ -21,7 +21,7 @@ namespace Orang.CommandLine
         [Option(shortName: OptionShortNames.Content, longName: OptionNames.Content,
             HelpText = "Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
-        public IEnumerable<string> Content { get; set; }
+        public IEnumerable<string> Content { get; set; } = null!;
 
         [Option(longName: OptionNames.ContentOnly,
             HelpText = "Delete content of a file or directory but not the file or directory itself.")]
@@ -43,7 +43,7 @@ namespace Orang.CommandLine
         [Option(shortName: OptionShortNames.Name, longName: OptionNames.Name,
             HelpText = "Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
-        public IEnumerable<string> Name { get; set; }
+        public IEnumerable<string> Name { get; set; } = null!;
 
         public bool TryParse(DeleteCommandOptions options)
         {
@@ -57,7 +57,7 @@ namespace Orang.CommandLine
             if (!TryParseAsEnumFlags(Highlight, OptionNames.Highlight, out HighlightOptions highlightOptions, defaultValue: HighlightOptions.Default, provider: OptionValueProviders.DeleteHighlightOptionsProvider))
                 return false;
 
-            if (!FilterParser.TryParse(Name, OptionNames.Name, OptionValueProviders.PatternOptionsProvider, out Filter nameFilter, out NamePartKind namePart, allowNull: true))
+            if (!FilterParser.TryParse(Name, OptionNames.Name, OptionValueProviders.PatternOptionsProvider, out Filter? nameFilter, out FileNamePart namePart, allowNull: true))
                 return false;
 
             if (nameFilter == null
@@ -68,7 +68,7 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            if (!FilterParser.TryParse(Content, OptionNames.Content, OptionValueProviders.PatternOptionsWithoutPartProvider, out Filter contentFilter, allowNull: true))
+            if (!FilterParser.TryParse(Content, OptionNames.Content, OptionValueProviders.PatternOptionsWithoutPartProvider, out Filter? contentFilter, allowNull: true))
                 return false;
 
             if (!TryParseDisplay(
@@ -80,8 +80,8 @@ namespace Orang.CommandLine
                 lineContext: out LineContext lineContext,
                 displayParts: out DisplayParts displayParts,
                 fileProperties: out ImmutableArray<FileProperty> fileProperties,
-                indent: out string indent,
-                separator: out string separator,
+                indent: out string? indent,
+                separator: out string? separator,
                 contentDisplayStyleProvider: OptionValueProviders.ContentDisplayStyleProvider,
                 pathDisplayStyleProvider: OptionValueProviders.PathDisplayStyleProvider))
             {

@@ -7,5 +7,10 @@ namespace Orang.CommandLine
         internal CopyCommandOptions()
         {
         }
+
+        protected override void WriteDiagnosticCore()
+        {
+            DiagnosticWriter.WriteCopyCommand(this);
+        }
     }
 }

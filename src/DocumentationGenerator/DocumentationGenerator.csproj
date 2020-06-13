@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <AssemblyName>Orang.DocumentationGenerator</AssemblyName>
     <RootNamespace>Orang.Documentation</RootNamespace>
@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotMarkdown" Version="0.1.0" />
-    <PackageReference Include="CommandLineParser" Version="2.6.0" />
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
   </ItemGroup>
 
   <ItemGroup>

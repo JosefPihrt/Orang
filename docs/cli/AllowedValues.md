@@ -9,6 +9,7 @@
 * [\<EXTENSION_OPTIONS>](#extension-options)
 * [\<FILE_PROPERTIES>](#file-properties)
 * [\<HIGHLIGHT>](#highlight)
+* [\<INPUT_OPTIONS>](#input-options)
 * [\<MAX_OPTIONS>](#max-options)
 * [\<MODIFY_OPTIONS>](#modify-options)
 * [\<NAME_PART>](#name-part)
@@ -68,24 +69,27 @@
 | ------------- | ------------------------------------------------- |
 | a\[sk\]       | Ask when a file or already exists\.               |
 | o\[verwrite\] | Overwrite a file when it already exists\.         |
-| r\[ename\]    | Create new file name if it already exists\.       |
+| suffix        | Add suffix to file name if it already exists\.    |
 | s\[kip\]      | Do not copy or move a file if it already exists\. |
 
 ## \<CONTENT\_DISPLAY>
 
 | Value                | Description                                                                              |
 | -------------------- | ---------------------------------------------------------------------------------------- |
-| v\[alue\]            | Display just the matched value\.                                                         |
-| d \[value\-detail\]  | Display matched value and include information about each value such as index or length\. |
+| a\[ll\-lines\]       | Display all lines\.                                                                      |
 | l\[ine\]             | Display entire line containing the matched value\.                                       |
 | u\[nmatched\-lines\] | Display all lines that do not contain the matched value\.                                |
-| a\[ll\-lines\]       | Display all lines\.                                                                      |
+| v\[alue\]            | Display just the matched value\.                                                         |
+| d \[value\-detail\]  | Display matched value and include information about each value such as index or length\. |
 
 ## \<DISPLAY\_OPTIONS>
 
 | Value                           | Description                                                            |
 | ------------------------------- | ---------------------------------------------------------------------- |
 | c\[ontent\]=\<CONTENT\_DISPLAY> |
+| t \[context\]=\<NUM>            | A number of lines to display before and after matching line\.          |
+| context\-before=\<NUM>          | A number of lines to display before matching line\.                    |
+| context\-after=\<NUM>           | A number of lines to display after matching line\.                     |
 | c\[ount\]                       | Include number of matches in file\.                                    |
 | c\[reation\-\]t\[ime\]          | Include file creation time\.                                           |
 | indent=\<INDENT>                | Indentation for a list of results\. Default indentation are 2 spaces\. |
@@ -136,13 +140,18 @@
 | n\[ew\-\]l\[ine\]          | Highlight carriage return and linefeed characters\. |
 | space                      | Highlight space character\.                         |
 
+## \<INPUT\_OPTIONS>
+
+| Value      | Description                                                                    |
+| ---------- | ------------------------------------------------------------------------------ |
+| e\[scape\] | Interpret literals \\a, \\b, \\f, \\n, \\r, \\t and \\v as character escapes\. |
+
 ## \<MAX\_OPTIONS>
 
-| Value                   | Description                                                                                   |
-| ----------------------- | --------------------------------------------------------------------------------------------- |
-| \<NUM>                  | Stop searching after \<NUM> matches \(or matches in file when searching in file's content\)\. |
-| m\[atches\]=\<NUM>      | Stop searching after \<NUM> matches\.                                                         |
-| m\[atching\-\]f\[iles\] | Stop searching after \<NUM> matching files\.                                                  |
+| Value              | Description                                                     |
+| ------------------ | --------------------------------------------------------------- |
+| \<NUM>             | Stop searching after \<NUM> matching files and/or directories\. |
+| m\[atches\]=\<NUM> | Stop searching in each file after \<NUM> matches\.              |
 
 ## \<MODIFY\_OPTIONS>
 
@@ -247,11 +256,11 @@
 
 ## \<REPLACEMENT\_OPTIONS>
 
-| Value                      | Description                                                                                 |
-| -------------------------- | ------------------------------------------------------------------------------------------- |
-| f\[rom\-file\]             | Load replacement string from a file whose path is specified in \<REPLACEMENT> value\.       |
-| l\[iteral\]                | Replacement should be treated as a literal expression and not as a replacement expression\. |
-| c\[haracter\-\]e\[scapes\] | Interpret literals \\a, \\b, \\f, \\n, \\r, \\t and \\v as character escapes\.              |
+| Value          | Description                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------- |
+| f\[rom\-file\] | Load replacement string from a file whose path is specified in \<REPLACEMENT> value\.       |
+| l\[iteral\]    | Replacement should be treated as a literal expression and not as a replacement expression\. |
+| e\[scape\]     | Interpret literals \\a, \\b, \\f, \\n, \\r, \\t and \\v as character escapes\.              |
 
 ## \<SORT\_OPTIONS>
 
