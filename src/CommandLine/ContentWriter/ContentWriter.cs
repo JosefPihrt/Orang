@@ -18,7 +18,7 @@ namespace Orang.CommandLine
 
         protected ContentWriter(
             string input,
-            ContentTextWriter writer,
+            ContentTextWriter? writer,
             ContentWriterOptions options)
         {
             Input = input;
@@ -35,7 +35,7 @@ namespace Orang.CommandLine
 
         public int MatchingLineCount { get; protected set; }
 
-        protected ContentTextWriter Writer { get; }
+        protected ContentTextWriter? Writer { get; }
 
         protected abstract ValueWriter ValueWriter { get; }
 
@@ -70,9 +70,9 @@ namespace Orang.CommandLine
             ContentDisplayStyle contentDisplayStyle,
             string input,
             ContentWriterOptions options,
-            IResultStorage storage,
-            MatchOutputInfo outputInfo,
-            ContentTextWriter writer,
+            IResultStorage? storage,
+            MatchOutputInfo? outputInfo,
+            ContentTextWriter? writer,
             bool ask = false)
         {
             if (ask)
@@ -115,8 +115,8 @@ namespace Orang.CommandLine
             string input,
             ReplaceOptions replaceOptions,
             ContentWriterOptions options,
-            TextWriter textWriter = null,
-            MatchOutputInfo outputInfo = null)
+            TextWriter? textWriter = null,
+            MatchOutputInfo? outputInfo = null)
         {
             switch (contentDisplayStyle)
             {
@@ -150,22 +150,22 @@ namespace Orang.CommandLine
 
         public abstract void Dispose();
 
-        protected void Write(string value)
+        protected void Write(string? value)
         {
             Writer?.Write(value);
         }
 
-        protected void Write(string value, in ConsoleColors colors)
+        protected void Write(string? value, in ConsoleColors colors)
         {
             Writer?.Write(value, colors);
         }
 
-        protected void Write(string value, int startIndex, int length)
+        protected void Write(string? value, int startIndex, int length)
         {
             Writer?.Write(value, startIndex, length);
         }
 
-        protected void Write(string value, int startIndex, int length, in ConsoleColors colors)
+        protected void Write(string? value, int startIndex, int length, in ConsoleColors colors)
         {
             Writer?.Write(value, startIndex, length, colors);
         }

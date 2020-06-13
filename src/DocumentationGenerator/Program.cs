@@ -27,8 +27,8 @@ namespace Orang.Documentation
                 "Search, replace, rename and delete files and its content using the power of .NET regular expressions.",
                 commands.OrderBy(f => f.Name, StringComparer.InvariantCulture));
 
-            string destinationDirectoryPath = null;
-            string dataDirectoryPath = null;
+            string? destinationDirectoryPath = null;
+            string? dataDirectoryPath = null;
 
             if (Debugger.IsAttached)
             {

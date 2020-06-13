@@ -11,13 +11,13 @@ namespace Orang
         private const int DefaultCapacity = 16;
 
         [ThreadStatic]
-        private static StringBuilder _cachedInstance;
+        private static StringBuilder? _cachedInstance;
 
         public static StringBuilder GetInstance(int capacity = DefaultCapacity)
         {
             if (capacity <= MaxSize)
             {
-                StringBuilder sb = _cachedInstance;
+                StringBuilder? sb = _cachedInstance;
 
                 if (sb != null
                     && capacity <= sb.Capacity)

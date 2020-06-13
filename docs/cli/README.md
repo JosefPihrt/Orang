@@ -9,7 +9,7 @@ Search, replace, rename and delete files and its content using the power of \.NE
 * [escape](escape-command.md)
 * [find](find-command.md)
 * [help](help-command.md)
-* [list-syntax](list-syntax-command.md)
+* [list-patterns](list-patterns-command.md)
 * [match](match-command.md)
 * [move](move-command.md)
 * [rename](rename-command.md)

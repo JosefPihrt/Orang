@@ -48,7 +48,7 @@ namespace Orang.CommandLine
         public const string Values = "values";
         public const string Verbosity = "verbosity";
 
-        private static ImmutableDictionary<string, string> _namesToShortNames;
+        private static ImmutableDictionary<string, string>? _namesToShortNames;
 
         public static ImmutableDictionary<string, string> NamesToShortNames
         {
@@ -67,7 +67,7 @@ namespace Orang.CommandLine
                         typeof(OptionShortNames).GetFields(),
                         f => f.Name,
                         f => f.Name,
-                        (f, g) => new KeyValuePair<string, string>((string)f.GetValue(null), g.GetValue(null).ToString())).ToImmutableDictionary();
+                        (f, g) => new KeyValuePair<string, string>((string)f.GetValue(null)!, g.GetValue(null)!.ToString()!)).ToImmutableDictionary();
                 }
             }
         }

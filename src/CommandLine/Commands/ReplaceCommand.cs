@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using Orang.FileSystem;
 using static Orang.CommandLine.LogHelpers;
@@ -14,27 +13,18 @@ using static Orang.Logger;
 
 namespace Orang.CommandLine
 {
-    internal class ReplaceCommand : CommonFindCommand<ReplaceCommandOptions>
+    internal sealed class ReplaceCommand : CommonFindCommand<ReplaceCommandOptions>
     {
-        private OutputSymbols _symbols;
+        private OutputSymbols? _symbols;
 
         public ReplaceCommand(ReplaceCommandOptions options) : base(options)
         {
-            Debug.Assert(!options.ContentFilter.IsNegative);
+            Debug.Assert(!options.ContentFilter!.IsNegative);
         }
 
         protected override bool CanDisplaySummary => Options.Input == null;
 
         private OutputSymbols Symbols => _symbols ?? (_symbols = OutputSymbols.Create(Options.HighlightOptions));
-
-        protected override FileSystemFilterOptions CreateFilterOptions()
-        {
-            return new FileSystemFilterOptions(
-                searchTarget: Options.SearchTarget,
-                recurseSubdirectories: Options.RecurseSubdirectories,
-                saveBomEncoding: true,
-                encoding: Options.DefaultEncoding);
-        }
 
         protected override void ExecuteCore(SearchContext context)
         {
@@ -42,7 +32,7 @@ namespace Orang.CommandLine
 
             if (Options.Input != null)
             {
-                ExecuteInput(context);
+                ExecuteInput(context, Options.Input);
             }
             else
             {
@@ -50,33 +40,33 @@ namespace Orang.CommandLine
             }
         }
 
-        private void ExecuteInput(SearchContext context)
+        private void ExecuteInput(SearchContext context, string input)
         {
-            string input = Options.Input;
             int count = 0;
             var maxReason = MaxReason.None;
-            Match match = Options.ContentFilter.Match(input);
+            Filter contentFilter = ContentFilter!;
+            Match? match = contentFilter.Match(input);
 
-            if (match.Success)
+            if (match != null)
             {
-                ContentWriter contentWriter = null;
-                List<Capture> groups = null;
+                ContentWriter? contentWriter = null;
+                List<Capture>? groups = null;
 
                 try
                 {
                     groups = ListCache<Capture>.GetInstance();
 
-                    maxReason = GetCaptures(match, FileWriterOptions.GroupNumber, context, isPathWritten: false, predicate: Options.ContentFilter.Predicate, captures: groups);
+                    maxReason = GetCaptures(match, FileWriterOptions.GroupNumber, context, isPathWritten: false, predicate: contentFilter.Predicate, captures: groups);
 
                     if (ShouldLog(Verbosity.Normal))
                     {
-                        MatchOutputInfo outputInfo = Options.CreateOutputInfo(input, match);
+                        MatchOutputInfo? outputInfo = Options.CreateOutputInfo(input, match, contentFilter);
 
                         contentWriter = ContentWriter.CreateReplace(Options.ContentDisplayStyle, input, Options.ReplaceOptions, FileWriterOptions, outputInfo: outputInfo);
                     }
                     else
                     {
-                        contentWriter = new EmptyContentWriter(null, FileWriterOptions);
+                        contentWriter = new EmptyContentWriter(FileWriterOptions);
                     }
 
                     WriteMatches(contentWriter, groups, context);
@@ -103,70 +93,34 @@ namespace Orang.CommandLine
             }
         }
 
-        protected override void ExecuteFile(string filePath, SearchContext context)
+        protected override void ExecuteMatchCore(FileMatch fileMatch, SearchContext context, string? baseDirectoryPath = null, ColumnWidths? columnWidths = null)
         {
-            FileMatch fileMatch = MatchFile(filePath, context.Progress);
-
-            if (fileMatch != null)
-                ExecuteOrAddMatch(fileMatch, context, FileWriterOptions);
+            throw new NotSupportedException();
         }
 
-        protected override void ExecuteDirectory(string directoryPath, SearchContext context)
-        {
-            foreach (FileMatch fileMatch in GetMatches(directoryPath, context))
-            {
-                ExecuteOrAddMatch(fileMatch, context, DirectoryWriterOptions, directoryPath);
-
-                if (context.TerminationReason == TerminationReason.Canceled)
-                    break;
-
-                if (context.TerminationReason == TerminationReason.MaxReached)
-                    break;
-            }
-        }
-
-        protected override void ExecuteMatch(FileMatch fileMatch, SearchContext context, string baseDirectoryPath = null, ColumnWidths columnWidths = null)
-        {
-            string indent = GetPathIndent(baseDirectoryPath);
-
-            if (!Options.OmitPath)
-                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
-
-            AskToContinue(context, indent);
-        }
-
-        protected override void ExecuteMatch(
+        protected override void ExecuteMatchWithContentCore(
             FileMatch fileMatch,
             SearchContext context,
             ContentWriterOptions writerOptions,
-            string baseDirectoryPath = null,
-            ColumnWidths columnWidths = null)
+            string? baseDirectoryPath = null,
+            ColumnWidths? columnWidths = null)
         {
             string indent = GetPathIndent(baseDirectoryPath);
 
             if (!Options.OmitPath)
                 WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
 
-            ReplaceMatches(fileMatch, indent, writerOptions, context);
-        }
-
-        private void ReplaceMatches(
-            FileMatch fileMatch,
-            string indent,
-            ContentWriterOptions writerOptions,
-            SearchContext context)
-        {
             SearchTelemetry telemetry = context.Telemetry;
 
-            ContentWriter contentWriter = null;
-            TextWriter textWriter = null;
-            List<Capture> groups = null;
+            ContentWriter? contentWriter = null;
+            TextWriter? textWriter = null;
+            List<Capture>? groups = null;
 
             try
             {
                 groups = ListCache<Capture>.GetInstance();
 
-                GetCaptures(fileMatch.ContentMatch, writerOptions.GroupNumber, context, isPathWritten: !Options.OmitPath, predicate: Options.ContentFilter.Predicate, captures: groups);
+                GetCaptures(fileMatch.ContentMatch!, writerOptions.GroupNumber, context, isPathWritten: !Options.OmitPath, predicate: Options.ContentFilter!.Predicate, captures: groups);
 
                 int fileMatchCount = 0;
                 int fileReplacementCount = 0;
@@ -186,11 +140,11 @@ namespace Orang.CommandLine
                 if (Options.AskMode == AskMode.Value
                     || ShouldLog(Verbosity.Normal))
                 {
-                    MatchOutputInfo outputInfo = Options.CreateOutputInfo(fileMatch);
+                    MatchOutputInfo? outputInfo = Options.CreateOutputInfo(fileMatch.ContentText, fileMatch.ContentMatch!, ContentFilter!);
 
                     if (Options.AskMode == AskMode.Value)
                     {
-                        Lazy<TextWriter> lazyWriter = (Options.DryRun)
+                        Lazy<TextWriter>? lazyWriter = (Options.DryRun)
                             ? null
                             : new Lazy<TextWriter>(() => new StreamWriter(fileMatch.Path, false, fileMatch.Encoding));
 
@@ -203,11 +157,11 @@ namespace Orang.CommandLine
                 }
                 else if (Options.DryRun)
                 {
-                    contentWriter = new EmptyContentWriter(null, FileWriterOptions);
+                    contentWriter = new EmptyContentWriter(FileWriterOptions);
                 }
                 else
                 {
-                    contentWriter = new TextWriterContentWriter(fileMatch.ContentText, Options.ReplaceOptions, textWriter, writerOptions);
+                    contentWriter = new TextWriterContentWriter(fileMatch.ContentText, Options.ReplaceOptions, textWriter!, writerOptions);
                 }
 
                 WriteMatches(contentWriter, groups, context);

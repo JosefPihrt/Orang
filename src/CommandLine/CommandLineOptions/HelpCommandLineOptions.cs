@@ -12,12 +12,12 @@ namespace Orang.CommandLine
         [Value(index: 0,
             HelpText = "Command name.",
             MetaName = ArgumentMetaNames.Command)]
-        public string Command { get; set; }
+        public string Command { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.Filter, longName: OptionNames.Filter,
             HelpText = "Regular expression for filtering help text. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
-        public IEnumerable<string> Filter { get; set; }
+        public IEnumerable<string> Filter { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.Manual, longName: OptionNames.Manual,
             HelpText = "Display full manual.")]
@@ -29,9 +29,8 @@ namespace Orang.CommandLine
                 Filter,
                 OptionNames.Filter,
                 OptionValueProviders.PatternOptionsWithoutPartAndNegativeProvider,
-                out Filter filter,
-                allowNull: true,
-                includedPatternOptions: PatternOptions.IgnoreCase))
+                out Filter? filter,
+                allowNull: true))
             {
                 return false;
             }

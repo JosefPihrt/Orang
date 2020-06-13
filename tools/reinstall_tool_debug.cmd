@@ -16,6 +16,6 @@ dotnet pack -c Debug --no-build -v normal "..\src\CommandLine\CommandLine.csproj
 
 dotnet tool uninstall orang.dotnet.cli -g
 
-dotnet tool install orang.dotnet.cli --version 0.1.0-rc -g --add-source "..\src\CommandLine\bin\Debug"
+dotnet tool install orang.dotnet.cli --version 0.1.0-rc2 -g --add-source "..\src\CommandLine\bin\Debug"
 
 pause

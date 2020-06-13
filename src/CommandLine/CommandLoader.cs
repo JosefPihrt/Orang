@@ -18,7 +18,7 @@ namespace Orang.CommandLine
             {
                 if (!type.IsAbstract)
                 {
-                    VerbAttribute verbAttribute = type.GetCustomAttribute<VerbAttribute>();
+                    VerbAttribute? verbAttribute = type.GetCustomAttribute<VerbAttribute>();
 
                     if (verbAttribute != null)
                         yield return CreateCommand(type, verbAttribute);
@@ -26,14 +26,14 @@ namespace Orang.CommandLine
             }
         }
 
-        public static Command LoadCommand(Assembly assembly, string commandName)
+        public static Command? LoadCommand(Assembly assembly, string commandName)
         {
             foreach (System.Reflection.TypeInfo type in assembly.GetTypes())
             {
                 if (type.IsAbstract)
                     continue;
 
-                VerbAttribute verbAttribute = type.GetCustomAttribute<VerbAttribute>();
+                VerbAttribute? verbAttribute = type.GetCustomAttribute<VerbAttribute>();
 
                 if (verbAttribute?.Name == commandName)
                     return CreateCommand(type, verbAttribute);
@@ -53,7 +53,7 @@ namespace Orang.CommandLine
 
             foreach (PropertyInfo propertyInfo in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {
-                OptionAttribute optionAttribute = null;
+                OptionAttribute? optionAttribute = null;
 
                 foreach (Attribute attribute in propertyInfo.GetCustomAttributes())
                 {
@@ -87,7 +87,7 @@ namespace Orang.CommandLine
                         metaValue: optionAttribute.MetaValue,
                         description: optionAttribute.HelpText,
                         isRequired: optionAttribute.Required,
-                        valueProviderName: (providerMap.TryGetValue(propertyInfo.Name, out string valueProviderName)) ? valueProviderName : null);
+                        valueProviderName: (providerMap.TryGetValue(propertyInfo.Name, out string? valueProviderName)) ? valueProviderName : null);
 
                     options.Add(option);
                 }

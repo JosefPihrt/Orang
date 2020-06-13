@@ -8,6 +8,6 @@ namespace Orang.CommandLine
     internal enum InputOptions
     {
         None = 0,
-        CharacterEscapes = 1,
+        Escape = 1,
     }
 }

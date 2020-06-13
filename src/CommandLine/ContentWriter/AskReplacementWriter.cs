@@ -8,14 +8,14 @@ namespace Orang.CommandLine
 {
     internal abstract class AskReplacementWriter : ContentWriter
     {
-        protected readonly Lazy<TextWriter> _lazyWriter;
+        protected readonly Lazy<TextWriter>? _lazyWriter;
         protected int _writerIndex;
-        private ValueWriter _valueWriter;
+        private ValueWriter? _valueWriter;
 
         protected AskReplacementWriter(
             string input,
             ReplaceOptions replaceOptions,
-            Lazy<TextWriter> lazyWriter,
+            Lazy<TextWriter>? lazyWriter,
             ContentWriterOptions options) : base(input, options)
         {
             ReplaceOptions = replaceOptions;
@@ -32,9 +32,9 @@ namespace Orang.CommandLine
             ContentDisplayStyle contentDisplayStyle,
             string input,
             ReplaceOptions replaceOptions,
-            Lazy<TextWriter> lazyWriter,
+            Lazy<TextWriter>? lazyWriter,
             ContentWriterOptions options,
-            MatchOutputInfo outputInfo)
+            MatchOutputInfo? outputInfo)
         {
             switch (contentDisplayStyle)
             {
@@ -119,14 +119,14 @@ namespace Orang.CommandLine
             public AskValueReplacementWriter(
                 string input,
                 ReplaceOptions replaceOptions,
-                Lazy<TextWriter> lazyWriter,
+                Lazy<TextWriter>? lazyWriter,
                 ContentWriterOptions options,
-                MatchOutputInfo outputInfo) : base(input, replaceOptions, lazyWriter, options)
+                MatchOutputInfo? outputInfo) : base(input, replaceOptions, lazyWriter, options)
             {
                 OutputInfo = outputInfo;
             }
 
-            public MatchOutputInfo OutputInfo { get; }
+            public MatchOutputInfo? OutputInfo { get; }
 
             protected override ValueWriter ValueWriter
             {
@@ -164,12 +164,12 @@ namespace Orang.CommandLine
             private int _eolIndex;
             private int _solIndex;
             private int _lineNumber;
-            private ValueWriter _replacementValueWriter;
+            private ValueWriter? _replacementValueWriter;
 
             public AskLineReplacementWriter(
                 string input,
                 ReplaceOptions replaceOptions,
-                Lazy<TextWriter> lazyWriter,
+                Lazy<TextWriter>? lazyWriter,
                 ContentWriterOptions options) : base(input, replaceOptions, lazyWriter, options)
             {
                 MatchingLineCount = 0;

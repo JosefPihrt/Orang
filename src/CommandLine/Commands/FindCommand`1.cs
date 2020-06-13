@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Orang.FileSystem;
 using static Orang.CommandLine.LogHelpers;
@@ -14,11 +13,11 @@ namespace Orang.CommandLine
 {
     internal sealed class FindCommand<TOptions> : CommonFindCommand<TOptions> where TOptions : FindCommandOptions
     {
-        private OutputSymbols _symbols;
-        private IResultStorage _storage;
-        private List<int> _storageIndexes;
-        private IResultStorage _fileStorage;
-        private List<string> _fileValues;
+        private OutputSymbols? _symbols;
+        private IResultStorage? _storage;
+        private List<int>? _storageIndexes;
+        private IResultStorage? _fileStorage;
+        private List<string>? _fileValues;
 
         public FindCommand(TOptions options) : base(options)
         {
@@ -61,35 +60,35 @@ namespace Orang.CommandLine
             base.ExecuteDirectory(directoryPath, context);
 
             if (ContentFilter == null)
-                _storageIndexes?.Add(_storage.Count);
+                _storageIndexes?.Add(_storage!.Count);
         }
 
-        protected override void ExecuteMatch(
+        protected override void ExecuteMatchWithContentCore(
             FileMatch fileMatch,
             SearchContext context,
             ContentWriterOptions writerOptions,
-            string baseDirectoryPath = null,
-            ColumnWidths columnWidths = null)
+            string? baseDirectoryPath = null,
+            ColumnWidths? columnWidths = null)
         {
             string indent = GetPathIndent(baseDirectoryPath);
 
             if (!Options.OmitPath)
                 WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
 
-            if (ContentFilter.IsNegative
+            if (ContentFilter!.IsNegative
                 || fileMatch.IsDirectory)
             {
                 WriteLineIf(!Options.OmitPath, Verbosity.Minimal);
             }
             else
             {
-                WriteMatches(fileMatch, writerOptions, context);
+                WriteContent(fileMatch, writerOptions, context);
             }
 
             AskToContinue(context, indent);
         }
 
-        protected override void ExecuteMatch(FileMatch fileMatch, SearchContext context, string baseDirectoryPath = null, ColumnWidths columnWidths = null)
+        protected override void ExecuteMatchCore(FileMatch fileMatch, SearchContext context, string? baseDirectoryPath = null, ColumnWidths? columnWidths = null)
         {
             string indent = GetPathIndent(baseDirectoryPath);
 
@@ -106,21 +105,21 @@ namespace Orang.CommandLine
             AskToContinue(context, indent);
         }
 
-        private void WriteMatches(
+        private void WriteContent(
             FileMatch fileMatch,
             ContentWriterOptions writerOptions,
             SearchContext context)
         {
             SearchTelemetry telemetry = context.Telemetry;
 
-            ContentWriter contentWriter = null;
-            List<Capture> captures = null;
+            ContentWriter? contentWriter = null;
+            List<Capture>? captures = null;
 
             try
             {
                 captures = ListCache<Capture>.GetInstance();
 
-                GetCaptures(fileMatch.ContentMatch, writerOptions.GroupNumber, context, isPathWritten: !Options.OmitPath, predicate: ContentFilter.Predicate, captures: captures);
+                GetCaptures(fileMatch.ContentMatch!, writerOptions.GroupNumber, context, isPathWritten: !Options.OmitPath, predicate: ContentFilter!.Predicate, captures: captures);
 
                 bool hasAnyFunction = Options.ModifyOptions.HasAnyFunction;
 
@@ -148,13 +147,13 @@ namespace Orang.CommandLine
                         input: fileMatch.ContentText,
                         options: writerOptions,
                         storage: (hasAnyFunction) ? _fileStorage : _storage,
-                        outputInfo: Options.CreateOutputInfo(fileMatch),
+                        outputInfo: Options.CreateOutputInfo(fileMatch.ContentText, fileMatch.ContentMatch!, ContentFilter),
                         writer: (hasAnyFunction) ? null : ContentTextWriter.Default,
                         ask: AskMode == AskMode.Value);
                 }
                 else
                 {
-                    contentWriter = new EmptyContentWriter(null, writerOptions);
+                    contentWriter = new EmptyContentWriter(writerOptions);
                 }
 
                 WriteMatches(contentWriter, captures, context);
@@ -166,7 +165,7 @@ namespace Orang.CommandLine
 
                     var valueWriter = new ValueWriter(ContentTextWriter.Default, writerOptions.Indent, includeEndingIndent: false);
 
-                    foreach (string value in _fileValues.Modify(Options.ModifyOptions))
+                    foreach (string value in _fileValues!.Modify(Options.ModifyOptions))
                     {
                         Write(writerOptions.Indent, Verbosity.Normal);
                         valueWriter.Write(value, Symbols, colors, boundaryColors);
@@ -218,7 +217,7 @@ namespace Orang.CommandLine
         {
             int count = 0;
             ModifyOptions modifyOptions = Options.ModifyOptions;
-            List<string> allValues = ((ListResultStorage)_storage).Values;
+            List<string> allValues = ((ListResultStorage)_storage!).Values;
 
             if (_storageIndexes?.Count > 1)
             {

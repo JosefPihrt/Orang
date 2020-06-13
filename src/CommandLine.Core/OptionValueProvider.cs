@@ -77,7 +77,7 @@ namespace Orang
             return false;
         }
 
-        public bool TryParseEnum<TEnum>(string value, out TEnum result) where TEnum : struct
+        public bool TryParseEnum<TEnum>(string? value, out TEnum result) where TEnum : struct
         {
             foreach (OptionValue optionValue in Values)
             {
@@ -103,12 +103,12 @@ namespace Orang
                     return value;
             }
 
-            return default;
+            throw new ArgumentException("", nameof(name));
         }
 
         public static IEnumerable<OptionValueProvider> GetProviders(IEnumerable<CommandOption> options, IEnumerable<OptionValueProvider> providers)
         {
-            IEnumerable<string> metaValues = options
+            IEnumerable<string?> metaValues = options
                 .SelectMany(f => _metaValueRegex.Matches(f.Description).Cast<Match>().Select(m => m.Value))
                 .Concat(options.Select(f => f.MetaValue))
                 .Distinct();

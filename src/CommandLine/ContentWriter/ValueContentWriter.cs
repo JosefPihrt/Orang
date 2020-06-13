@@ -6,30 +6,30 @@ namespace Orang.CommandLine
 {
     internal class ValueContentWriter : ContentWriter
     {
-        private ValueWriter _valueWriter;
+        private ValueWriter? _valueWriter;
 
         public ValueContentWriter(
             string input,
-            ContentWriterOptions options = null,
-            IResultStorage storage = null,
-            MatchOutputInfo outputInfo = null) : this(input, ContentTextWriter.Default, options, storage, outputInfo)
+            ContentWriterOptions options,
+            IResultStorage? storage = null,
+            MatchOutputInfo? outputInfo = null) : this(input, ContentTextWriter.Default, options, storage, outputInfo)
         {
         }
 
         public ValueContentWriter(
             string input,
-            ContentTextWriter writer,
-            ContentWriterOptions options = null,
-            IResultStorage storage = null,
-            MatchOutputInfo outputInfo = null) : base(input, writer, options)
+            ContentTextWriter? writer,
+            ContentWriterOptions options,
+            IResultStorage? storage = null,
+            MatchOutputInfo? outputInfo = null) : base(input, writer, options)
         {
             ResultStorage = storage;
             OutputInfo = outputInfo;
         }
 
-        public IResultStorage ResultStorage { get; }
+        public IResultStorage? ResultStorage { get; }
 
-        public MatchOutputInfo OutputInfo { get; }
+        public MatchOutputInfo? OutputInfo { get; }
 
         protected override ValueWriter ValueWriter
         {

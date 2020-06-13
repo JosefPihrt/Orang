@@ -8,7 +8,7 @@ namespace Orang.CommandLine.Help
 {
     public abstract class HelpWriter
     {
-        protected HelpWriter(HelpWriterOptions options = null)
+        protected HelpWriter(HelpWriterOptions? options = null)
         {
             Options = options ?? HelpWriterOptions.Default;
         }

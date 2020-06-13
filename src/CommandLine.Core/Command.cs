@@ -13,8 +13,8 @@ namespace Orang
         public Command(
             string name,
             string description,
-            IEnumerable<CommandArgument> arguments = null,
-            IEnumerable<CommandOption> options = null)
+            IEnumerable<CommandArgument>? arguments = null,
+            IEnumerable<CommandOption>? options = null)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Description = description;

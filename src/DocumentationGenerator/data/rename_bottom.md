@@ -33,7 +33,8 @@ Normalize file extensions to lowercase.
 #### Syntax
 
 ```
-orang rename --name ".*" equals part=extension ^
+orang rename ^
+ --name ".*" equals part=extension ^
  --modify to-lower
 ```
 

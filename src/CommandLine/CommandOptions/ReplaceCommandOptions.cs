@@ -8,11 +8,11 @@ namespace Orang.CommandLine
         {
         }
 
-        public string Input { get; internal set; }
+        public string? Input { get; internal set; }
 
         public bool DryRun { get; internal set; }
 
-        public ReplaceOptions ReplaceOptions { get; internal set; }
+        public ReplaceOptions ReplaceOptions { get; internal set; } = null!;
 
         protected override void WriteDiagnosticCore()
         {

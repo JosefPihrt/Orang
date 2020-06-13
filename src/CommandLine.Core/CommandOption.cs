@@ -11,11 +11,11 @@ namespace Orang
     {
         public CommandOption(
             string name,
-            string shortName = null,
-            string metaValue = null,
-            string description = null,
+            string? shortName = null,
+            string? metaValue = null,
+            string? description = null,
             bool isRequired = false,
-            string valueProviderName = null)
+            string? valueProviderName = null)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             ShortName = shortName;
@@ -27,15 +27,15 @@ namespace Orang
 
         public string Name { get; }
 
-        public string ShortName { get; }
+        public string? ShortName { get; }
 
-        public string MetaValue { get; }
+        public string? MetaValue { get; }
 
-        public string Description { get; }
+        public string? Description { get; }
 
         public bool IsRequired { get; }
 
-        public string ValueProviderName { get; }
+        public string? ValueProviderName { get; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay

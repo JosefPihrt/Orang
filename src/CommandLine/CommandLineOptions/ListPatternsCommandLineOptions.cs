@@ -16,7 +16,7 @@ namespace Orang.CommandLine
             Required = false,
             HelpText = "Character or a decimal number that represents the character. For a number literal use escape like \\1.",
             MetaName = ArgumentMetaNames.Char)]
-        public string Value { get; set; }
+        public string Value { get; set; } = null!;
 
         [Option(longName: OptionNames.CharGroup,
             HelpText = "Treat character as if it is in the character group.")]
@@ -25,12 +25,12 @@ namespace Orang.CommandLine
         [Option(shortName: OptionShortNames.Options, longName: OptionNames.Options,
             HelpText = "Regex options that should be used. Relevant values are [e]cma-[s]cript or [i]gnore-case.",
             MetaValue = MetaValues.RegexOptions)]
-        public IEnumerable<string> Options { get; set; }
+        public IEnumerable<string> Options { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.Section, longName: OptionNames.Section,
             HelpText = "Syntax sections to filter.",
             MetaValue = MetaValues.SyntaxSections)]
-        public IEnumerable<string> Section { get; set; }
+        public IEnumerable<string> Section { get; set; } = null!;
 
         public bool TryParse(ListPatternsCommandOptions options)
         {

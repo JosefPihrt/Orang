@@ -12,9 +12,7 @@ namespace Orang.CommandLine
         {
         }
 
-        public event EventHandler<DirectoryChangedEventArgs> DirectoryChanged;
-
-        protected abstract void ProcessMatch(FileMatch fileMatch, SearchContext context, string baseDirectoryPath = null);
+        public event EventHandler<DirectoryChangedEventArgs>? DirectoryChanged;
 
         protected virtual void OnDirectoryChanged(DirectoryChangedEventArgs e)
         {
@@ -23,19 +21,17 @@ namespace Orang.CommandLine
 
         protected sealed override void ExecuteFile(string filePath, SearchContext context)
         {
-            FileMatch fileMatch = MatchFile(filePath, context.Progress);
+            FileMatch? fileMatch = MatchFile(filePath);
 
             if (fileMatch != null)
-                ProcessMatch(fileMatch, context);
+                ExecuteMatch(fileMatch, context);
         }
 
         protected sealed override void ExecuteDirectory(string directoryPath, SearchContext context)
         {
             foreach (FileMatch fileMatch in GetMatches(directoryPath, context, notifyDirectoryChanged: this))
             {
-                Debug.Assert(fileMatch.Path.StartsWith(directoryPath, FileSystemHelpers.Comparison), $"{directoryPath}\r\n{fileMatch.Path}");
-
-                ProcessMatch(fileMatch, context, directoryPath);
+                ExecuteMatch(fileMatch, context, directoryPath);
 
                 if (context.TerminationReason == TerminationReason.Canceled)
                     break;
@@ -45,14 +41,14 @@ namespace Orang.CommandLine
             }
         }
 
-        protected sealed override void ExecuteResult(SearchResult result, SearchContext context, ColumnWidths columnWidths)
+        protected sealed override void ExecuteResult(SearchResult result, SearchContext context, ColumnWidths? columnWidths)
         {
-            ExecuteMatch(result.FileMatch, context, result.BaseDirectoryPath, columnWidths);
+            ExecuteMatchCore(result.FileMatch, context, result.BaseDirectoryPath, columnWidths);
         }
 
         protected bool AskToExecute(SearchContext context, string question, string indent)
         {
-            DialogResult result = ConsoleHelpers.Ask((Options.DryRun) ? "Continue?" : question, indent);
+            DialogResult result = ConsoleHelpers.Ask(question, indent);
 
             switch (result)
             {

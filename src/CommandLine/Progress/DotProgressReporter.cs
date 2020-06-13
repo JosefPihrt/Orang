@@ -11,25 +11,25 @@ namespace Orang.FileSystem
         {
         }
 
-        public override void Report(FileSystemFilterProgress value)
+        public override void Report(SearchProgress value)
         {
-            if (value.Error != null)
+            if (value.Exception != null)
                 return;
 
             switch (value.Kind)
             {
-                case ProgressKind.SearchedDirectory:
+                case SearchProgressKind.SearchDirectory:
                     {
                         SearchedDirectoryCount++;
                         break;
                     }
-                case ProgressKind.Directory:
+                case SearchProgressKind.Directory:
                     {
                         DirectoryCount++;
                         WriteProgress();
                         break;
                     }
-                case ProgressKind.File:
+                case SearchProgressKind.File:
                     {
                         FileCount++;
                         WriteProgress();

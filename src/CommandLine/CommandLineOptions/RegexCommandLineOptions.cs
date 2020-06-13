@@ -17,17 +17,17 @@ namespace Orang.CommandLine
         [Value(index: 0,
             HelpText = "Path to a file that should be analyzed.",
             MetaName = ArgumentMetaNames.Path)]
-        public string Path { get; set; }
+        public string Path { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.Input, longName: OptionNames.Input,
             HelpText = "The input string to be searched. Syntax is <INPUT> [<INPUT_OPTIONS>].",
             MetaValue = MetaValues.Input)]
-        public IEnumerable<string> Input { get; set; }
+        public IEnumerable<string> Input { get; set; } = null!;
 
         [Option(longName: OptionNames.Modify,
             HelpText = "Functions to modify results.",
             MetaValue = MetaValues.ModifyOptions)]
-        public IEnumerable<string> Modify { get; set; }
+        public IEnumerable<string> Modify { get; set; } = null!;
 
         public bool TryParse(RegexCommandOptions options)
         {
@@ -62,13 +62,15 @@ namespace Orang.CommandLine
             }
             else if (string.IsNullOrEmpty(input))
             {
-                input = ConsoleHelpers.ReadRedirectedInput();
+                string? redirectedInput = ConsoleHelpers.ReadRedirectedInput();
 
-                if (input == null)
+                if (redirectedInput == null)
                 {
                     WriteError("Input is missing.");
                     return false;
                 }
+
+                input = redirectedInput;
             }
             else if (!TryParseInput(Input, out input))
             {
@@ -84,15 +86,15 @@ namespace Orang.CommandLine
                 lineContext: out LineContext _,
                 displayParts: out DisplayParts displayParts,
                 fileProperties: out ImmutableArray<FileProperty> fileProperties,
-                indent: out string indent,
-                separator: out string separator,
+                indent: out string? indent,
+                separator: out string? separator,
                 contentDisplayStyleProvider: OptionValueProviders.ContentDisplayStyleProvider_WithoutLineAndUnmatchedLines,
                 pathDisplayStyleProvider: OptionValueProviders.PathDisplayStyleProvider))
             {
                 return false;
             }
 
-            if (!TryParseModifyOptions(Modify, OptionNames.Modify, out ModifyOptions modifyOptions, out bool aggregateOnly))
+            if (!TryParseModifyOptions(Modify, OptionNames.Modify, out ModifyOptions? modifyOptions, out bool aggregateOnly))
                 return false;
 
             if (modifyOptions.HasAnyFunction

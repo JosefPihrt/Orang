@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using Orang.FileSystem;
 using static Orang.CommandLine.LogHelpers;
@@ -14,21 +13,11 @@ namespace Orang.CommandLine
         {
         }
 
-        protected override void ProcessMatch(
+        protected override void ExecuteMatchCore(
             FileMatch fileMatch,
             SearchContext context,
-            string baseDirectoryPath = null)
-        {
-            Debug.Assert(baseDirectoryPath == null || fileMatch.Path.StartsWith(baseDirectoryPath, FileSystemHelpers.Comparison), $"{baseDirectoryPath}\r\n{fileMatch.Path}");
-
-            ExecuteOrAddMatch(fileMatch, context, baseDirectoryPath);
-        }
-
-        protected override void ExecuteMatch(
-            FileMatch fileMatch,
-            SearchContext context,
-            string baseDirectoryPath = null,
-            ColumnWidths columnWidths = null)
+            string? baseDirectoryPath = null,
+            ColumnWidths? columnWidths = null)
         {
             string indent = GetPathIndent(baseDirectoryPath);
 

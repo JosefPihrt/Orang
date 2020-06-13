@@ -4,6 +4,7 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <AssemblyName>Orang.Core</AssemblyName>
     <RootNamespace>Orang</RootNamespace>
+    <CodeAnalysisRuleSet>..\api.ruleset</CodeAnalysisRuleSet>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

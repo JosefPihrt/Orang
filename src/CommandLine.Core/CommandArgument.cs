@@ -12,7 +12,7 @@ namespace Orang
         public CommandArgument(
             int index,
             string name,
-            string description = null,
+            string? description = null,
             bool isRequired = false)
         {
             Index = index;
@@ -25,7 +25,7 @@ namespace Orang
 
         public string Name { get; }
 
-        public string Description { get; }
+        public string? Description { get; }
 
         public bool IsRequired { get; }
 

@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Orang.CommandLine.Help;
 using Orang.Expressions;
 using Orang.FileSystem;
+using Orang.Text.RegularExpressions;
 using static Orang.CommandLine.ParseHelpers;
 using static Orang.Logger;
 
@@ -21,9 +22,10 @@ namespace Orang.CommandLine
             IEnumerable<string> values,
             string optionName,
             OptionValueProvider provider,
-            out Filter filter,
+            out Filter? filter,
             bool allowNull = false,
-            NamePartKind defaultNamePart = NamePartKind.Name,
+            OptionValueProvider? namePartProvider = null,
+            FileNamePart defaultNamePart = FileNamePart.Name,
             PatternOptions includedPatternOptions = PatternOptions.None)
         {
             return TryParse(
@@ -33,6 +35,7 @@ namespace Orang.CommandLine
                 filter: out filter,
                 namePart: out _,
                 allowNull: allowNull,
+                namePartProvider: namePartProvider,
                 defaultNamePart: defaultNamePart,
                 includedPatternOptions: includedPatternOptions);
         }
@@ -41,16 +44,17 @@ namespace Orang.CommandLine
             IEnumerable<string> values,
             string optionName,
             OptionValueProvider provider,
-            out Filter filter,
-            out NamePartKind namePart,
+            out Filter? filter,
+            out FileNamePart namePart,
             bool allowNull = false,
-            NamePartKind defaultNamePart = NamePartKind.Name,
+            OptionValueProvider? namePartProvider = null,
+            FileNamePart defaultNamePart = FileNamePart.Name,
             PatternOptions includedPatternOptions = PatternOptions.None)
         {
             filter = null;
             namePart = defaultNamePart;
 
-            string pattern = values.FirstOrDefault();
+            string? pattern = values.FirstOrDefault();
 
             if (pattern == null)
             {
@@ -65,11 +69,11 @@ namespace Orang.CommandLine
             }
 
             TimeSpan matchTimeout = Regex.InfiniteMatchTimeout;
-            string groupName = null;
-            string separator = null;
-            Func<Capture, bool> predicate = null;
+            string? groupName = null;
+            string? separator = null;
+            Func<Capture, bool>? predicate = null;
 
-            List<string> options = null;
+            List<string>? options = null;
 
             foreach (string option in values.Skip(1))
             {
@@ -99,9 +103,9 @@ namespace Orang.CommandLine
                     }
                     else if (OptionValues.Part.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseAsEnum(value, out namePart, provider: OptionValueProviders.NamePartKindProvider))
+                        if (!TryParseAsEnum(value, out namePart, provider: namePartProvider ?? OptionValueProviders.NamePartKindProvider))
                         {
-                            WriteOptionValueError(value, OptionValues.Part, OptionValueProviders.NamePartKindProvider);
+                            WriteOptionValueError(value, OptionValues.Part, namePartProvider ?? OptionValueProviders.NamePartKindProvider);
                             return false;
                         }
 
@@ -119,7 +123,7 @@ namespace Orang.CommandLine
                     }
                 }
 
-                if (Expression.TryParse(option, out Expression expression))
+                if (Expression.TryParse(option, out Expression? expression))
                 {
                     if (OptionValues.Length.IsKeyOrShortKey(expression.Identifier)
                         && provider.ContainsKeyOrShortKey(expression.Identifier))
@@ -164,14 +168,14 @@ namespace Orang.CommandLine
             }
 
             if ((patternOptions & PatternOptions.FromFile) != 0
-                && !FileSystemHelpers.TryReadAllText(pattern, out pattern))
+                && !FileSystemHelpers.TryReadAllText(pattern, out pattern, ex => WriteError(ex)))
             {
                 return false;
             }
 
             pattern = BuildPattern(pattern, patternOptions, separator);
 
-            Regex regex = null;
+            Regex? regex = null;
 
             try
             {
@@ -204,9 +208,9 @@ namespace Orang.CommandLine
 
             filter = new Filter(
                 regex,
-                groupNumber: groupIndex,
                 isNegative: (patternOptions & PatternOptions.Negative) != 0,
-                predicate);
+                groupNumber: groupIndex,
+                predicate: predicate);
 
             return true;
         }
@@ -214,7 +218,7 @@ namespace Orang.CommandLine
         private static string BuildPattern(
             string pattern,
             PatternOptions patternOptions,
-            string separator)
+            string? separator)
         {
             bool literal = (patternOptions & PatternOptions.Literal) != 0;
 
@@ -310,12 +314,12 @@ namespace Orang.CommandLine
         }
 
         private static bool TryParseRegexOptions(
-            IEnumerable<string> options,
+            IEnumerable<string>? options,
             string optionsParameterName,
             out RegexOptions regexOptions,
             out PatternOptions patternOptions,
             PatternOptions includedPatternOptions = PatternOptions.None,
-            OptionValueProvider provider = null)
+            OptionValueProvider? provider = null)
         {
             regexOptions = RegexOptions.None;
 

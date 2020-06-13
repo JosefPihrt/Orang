@@ -37,14 +37,14 @@ namespace Orang.CommandLine
         }
 
         private static void WriteHelp(
-            string commandName,
+            string? commandName,
             bool manual,
             bool includeValues,
-            Filter filter = null)
+            Filter? filter = null)
         {
             if (commandName != null)
             {
-                Command command = CommandLoader.LoadCommand(typeof(HelpCommand).Assembly, commandName);
+                Command? command = CommandLoader.LoadCommand(typeof(HelpCommand).Assembly, commandName);
 
                 if (command == null)
                     throw new ArgumentException($"Command '{commandName}' does not exist.", nameof(commandName));
@@ -61,7 +61,7 @@ namespace Orang.CommandLine
             }
         }
 
-        public static void WriteCommandHelp(Command command, bool includeValues = false, Filter filter = null)
+        public static void WriteCommandHelp(Command command, bool includeValues = false, Filter? filter = null)
         {
             var writer = new ConsoleHelpWriter(new HelpWriterOptions(filter: filter));
 
@@ -89,7 +89,7 @@ namespace Orang.CommandLine
             }
         }
 
-        public static void WriteCommandsHelp(bool includeValues = false, Filter filter = null)
+        public static void WriteCommandsHelp(bool includeValues = false, Filter? filter = null)
         {
             IEnumerable<Command> commands = LoadCommands();
 
@@ -106,7 +106,7 @@ namespace Orang.CommandLine
             WriteLine(GetFooterText());
         }
 
-        private static void WriteManual(bool includeValues = false, Filter filter = null)
+        private static void WriteManual(bool includeValues = false, Filter? filter = null)
         {
             IEnumerable<Command> commands = LoadCommands();
 
@@ -183,7 +183,7 @@ namespace Orang.CommandLine
             return $"Orang Command-Line Tool version {typeof(Program).GetTypeInfo().Assembly.GetName().Version}";
         }
 
-        internal static string GetFooterText(string command = null)
+        internal static string GetFooterText(string? command = null)
         {
             return $"Run 'orang help {command ?? "[command]"}' for more information on a command."
                 + Environment.NewLine

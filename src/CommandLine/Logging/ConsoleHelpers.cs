@@ -10,7 +10,7 @@ namespace Orang.CommandLine
 {
     internal static class ConsoleHelpers
     {
-        public static string ReadRedirectedInput()
+        public static string? ReadRedirectedInput()
         {
             if (Console.IsInputRedirected)
             {
@@ -31,7 +31,7 @@ namespace Orang.CommandLine
                 using (Stream stream = Console.OpenStandardInput())
                 using (var streamReader = new StreamReader(stream, Console.InputEncoding))
                 {
-                    string line;
+                    string? line;
 
                     while ((line = streamReader.ReadLine()) != null)
                         yield return line;
@@ -39,7 +39,7 @@ namespace Orang.CommandLine
             }
         }
 
-        public static bool AskToExecute(string text, string indent = null)
+        public static bool AskToExecute(string text, string? indent = null)
         {
             switch (Ask(text, " (Y/N/C): ", "Y (Yes), N (No), C (Cancel)", DialogResultMap.YesNoCancel, indent))
             {
@@ -78,7 +78,7 @@ namespace Orang.CommandLine
             return false;
         }
 
-        public static DialogResult Ask(string question, string indent = null)
+        public static DialogResult Ask(string question, string? indent = null)
         {
             return Ask(question, " (Y[A]/N[A]/C): ", "Y (Yes), YA (Yes to All), N (No), NA (No to All), C (Cancel)", DialogResultMap.All, indent);
         }
@@ -88,7 +88,7 @@ namespace Orang.CommandLine
             string suffix,
             string helpText,
             ImmutableDictionary<string, DialogResult> map,
-            string indent)
+            string? indent)
         {
             while (true)
             {
@@ -96,7 +96,7 @@ namespace Orang.CommandLine
                 ConsoleOut.Write(question);
                 ConsoleOut.Write(suffix);
 
-                string s = Console.ReadLine()?.Trim();
+                string? s = Console.ReadLine()?.Trim();
 
                 if (s != null)
                 {

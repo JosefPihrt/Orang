@@ -46,7 +46,7 @@ namespace Orang
                 Write(value, repeatCount, colors);
         }
 
-        public void Write(string value, in ConsoleColors colors)
+        public void Write(string? value, in ConsoleColors colors)
         {
             if (!colors.IsDefault)
             {
@@ -61,7 +61,7 @@ namespace Orang
             }
         }
 
-        public void Write(string value, in ConsoleColors colors, Verbosity verbosity)
+        public void Write(string? value, in ConsoleColors colors, Verbosity verbosity)
         {
             if (verbosity <= Verbosity)
                 Write(value, colors);
@@ -88,25 +88,25 @@ namespace Orang
                 Write(buffer, colors);
         }
 
-        public void Write(string value, int startIndex, int length, in ConsoleColors colors, Verbosity verbosity)
+        public void Write(string? value, int startIndex, int length, in ConsoleColors colors, Verbosity verbosity)
         {
             if (verbosity <= Verbosity)
                 Write(value.AsSpan(startIndex, length), colors);
         }
 
-        public void WriteIf(bool condition, string value, in ConsoleColors colors)
+        public void WriteIf(bool condition, string? value, in ConsoleColors colors)
         {
             if (condition)
                 Write(value, colors);
         }
 
-        public void WriteIf(bool condition, string value, in ConsoleColors colors, Verbosity verbosity)
+        public void WriteIf(bool condition, string? value, in ConsoleColors colors, Verbosity verbosity)
         {
             if (condition && verbosity <= Verbosity)
                 Write(value, colors);
         }
 
-        public void WriteLine(string value, in ConsoleColors colors)
+        public void WriteLine(string? value, in ConsoleColors colors)
         {
             if (!colors.IsDefault)
             {
@@ -121,7 +121,7 @@ namespace Orang
             }
         }
 
-        public void WriteLine(string value, in ConsoleColors colors, Verbosity verbosity)
+        public void WriteLine(string? value, in ConsoleColors colors, Verbosity verbosity)
         {
             if (verbosity <= Verbosity)
                 WriteLine(value, colors);
@@ -148,7 +148,7 @@ namespace Orang
                 WriteLine(buffer, colors);
         }
 
-        public void WriteLineIf(bool condition, string value, in ConsoleColors colors)
+        public void WriteLineIf(bool condition, string? value, in ConsoleColors colors)
         {
             if (condition)
                 WriteLine(value, colors);

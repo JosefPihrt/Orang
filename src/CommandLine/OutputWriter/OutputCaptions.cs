@@ -19,18 +19,18 @@ namespace Orang
             splitChar: "S");
 
         public OutputCaptions(
-            string match = null,
-            string group = null,
-            string capture = null,
-            string index = null,
-            string length = null,
-            string split = null,
-            string shortMatch = null,
-            string shortGroup = null,
-            string shortCapture = null,
-            string shortIndex = null,
-            string shortLength = null,
-            string splitChar = null)
+            string? match = null,
+            string? group = null,
+            string? capture = null,
+            string? index = null,
+            string? length = null,
+            string? split = null,
+            string? shortMatch = null,
+            string? shortGroup = null,
+            string? shortCapture = null,
+            string? shortIndex = null,
+            string? shortLength = null,
+            string? splitChar = null)
         {
             Match = match ?? Default.Match;
             Group = group ?? Default.Group;

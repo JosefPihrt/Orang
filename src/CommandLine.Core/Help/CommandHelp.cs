@@ -37,7 +37,7 @@ namespace Orang.CommandLine.Help
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay => $"{Name}  {Description}";
 
-        public static CommandHelp Create(Command command, IEnumerable<OptionValueProvider> providers = null, Filter filter = null)
+        public static CommandHelp Create(Command command, IEnumerable<OptionValueProvider>? providers = null, Filter? filter = null)
         {
             ImmutableArray<ArgumentItem> arguments = (command.Arguments.Any())
                 ? HelpProvider.GetArgumentItems(command.Arguments, filter)

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Orang.FileSystem.ApiTest</AssemblyName>
+    <RootNamespace>Orang.FileSystem</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FileSystem\FileSystem.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -15,12 +15,12 @@ namespace Orang
             closeValue: ")");
 
         public OutputSymbols(
-            string tab = null,
-            string carriageReturn = null,
-            string linefeed = null,
-            string space = null,
-            string openValue = null,
-            string closeValue = null)
+            string? tab = null,
+            string? carriageReturn = null,
+            string? linefeed = null,
+            string? space = null,
+            string? openValue = null,
+            string? closeValue = null)
         {
             Tab = tab;
             CarriageReturn = carriageReturn;
@@ -44,16 +44,16 @@ namespace Orang
                 closeValue: ((options & HighlightOptions.Boundary) != 0) ? Default.CloseBoundary : null);
         }
 
-        public string Tab { get; }
+        public string? Tab { get; }
 
-        public string CarriageReturn { get; }
+        public string? CarriageReturn { get; }
 
-        public string Linefeed { get; }
+        public string? Linefeed { get; }
 
-        public string Space { get; }
+        public string? Space { get; }
 
-        public string OpenBoundary { get; }
+        public string? OpenBoundary { get; }
 
-        public string CloseBoundary { get; }
+        public string? CloseBoundary { get; }
     }
 }

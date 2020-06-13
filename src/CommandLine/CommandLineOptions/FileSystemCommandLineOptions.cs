@@ -20,37 +20,37 @@ namespace Orang.CommandLine
         [Value(index: 0,
             HelpText = "Path to one or more files and/or directories that should be searched.",
             MetaName = ArgumentMetaNames.Path)]
-        public IEnumerable<string> Path { get; set; }
+        public IEnumerable<string> Path { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.Attributes, longName: OptionNames.Attributes,
         HelpText = "File attributes that are required.",
         MetaValue = MetaValues.Attributes)]
-        public IEnumerable<string> Attributes { get; set; }
+        public IEnumerable<string> Attributes { get; set; } = null!;
 
         [Option(longName: OptionNames.AttributesToSkip,
             HelpText = "File attributes that should be skipped.",
             MetaValue = MetaValues.Attributes)]
-        public IEnumerable<string> AttributesToSkip { get; set; }
+        public IEnumerable<string> AttributesToSkip { get; set; } = null!;
 
         [Option(longName: OptionNames.Encoding,
             HelpText = "Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.",
             MetaValue = MetaValues.Encoding)]
-        public string Encoding { get; set; }
+        public string Encoding { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.Extension, longName: OptionNames.Extension,
             HelpText = "A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].",
             MetaValue = MetaValues.ExtensionFilter)]
-        public IEnumerable<string> Extension { get; set; }
+        public IEnumerable<string> Extension { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.Properties, longName: OptionNames.Properties,
             HelpText = "A filter for file properties.",
             MetaValue = MetaValues.FileProperties)]
-        public IEnumerable<string> FileProperties { get; set; }
+        public IEnumerable<string> FileProperties { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.IncludeDirectory, longName: OptionNames.IncludeDirectory,
             HelpText = "Regular expression for a directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
-        public IEnumerable<string> IncludeDirectory { get; set; }
+        public IEnumerable<string> IncludeDirectory { get; set; } = null!;
 
         [Option(longName: OptionNames.NoRecurse,
             HelpText = "Do not search subdirectories.")]
@@ -59,7 +59,7 @@ namespace Orang.CommandLine
         [Option(longName: OptionNames.PathsFrom,
             HelpText = "Read the list of paths to search from a file. Paths should be separated by newlines.",
             MetaValue = MetaValues.FilePath)]
-        public string PathsFrom { get; set; }
+        public string PathsFrom { get; set; } = null!;
 
         [Option(longName: OptionNames.Progress,
             HelpText = "Display dot (.) for every hundredth searched file or directory.")]
@@ -68,7 +68,7 @@ namespace Orang.CommandLine
         [Option(shortName: OptionShortNames.Sort, longName: OptionNames.Sort,
             HelpText = "Sort matched files and directories.",
             MetaValue = MetaValues.SortOptions)]
-        public IEnumerable<string> Sort { get; set; }
+        public IEnumerable<string> Sort { get; set; } = null!;
 
         public bool TryParse(FileSystemCommandOptions options)
         {
@@ -88,22 +88,22 @@ namespace Orang.CommandLine
             if (!TryParseAsEnumFlags(AttributesToSkip, OptionNames.AttributesToSkip, out FileSystemAttributes attributesToSkip, provider: OptionValueProviders.FileSystemAttributesToSkipProvider))
                 return false;
 
-            if (!TryParseEncoding(Encoding, out Encoding defaultEncoding, EncodingHelpers.UTF8NoBom))
+            if (!TryParseEncoding(Encoding, out Encoding defaultEncoding, Text.EncodingHelpers.UTF8NoBom))
                 return false;
 
-            if (!TryParseSortOptions(Sort, OptionNames.Sort, out SortOptions sortOptions))
+            if (!TryParseSortOptions(Sort, OptionNames.Sort, out SortOptions? sortOptions))
                 return false;
 
-            if (!FilterParser.TryParse(IncludeDirectory, OptionNames.IncludeDirectory, OptionValueProviders.PatternOptionsProvider, out Filter directoryFilter, out NamePartKind directoryNamePart, allowNull: true))
+            if (!FilterParser.TryParse(IncludeDirectory, OptionNames.IncludeDirectory, OptionValueProviders.PatternOptionsProvider, out Filter? directoryFilter, out FileNamePart directoryNamePart, allowNull: true, namePartProvider: OptionValueProviders.NamePartKindProvider_WithoutExtension))
                 return false;
 
             if (!FilterParser.TryParse(
                 Extension,
                 OptionNames.Extension,
                 OptionValueProviders.ExtensionOptionsProvider,
-                out Filter extensionFilter,
+                out Filter? extensionFilter,
                 allowNull: true,
-                defaultNamePart: NamePartKind.Extension,
+                defaultNamePart: FileNamePart.Extension,
                 includedPatternOptions: PatternOptions.List | PatternOptions.Equals | PatternOptions.IgnoreCase))
             {
                 return false;
@@ -112,9 +112,9 @@ namespace Orang.CommandLine
             if (!TryParseFileProperties(
                 FileProperties,
                 OptionNames.Properties,
-                out FilterPredicate<DateTime> creationTimePredicate,
-                out FilterPredicate<DateTime> modifiedTimePredicate,
-                out FilterPredicate<long> sizePredicate))
+                out FilterPredicate<DateTime>? creationTimePredicate,
+                out FilterPredicate<DateTime>? modifiedTimePredicate,
+                out FilterPredicate<long>? sizePredicate))
             {
                 return false;
             }
@@ -127,11 +127,11 @@ namespace Orang.CommandLine
                     return false;
                 }
 
-                options.EmptyFilter = FileEmptyFilter.Empty;
+                options.EmptyOption = FileEmptyOption.Empty;
             }
             else if ((attributesToSkip & FileSystemAttributes.Empty) != 0)
             {
-                options.EmptyFilter = FileEmptyFilter.NonEmpty;
+                options.EmptyOption = FileEmptyOption.NonEmpty;
             }
 
             options.Paths = paths;
@@ -177,7 +177,7 @@ namespace Orang.CommandLine
 
             if (PathsFrom != null)
             {
-                if (!FileSystemHelpers.TryReadAllText(PathsFrom, out string content))
+                if (!FileSystemHelpers.TryReadAllText(PathsFrom, out string? content, ex => Logger.WriteError(ex)))
                     return false;
 
                 IEnumerable<string> lines = TextHelpers.ReadLines(content).Where(f => !string.IsNullOrWhiteSpace(f));
@@ -210,7 +210,7 @@ namespace Orang.CommandLine
 
             foreach (string path in paths)
             {
-                if (!ParseHelpers.TryEnsureFullPath(path, out string fullPath))
+                if (!ParseHelpers.TryEnsureFullPath(path, out string? fullPath))
                     return false;
 
                 builder.Add(new PathInfo(fullPath, kind));

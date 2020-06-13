@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Orang.Syntax;
+using Orang.Text.RegularExpressions;
 using static Orang.Logger;
 
 namespace Orang.CommandLine
@@ -34,7 +35,7 @@ namespace Orang.CommandLine
         {
             IEnumerable<SyntaxItem> items = SyntaxItems.Load();
 
-            string filter = Options.Filter;
+            string? filter = Options.Filter;
 
             ImmutableArray<SyntaxSection> sections = Options.Sections;
 
@@ -155,7 +156,7 @@ namespace Orang.CommandLine
                 return CommandResult.NoMatch;
             }
 
-            void WriteRow(string value1, string value2, in ConsoleColors colors1 = default, in ConsoleColors colors2 = default)
+            void WriteRow(string value1, string? value2, in ConsoleColors colors1 = default, in ConsoleColors colors2 = default)
             {
                 Write(value1, colors1);
                 Write(' ', width - value1.Length + 1);
@@ -167,7 +168,7 @@ namespace Orang.CommandLine
         {
             IEnumerable<PatternInfo> patterns = GetPatterns(ch, inCharGroup: Options.InCharGroup, options: Options.RegexOptions);
 
-            string filter = Options.Filter;
+            string? filter = Options.Filter;
 
             if (!string.IsNullOrEmpty(filter))
             {
@@ -314,7 +315,7 @@ namespace Orang.CommandLine
 
         private class PatternInfo
         {
-            public PatternInfo(string pattern, SyntaxSection section, string description = null)
+            public PatternInfo(string pattern, SyntaxSection section, string? description = null)
             {
                 Pattern = pattern ?? throw new ArgumentNullException(nameof(pattern));
                 Section = section;
@@ -325,7 +326,7 @@ namespace Orang.CommandLine
 
             public SyntaxSection Section { get; }
 
-            public string Description { get; }
+            public string? Description { get; }
         }
 
         private enum AsciiChar

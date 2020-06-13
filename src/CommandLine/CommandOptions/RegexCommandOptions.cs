@@ -10,13 +10,13 @@ namespace Orang.CommandLine
         {
         }
 
-        public Filter Filter { get; internal set; }
+        public Filter Filter { get; internal set; } = null!;
 
-        public string Input { get; internal set; }
+        public string Input { get; internal set; } = null!;
 
         public int MaxCount { get; internal set; }
 
-        public ModifyOptions ModifyOptions { get; internal set; }
+        public ModifyOptions ModifyOptions { get; internal set; } = null!;
 
         public ContentDisplayStyle ContentDisplayStyle => Format.ContentDisplayStyle;
 

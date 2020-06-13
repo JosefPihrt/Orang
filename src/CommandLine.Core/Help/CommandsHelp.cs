@@ -22,8 +22,8 @@ namespace Orang.CommandLine.Help
 
         public static CommandsHelp Create(
             IEnumerable<Command> commands,
-            IEnumerable<OptionValueProvider> providers = null,
-            Filter filter = null)
+            IEnumerable<OptionValueProvider>? providers = null,
+            Filter? filter = null)
         {
             ImmutableArray<CommandItem> commandsHelp = HelpProvider.GetCommandItems(commands, filter);
 

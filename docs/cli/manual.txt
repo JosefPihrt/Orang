@@ -1,0 +1,551 @@
+Orang Command-Line Tool version 0.1.0.2
+Usage: orang [command] [arguments]
+
+Commands:
+  copy          Searches the file system for files and directories and copy them to a destination directory.
+  delete        Deletes files and directories.
+  escape        Escapes special characters by replacing them with their escape codes.
+  find          Searches the file system for files and directories and optionally searches files' content.
+  help          Displays help.
+  list-patterns Lists regular expression patterns.
+  match         Searches the input string for occurrences of the regular expression.
+  move          Searches the file system for files and directories and move them to a destination directory.
+  rename        Renames files and directories.
+  replace       Searches the file system for files and replaces its content.
+  split         Splits the input string into an list of substrings at the positions defined by a regular expression.
+
+----------
+
+Command: copy
+
+Searches the file system for files and directories and copy them to a destination directory.
+
+Usage: orang copy [<PATH>] [options]
+
+Arguments:
+  [<PATH>]   Path to one or more files and/or directories that should be searched.
+
+Options:
+  [    --ask]                <ASK_MODE>            Ask for permission after each file or value.
+  [-a, --attributes]         <ATTRIBUTES>          File attributes that are required.
+  [    --attributes-to-skip] <ATTRIBUTES>          File attributes that should be skipped.
+  [    --compare]            <COMPARE_OPTIONS>     File properties to be compared.
+  [    --conflict]           <CONFLICT_RESOLUTION> Defines how to resolve conflict when a file/directory already exists.
+  [-c, --content]            <REGEX>               Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-y, --display]            <DISPLAY_OPTIONS>     Display of the results.
+  [-d, --dry-run]                                  Display which files or directories should be copied but do not actually copy any file or directory.
+  [    --encoding]           <ENCODING>            Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.
+  [-e, --extension]          <EXTENSION_FILTER>    A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].
+  [    --flat]                                     Copy files directly into target directory.
+  [-h, --help]                                     Show command line help.
+  [-t, --highlight]          <HIGHLIGHT>           Parts of the output to highlight.
+  [-i, --include-directory]  <REGEX>               Regular expression for a directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-m, --max-count]          <MAX_OPTIONS>         Stop searching after specified number is reached.
+  [-n, --name]               <REGEX>               Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [    --no-recurse]                               Do not search subdirectories.
+  [-o, --output]             <OUTPUT_OPTIONS>      Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths-from]         <FILE_PATH>           Read the list of paths to search from a file. Paths should be separated by newlines.
+  [    --progress]                                 Display dot (.) for every hundredth searched file or directory.
+  [-p, --properties]         <FILE_PROPERTIES>     A filter for file properties.
+  [-s, --sort]               <SORT_OPTIONS>        Sort matched files and directories.
+       --target              <DIRECTORY_PATH>      A directory to copy files and directories to.
+  [-v, --verbosity]          <VERBOSITY>           The amount of information to display in the log.
+
+----------
+
+Command: delete
+
+Deletes files and directories.
+
+Usage: orang delete [<PATH>] [options]
+
+Arguments:
+  [<PATH>]   Path to one or more files and/or directories that should be searched.
+
+Options:
+  [    --ask]                                   Ask for a permission to delete file or directory.
+  [-a, --attributes]         <ATTRIBUTES>       File attributes that are required.
+  [    --attributes-to-skip] <ATTRIBUTES>       File attributes that should be skipped.
+  [-c, --content]            <REGEX>            Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [    --content-only]                          Delete content of a file or directory but not the file or directory itself.
+  [-y, --display]            <DISPLAY_OPTIONS>  Display of the results.
+  [-d, --dry-run]                               Display which files or directories should be deleted but do not actually delete any file or directory.
+  [    --encoding]           <ENCODING>         Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.
+  [-e, --extension]          <EXTENSION_FILTER> A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].
+  [-h, --help]                                  Show command line help.
+  [-t, --highlight]          <HIGHLIGHT>        Parts of the output to highlight.
+  [-i, --include-directory]  <REGEX>            Regular expression for a directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [    --including-bom]                         Delete byte order mark (BOM) when deleting file's content.
+  [-m, --max-count]          <NUM>              Stop deleting after specified number is reached.
+  [-n, --name]               <REGEX>            Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [    --no-recurse]                            Do not search subdirectories.
+  [-o, --output]             <OUTPUT_OPTIONS>   Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths-from]         <FILE_PATH>        Read the list of paths to search from a file. Paths should be separated by newlines.
+  [    --progress]                              Display dot (.) for every hundredth searched file or directory.
+  [-p, --properties]         <FILE_PROPERTIES>  A filter for file properties.
+  [-s, --sort]               <SORT_OPTIONS>     Sort matched files and directories.
+  [-v, --verbosity]          <VERBOSITY>        The amount of information to display in the log.
+
+----------
+
+Command: escape
+
+Escapes special characters by replacing them with their escape codes.
+
+Usage: orang escape [options]
+
+Options:
+  [    --char-group]                   Text is part of a character group.
+  [-h, --help]                         Show command line help.
+  [-i, --input]       <INPUT>          Text to be escaped.
+  [-o, --output]      <OUTPUT_OPTIONS> Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [-r, --replacement]                  Text is a replacement string.
+  [-v, --verbosity]   <VERBOSITY>      The amount of information to display in the log.
+
+----------
+
+Command: find
+
+Searches the file system for files and directories and optionally searches files' content.
+
+Usage: orang find [<PATH>] [options]
+
+Arguments:
+  [<PATH>]   Path to one or more files and/or directories that should be searched.
+
+Options:
+  [    --ask]                <ASK_MODE>         Ask for permission after each file or value.
+  [-a, --attributes]         <ATTRIBUTES>       File attributes that are required.
+  [    --attributes-to-skip] <ATTRIBUTES>       File attributes that should be skipped.
+  [-c, --content]            <REGEX>            Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-y, --display]            <DISPLAY_OPTIONS>  Display of the results.
+  [    --encoding]           <ENCODING>         Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.
+  [-e, --extension]          <EXTENSION_FILTER> A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].
+  [-h, --help]                                  Show command line help.
+  [-t, --highlight]          <HIGHLIGHT>        Parts of the output to highlight.
+  [-i, --include-directory]  <REGEX>            Regular expression for a directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-m, --max-count]          <MAX_OPTIONS>      Stop searching after specified number is reached.
+  [    --modify]             <MODIFY_OPTIONS>   Functions to modify results.
+  [-n, --name]               <REGEX>            Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [    --no-recurse]                            Do not search subdirectories.
+  [-o, --output]             <OUTPUT_OPTIONS>   Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths-from]         <FILE_PATH>        Read the list of paths to search from a file. Paths should be separated by newlines.
+  [    --progress]                              Display dot (.) for every hundredth searched file or directory.
+  [-p, --properties]         <FILE_PROPERTIES>  A filter for file properties.
+  [-s, --sort]               <SORT_OPTIONS>     Sort matched files and directories.
+  [-v, --verbosity]          <VERBOSITY>        The amount of information to display in the log.
+
+----------
+
+Command: help
+
+Displays help.
+
+Usage: orang help [<COMMAND>] [options]
+
+Arguments:
+  [<COMMAND>]   Command name.
+
+Options:
+  [-f, --filter]    <REGEX>     Regular expression for filtering help text. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-m, --manual]                Display full manual.
+  [-v, --verbosity] <VERBOSITY> The amount of information to display in the log.
+
+----------
+
+Command: list-patterns
+
+Lists regular expression patterns.
+
+Usage: orang list-patterns [<CHAR>] [options]
+
+Arguments:
+  [<CHAR>]   Character or a decimal number that represents the character. For a number literal use escape like \1.
+
+Options:
+  [    --char-group]                   Treat character as if it is in the character group.
+  [-f, --filter]     <FILTER>          Filter string that should be used to filter results.
+  [-h, --help]                         Show command line help.
+  [-o, --options]    <REGEX_OPTIONS>   Regex options that should be used. Relevant values are [e]cma-[s]cript or [i]gnore-case.
+  [-o, --output]     <OUTPUT_OPTIONS>  Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [-s, --section]    <SYNTAX_SECTIONS> Syntax sections to filter.
+  [-v, --verbosity]  <VERBOSITY>       The amount of information to display in the log.
+
+----------
+
+Command: match
+
+Searches the input string for occurrences of the regular expression.
+
+Usage: orang match [<PATH>] [options]
+
+Arguments:
+  [<PATH>]   Path to a file that should be analyzed.
+
+Options:
+   -c, --content    <REGEX>           Regular expression for the input string. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-y, --display]   <DISPLAY_OPTIONS> Display of the results.
+  [-h, --help]                        Show command line help.
+  [-t, --highlight] <HIGHLIGHT>       Parts of the output to highlight.
+  [-i, --input]     <INPUT>           The input string to be searched. Syntax is <INPUT> [<INPUT_OPTIONS>].
+  [-m, --max-count] <NUM>             Maximum number of matches returned.
+  [    --modify]    <MODIFY_OPTIONS>  Functions to modify results.
+  [-o, --output]    <OUTPUT_OPTIONS>  Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [-v, --verbosity] <VERBOSITY>       The amount of information to display in the log.
+
+----------
+
+Command: move
+
+Searches the file system for files and directories and move them to a destination directory.
+
+Usage: orang move [<PATH>] [options]
+
+Arguments:
+  [<PATH>]   Path to one or more files and/or directories that should be searched.
+
+Options:
+  [    --ask]                <ASK_MODE>            Ask for permission after each file or value.
+  [-a, --attributes]         <ATTRIBUTES>          File attributes that are required.
+  [    --attributes-to-skip] <ATTRIBUTES>          File attributes that should be skipped.
+  [    --compare]            <COMPARE_OPTIONS>     File properties to be compared.
+  [    --conflict]           <CONFLICT_RESOLUTION> Defines how to resolve conflict when a file/directory already exists.
+  [-c, --content]            <REGEX>               Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-y, --display]            <DISPLAY_OPTIONS>     Display of the results.
+  [-d, --dry-run]                                  Display which files or directories should be moved but do not actually move any file or directory.
+  [    --encoding]           <ENCODING>            Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.
+  [-e, --extension]          <EXTENSION_FILTER>    A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].
+  [    --flat]                                     Move files directly into target directory.
+  [-h, --help]                                     Show command line help.
+  [-t, --highlight]          <HIGHLIGHT>           Parts of the output to highlight.
+  [-i, --include-directory]  <REGEX>               Regular expression for a directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-m, --max-count]          <MAX_OPTIONS>         Stop searching after specified number is reached.
+  [-n, --name]               <REGEX>               Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [    --no-recurse]                               Do not search subdirectories.
+  [-o, --output]             <OUTPUT_OPTIONS>      Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths-from]         <FILE_PATH>           Read the list of paths to search from a file. Paths should be separated by newlines.
+  [    --progress]                                 Display dot (.) for every hundredth searched file or directory.
+  [-p, --properties]         <FILE_PROPERTIES>     A filter for file properties.
+  [-s, --sort]               <SORT_OPTIONS>        Sort matched files and directories.
+       --target              <DIRECTORY_PATH>      A directory to move files and directories to.
+  [-v, --verbosity]          <VERBOSITY>           The amount of information to display in the log.
+
+----------
+
+Command: rename
+
+Renames files and directories.
+
+Usage: orang rename [<PATH>] [options]
+
+Arguments:
+  [<PATH>]   Path to one or more files and/or directories that should be searched.
+
+Options:
+  [    --ask]                                      Ask for a permission to rename file or directory.
+  [-a, --attributes]         <ATTRIBUTES>          File attributes that are required.
+  [    --attributes-to-skip] <ATTRIBUTES>          File attributes that should be skipped.
+  [    --conflict]           <CONFLICT_RESOLUTION> Defines how to resolve conflict when a file/directory already exists.
+  [-c, --content]            <REGEX>               Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-y, --display]            <DISPLAY_OPTIONS>     Display of the results.
+  [-d, --dry-run]                                  Display which files or directories should be renamed but do not actually rename any file or directory.
+  [    --encoding]           <ENCODING>            Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.
+  [    --evaluator]          <EVALUATOR>           Path to the evaluator method to compute replacements. The format is "LibraryPath,FullTypeName.MethodName".
+  [-e, --extension]          <EXTENSION_FILTER>    A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].
+  [-h, --help]                                     Show command line help.
+  [-t, --highlight]          <HIGHLIGHT>           Parts of the output to highlight.
+  [-i, --include-directory]  <REGEX>               Regular expression for a directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-m, --max-count]          <NUM>                 Stop renaming after specified number is reached.
+  [    --modify]             <REPLACE_MODIFY>      Functions to modify result.
+   -n, --name                <REGEX>               Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [    --no-recurse]                               Do not search subdirectories.
+  [-o, --output]             <OUTPUT_OPTIONS>      Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths-from]         <FILE_PATH>           Read the list of paths to search from a file. Paths should be separated by newlines.
+  [    --progress]                                 Display dot (.) for every hundredth searched file or directory.
+  [-p, --properties]         <FILE_PROPERTIES>     A filter for file properties.
+  [-r, --replacement]        <REPLACEMENT>         Replacement pattern. Syntax is <REPLACEMENT> [<REPLACEMENT_OPTIONS>].
+  [-s, --sort]               <SORT_OPTIONS>        Sort matched files and directories.
+  [-v, --verbosity]          <VERBOSITY>           The amount of information to display in the log.
+
+----------
+
+Command: replace
+
+Searches the file system for files and replaces its content.
+
+Usage: orang replace [<PATH>] [options]
+
+Arguments:
+  [<PATH>]   Path to one or more files and/or directories that should be searched.
+
+Options:
+  [    --ask]                <ASK_MODE>         Ask for permission after each file or value.
+  [-a, --attributes]         <ATTRIBUTES>       File attributes that are required.
+  [    --attributes-to-skip] <ATTRIBUTES>       File attributes that should be skipped.
+   -c, --content             <REGEX>            Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-y, --display]            <DISPLAY_OPTIONS>  Display of the results.
+  [-d, --dry-run]                               Display which files should be updated but do not actually update any file.
+  [    --encoding]           <ENCODING>         Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.
+  [    --evaluator]          <EVALUATOR>        Path to the evaluator method to compute replacements. The format is "LibraryPath,FullTypeName.MethodName".
+  [-e, --extension]          <EXTENSION_FILTER> A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].
+  [-h, --help]                                  Show command line help.
+  [-t, --highlight]          <HIGHLIGHT>        Parts of the output to highlight.
+  [-i, --include-directory]  <REGEX>            Regular expression for a directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [    --input]              <INPUT>            The input string to be searched. Syntax is <INPUT> [<INPUT_OPTIONS>].
+  [-m, --max-count]          <MAX_OPTIONS>      Stop searching after specified number is reached.
+  [    --modify]             <REPLACE_MODIFY>   Functions to modify result.
+  [-n, --name]               <REGEX>            Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [    --no-recurse]                            Do not search subdirectories.
+  [-o, --output]             <OUTPUT_OPTIONS>   Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths-from]         <FILE_PATH>        Read the list of paths to search from a file. Paths should be separated by newlines.
+  [    --progress]                              Display dot (.) for every hundredth searched file or directory.
+  [-p, --properties]         <FILE_PROPERTIES>  A filter for file properties.
+  [-r, --replacement]        <REPLACEMENT>      Replacement pattern. Syntax is <REPLACEMENT> [<REPLACEMENT_OPTIONS>].
+  [-s, --sort]               <SORT_OPTIONS>     Sort matched files and directories.
+  [-v, --verbosity]          <VERBOSITY>        The amount of information to display in the log.
+
+----------
+
+Command: split
+
+Splits the input string into an list of substrings at the positions defined by a regular expression.
+
+Usage: orang split [<PATH>] [options]
+
+Arguments:
+  [<PATH>]   Path to a file that should be analyzed.
+
+Options:
+   -c, --content    <REGEX>           Regular expression for the input string. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
+  [-y, --display]   <DISPLAY_OPTIONS> Display of the results.
+  [-h, --help]                        Show command line help.
+  [-t, --highlight] <HIGHLIGHT>       Parts of the output to highlight.
+  [-i, --input]     <INPUT>           The input string to be searched. Syntax is <INPUT> [<INPUT_OPTIONS>].
+  [-m, --max-count] <NUM>             Maximum number of times the split can occur.
+  [    --modify]    <MODIFY_OPTIONS>  Functions to modify results.
+  [    --no-groups]                   Do not include groups in the results.
+  [-o, --output]    <OUTPUT_OPTIONS>  Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [-v, --verbosity] <VERBOSITY>       The amount of information to display in the log.
+
+----------
+
+Values:
+<ASK_MODE>
+  file                       f  Ask for confirmation after each file.
+  value                      v  Ask for confirmation after each value.
+
+<ATTRIBUTES>
+  archive                    -
+  compressed                 -
+  directory                  d
+  empty                      e
+  encrypted                  -
+  file                       f
+  hidden                     h
+  normal                     -
+  offline                    -
+  read-only                  r
+  reparse-point              rp
+  system                     s
+  temporary                  -
+
+<COMPARE_OPTIONS>
+  none                       n  Compare files only by name.
+  attributes                 a  Compare file attributes.
+  content                    c  Compare file content.
+  modified-time              mt Compare time a file was last modified.
+  size                       s  Compare file size.
+
+<CONFLICT_RESOLUTION>
+  ask                        a  Ask when a file or already exists.
+  overwrite                  o  Overwrite a file when it already exists.
+  suffix                     -  Add suffix to file name if it already exists.
+  skip                       s  Do not copy or move a file if it already exists.
+
+<CONTENT_DISPLAY>
+  all-lines                  a  Display all lines.
+  line                       l  Display entire line containing the matched value.
+  unmatched-lines            u  Display all lines that do not contain the matched value.
+  value                      v  Display just the matched value.
+  value-detail               d  Display matched value and include information about each value such as index or length.
+
+<DISPLAY_OPTIONS>
+  content=<CONTENT_DISPLAY>  c
+  context=<NUM>              t  A number of lines to display before and after matching line.
+  context-before=<NUM>       -  A number of lines to display before matching line.
+  context-after=<NUM>        -  A number of lines to display after matching line.
+  count                      c  Include number of matches in file.
+  creation-time              ct Include file creation time.
+  indent=<INDENT>            -  Indentation for a list of results. Default indentation are 2 spaces.
+  line-number                l  Include line number.
+  modified-time              mt Include file last modified time.
+  path=<PATH_DISPLAY>        p
+  size                       s  Include file size.
+  separator=<SEPARATOR>      s  String that separate each value.
+  summary                    su Include summary.
+  trim-line                  -  Trim leading and trailing white-space from a line.
+
+<EXTENSION_OPTIONS>
+  case-sensitive             cs Use case-sensitive matching.
+  culture-invariant          ci Ignore cultural differences between languages.
+  from-file                  f  Load pattern from a file.
+  list-separator=<SEPARATOR> ls String that separate each value in a list. Default value is comma (,) or newline if the list is loaded from a file.
+  literal                    l  Pattern should be treated as a literal expression and not as a regular expression.
+  negative                   ne Search succeeds if the regular expression does not match.
+  timeout=<NUM>              -  Match time-out interval in seconds.
+
+<FILE_PROPERTIES>
+  creation-time=<DATE>       ct Filter files by creation time (See 'Expression syntax' for other expressions).
+  modified-time=<DATE>       mt Filter files by modified time (See 'Expression syntax' for other expressions).
+  size=<NUM>                 s  Filter files by size (See 'Expression syntax' for other expressions).
+
+<HIGHLIGHT>
+  none                       n  No highlighting.
+  match                      m  Highlight match value.
+  replacement                r  Highlight replacement value.
+  split                      s  Highlight split value.
+  empty-match                em Highlight match value that is empty string.
+  empty-replacement          er Highlight replacement value that is empty string.
+  empty-split                es Highlight split value that is empty string.
+  empty                      e  Highlight value that is empty string.
+  boundary                   b  Highlight start and end of the value.
+  tab                        t  Highlight tab character.
+  carriage-return            cr Highlight carriage return character.
+  linefeed                   lf Highlight linefeed character.
+  new-line                   nl Highlight carriage return and linefeed characters.
+  space                      -  Highlight space character.
+
+<INPUT_OPTIONS>
+  escape                     e  Interpret literals \a, \b, \f, \n, \r, \t and \v as character escapes.
+
+<MAX_OPTIONS>
+  <NUM>                      -  Stop searching after <NUM> matching files and/or directories.
+  matches=<NUM>              m  Stop searching in each file after <NUM> matches.
+
+<MODIFY_OPTIONS>
+  aggregate                  ag Display list of all values at the end of search.
+  aggregate-only             ao Display only list of all values at the end of search.
+  ascending                  a  Sort values in an ascending order.
+  culture-invariant          ci Ignore cultural differences between languages.
+  descending                 d  Sort values in a descending order.
+  distinct                   di Return distinct values.
+  except                     -  Return values from first file except values from second file.
+  intersect                  -  Return values that were found in all files.
+  ignore-case                i  Use case-insensitive matching.
+  remove-empty               re Remove values that are empty strings.
+  remove-white-space         rw Remove values that are empty or consist of white-space.
+  sort-by=<SORT_PROPERTY>    -
+  to-lower                   tl Convert value to lowercase.
+  to-upper                   tu Convert value to uppercase.
+  trim                       t  Trim leading and trailing white-space.
+  trim-end                   te Trim trailing white-space.
+  trim-start                 ts Trim leading white-space.
+
+<NAME_PART>
+  extension                  e  Search in file extension.
+  full-name                  f  Search in full path.
+  name                       n  Search in file name and its extension.
+  name-without-extension     w  Search in file name without extension.
+
+<OUTPUT_OPTIONS>
+  encoding=<ENCODING>        e
+  verbosity=<VERBOSITY>      v
+  append                     a  If the file exists output will be appended to the end of the file.
+
+<PATH_DISPLAY>
+  full                       f  Display full path.
+  relative                   r  Display path relatively to the base directory.
+  match                      m  Display only match.
+  omit                       o  Do not display path.
+
+<PATTERN_OPTIONS>
+  compiled                   -  Compile the regular expression to an assembly.
+  culture-invariant          ci Ignore cultural differences between languages.
+  ecma-script                es Enable ECMAScript-compliant behavior for the expression.
+  ends-with                  ew Pattern should match from the end of the input string.
+  equals                     e  Pattern should match whole input string.
+  explicit-capture           n  Do not capture unnamed groups.
+  from-file                  f  Load pattern from a file.
+  group=<GROUP_NAME>         g
+  ignore-case                i  Use case-insensitive matching.
+  ignore-pattern-whitespace  x  Exclude unescaped white-space from the pattern and enable comments after a number sign (#).
+  list                       li Interpret pattern as a list of patterns any of which is to be matched. Separator is either comma (,) or newline if the list is loaded from a file.
+  length=<NUM>               -  Include matches whose length matches the expression (See 'Expression syntax' for other expressions).
+  list-separator=<SEPARATOR> ls String that separate each value in a list. Default value is comma (,) or newline if the list is loaded from a file.
+  literal                    l  Pattern should be treated as a literal expression and not as a regular expression.
+  multiline                  m  ^ and $ match the beginning and end of each line (instead of the beginning and end of the input string).
+  negative                   ne Search succeeds if the regular expression does not match.
+  part=<NAME_PART>           p  The part of a file or a directory name that should be matched.
+  right-to-left              r  Specifies that the search will be from right to left.
+  singleline                 s  The period (.) matches every character (instead of every character except \n).
+  starts-with                sw Pattern should match from the start of the input string.
+  timeout=<NUM>              -  Match time-out interval in seconds.
+  whole-line                 wl Pattern should match whole line.
+  whole-word                 w  Pattern should match whole word.
+
+<REGEX_OPTIONS>
+  compiled                   c  Compile the regular expression to an assembly.
+  culture-invariant          ci Ignore cultural differences between languages.
+  ecma-script                es Enable ECMAScript-compliant behavior for the expression.
+  explicit-capture           n  Do not capture unnamed groups.
+  ignore-case                i  Use case-insensitive matching.
+  ignore-pattern-whitespace  x  Exclude unescaped white-space from the pattern and enable comments after a number sign (#).
+  multiline                  m  ^ and $ match the beginning and end of each line (instead of the beginning and end of the input string).
+  right-to-left              r  Specifies that the search will be from right to left.
+  singleline                 s  The period (.) matches every character (instead of every character except \n).
+
+<REPLACE_MODIFY>
+  culture-invariant          ci Ignore cultural differences between languages.
+  to-lower                   tl Convert value to lowercase.
+  to-upper                   tu Convert value to uppercase.
+  trim                       t  Trim leading and trailing white-space.
+  trim-end                   te Trim trailing white-space.
+  trim-start                 ts Trim leading white-space.
+
+<REPLACEMENT_OPTIONS>
+  from-file                  f  Load replacement string from a file whose path is specified in <REPLACEMENT> value.
+  literal                    l  Replacement should be treated as a literal expression and not as a replacement expression.
+  escape                     e  Interpret literals \a, \b, \f, \n, \r, \t and \v as character escapes.
+
+<SORT_OPTIONS>
+  ascending                  a  Sort items in ascending order.
+  creation-time              ct Sort items by creation time.
+  descending                 d  Sort items in descending order.
+  max-count=<NUM>            m  Show only <NUM> items.
+  modified-time              mt Sort items by last modified time.
+  name                       n  Sort items by full name.
+  size                       s  Sort items by size.
+
+<SORT_PROPERTY>
+  length                     l  Sort values by value's length.
+
+<SYNTAX_SECTIONS>
+  alternation-constructs     ac
+  anchors                    a
+  backreference-constructs   b
+  character-classes          c
+  character-escapes          ce
+  general-categories         gc
+  grouping-constructs        g
+  miscellaneous              m
+  named-blocks               n
+  options                    o
+  quantifiers                q
+  substitutions              s
+
+<VERBOSITY>
+  quiet                      q
+  minimal                    m
+  normal                     n
+  detailed                   d
+  diagnostic                 di
+
+Expression syntax:
+  x=n
+  x<n
+  x>n
+  x<=n
+  x>=n
+  x=<min;max>          Inclusive interval
+  x=(min;max)          Exclusive interval
+  x=-d|[d.]hh:mm[:ss]  x is greater than actual date - <VALUE>

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Orang.FileSystem;
+using Orang.Text.RegularExpressions;
 using static Orang.Logger;
 
 namespace Orang.CommandLine
@@ -14,11 +15,11 @@ namespace Orang.CommandLine
     {
         public static void WriteFileError(
             Exception ex,
-            string path = null,
-            string basePath = null,
+            string? path = null,
+            string? basePath = null,
             bool relativePath = false,
             ConsoleColors colors = default,
-            string indent = null,
+            string? indent = null,
             Verbosity verbosity = Verbosity.Normal)
         {
             if (colors.IsDefault)
@@ -131,7 +132,7 @@ namespace Orang.CommandLine
             WriteLine(verbosity);
         }
 
-        public static void WriteGroups(GroupDefinitionCollection groupDefinitions, Dictionary<int, ConsoleColors> colors = null, Verbosity verbosity = Verbosity.Detailed)
+        public static void WriteGroups(GroupDefinitionCollection groupDefinitions, Dictionary<int, ConsoleColors>? colors = null, Verbosity verbosity = Verbosity.Detailed)
         {
             if (!ShouldLog(verbosity))
                 return;
@@ -206,7 +207,7 @@ namespace Orang.CommandLine
 
         public static void WritePath(
             FileMatch fileMatch,
-            string basePath,
+            string? basePath,
             bool relativePath,
             in ConsoleColors colors,
             in ConsoleColors matchColors,
@@ -231,7 +232,7 @@ namespace Orang.CommandLine
         public static void WritePath(
             FileMatch fileMatch,
             List<ReplaceItem> items,
-            string basePath,
+            string? basePath,
             bool relativePath,
             in ConsoleColors colors,
             in ConsoleColors matchColors,
@@ -240,7 +241,7 @@ namespace Orang.CommandLine
             Verbosity verbosity = Verbosity.Quiet)
         {
             string path = fileMatch.Path;
-            int matchIndex = fileMatch.Part.Index + fileMatch.Index;
+            int matchIndex = fileMatch.NameSpan.Start + fileMatch.Index;
 
             (int startIndex, bool isWritten) = WritePathImpl(path, basePath, relativePath, colors, stopAtMatch: true, matchIndex, indent, verbosity);
 
@@ -250,14 +251,14 @@ namespace Orang.CommandLine
                 {
                     Match match = item.Match;
 
-                    Write(path, startIndex, fileMatch.Part.Index + match.Index - startIndex);
+                    Write(path, startIndex, fileMatch.NameSpan.Start + match.Index - startIndex);
 
                     if (!matchColors.IsDefault)
                         Write(match.Value, matchColors);
 
                     Write(item.Value, replaceColors);
 
-                    startIndex = fileMatch.Part.Index + match.Index + match.Length;
+                    startIndex = fileMatch.NameSpan.Start + match.Index + match.Length;
                 }
 
                 Write(path, startIndex, path.Length - startIndex);
@@ -266,10 +267,10 @@ namespace Orang.CommandLine
 
         public static void WritePath(
             string path,
-            string basePath = null,
+            string? basePath = null,
             bool relativePath = false,
             in ConsoleColors colors = default,
-            string indent = null,
+            string? indent = null,
             Verbosity verbosity = Verbosity.Quiet)
         {
             WritePathImpl(path, basePath, relativePath, colors, indent: indent, verbosity: verbosity);
@@ -277,12 +278,12 @@ namespace Orang.CommandLine
 
         private static (int startIndex, bool isWritten) WritePathImpl(
             string path,
-            string basePath,
+            string? basePath,
             bool relativePath,
             in ConsoleColors colors,
             bool stopAtMatch = false,
             int matchIndex = -1,
-            string indent = null,
+            string? indent = null,
             Verbosity verbosity = Verbosity.Quiet)
         {
             if (!ShouldLog(verbosity))

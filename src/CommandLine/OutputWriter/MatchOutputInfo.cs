@@ -3,6 +3,7 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using Orang.Text.RegularExpressions;
 
 namespace Orang
 {
@@ -10,8 +11,8 @@ namespace Orang
     {
         private const string ItemSeparator = " ";
 
-        private string _matchSpaces;
-        private string _groupSpaces;
+        private string? _matchSpaces;
+        private string? _groupSpaces;
 
         private MatchOutputInfo(
             int groupNumber,
@@ -20,8 +21,8 @@ namespace Orang
             int captureWidth,
             int indexWidth,
             int lengthWidth,
-            OutputCaptions captions = null,
-            string prefixSeparator = null)
+            OutputCaptions? captions = null,
+            string? prefixSeparator = null)
         {
             GroupNumber = groupNumber;
             MatchWidth = matchWidth;
@@ -105,8 +106,8 @@ namespace Orang
             int groupNumber = -1,
             bool includeGroupNumber = true,
             bool includeCaptureNumber = true,
-            OutputCaptions captions = null,
-            string prefixSeparator = null)
+            OutputCaptions? captions = null,
+            string? prefixSeparator = null)
         {
             int matchWidth = Math.Max(matchData.Items.Count, 0).GetDigitCount();
             int groupWidth = 0;
@@ -138,9 +139,9 @@ namespace Orang
                     if (includeCaptureNumber)
                         maxCaptureCount = Math.Max(maxCaptureCount, groupItem.Captures.Count);
 
-                    foreach (Capture capture in groupItem.Captures)
+                    foreach (Capture? capture in groupItem.Captures)
                     {
-                        maxIndex = Math.Max(maxIndex, capture.Index);
+                        maxIndex = Math.Max(maxIndex, capture!.Index);
                         maxLength = Math.Max(maxLength, capture.Length);
                     }
                 }
@@ -174,7 +175,7 @@ namespace Orang
         public string GetText(
             Capture capture,
             int matchNumber,
-            string groupName,
+            string? groupName,
             int captureNumber,
             bool omitMatchInfo = false,
             bool omitGroupInfo = false)

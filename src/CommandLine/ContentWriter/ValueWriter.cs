@@ -7,8 +7,8 @@ namespace Orang.CommandLine
     internal class ValueWriter
     {
         public ValueWriter(
-            ContentTextWriter writer,
-            string indent = null,
+            ContentTextWriter? writer,
+            string? indent = null,
             bool includeEndingIndent = true)
         {
             Writer = writer;
@@ -16,9 +16,9 @@ namespace Orang.CommandLine
             IncludeEndingIndent = includeEndingIndent;
         }
 
-        private ContentTextWriter Writer { get; }
+        private ContentTextWriter? Writer { get; }
 
-        public string Indent { get; }
+        public string? Indent { get; }
 
         public bool IncludeEndingIndent { get; }
 
@@ -27,7 +27,7 @@ namespace Orang.CommandLine
             Write(value, 0, value.Length, symbols, colors, boundaryColors);
         }
 
-        public void Write(string value, int startIndex, int length, OutputSymbols symbols, in ConsoleColors colors = default, in ConsoleColors boundaryColors = default)
+        public void Write(string value, int startIndex, int length, OutputSymbols? symbols, in ConsoleColors colors = default, in ConsoleColors boundaryColors = default)
         {
             if (symbols == null)
                 symbols = OutputSymbols.Empty;
@@ -97,7 +97,7 @@ namespace Orang.CommandLine
 
             Write(value, lastPos, startIndex + length - lastPos, colors);
 
-            void WriteSymbol(string symbol)
+            void WriteSymbol(string? symbol)
             {
                 if (symbol != null)
                 {
@@ -133,17 +133,17 @@ namespace Orang.CommandLine
             }
         }
 
-        protected virtual void Write(string value)
+        protected virtual void Write(string? value)
         {
             Writer?.Write(value);
         }
 
-        protected virtual void Write(string value, in ConsoleColors colors)
+        protected virtual void Write(string? value, in ConsoleColors colors)
         {
             Writer?.Write(value, colors);
         }
 
-        protected virtual void Write(string value, int startIndex, int length, in ConsoleColors colors)
+        protected virtual void Write(string? value, int startIndex, int length, in ConsoleColors colors)
         {
             Writer?.Write(value, startIndex, length, colors);
         }

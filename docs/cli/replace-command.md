@@ -58,7 +58,7 @@ Regular expression for files' content\. Syntax is \<PATTERN> \[\<PATTERN\_OPTION
 
 **`[-y|--display] <DISPLAY_OPTIONS>`**
 
-Display of the results\. Allowed values are c\[ontent\]=\<CONTENT\_DISPLAY>, c\[ount\], c\[reation\-\]t\[ime\], indent=\<INDENT>, l\[ine\-number\], m\[odified\-\]t\[ime\], p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR>, su\[mmary\] and trim\-line\.
+Display of the results\. Allowed values are c\[ontent\]=\<CONTENT\_DISPLAY>, t \[context\]=\<NUM>, context\-before=\<NUM>, context\-after=\<NUM>, c\[ount\], c\[reation\-\]t\[ime\], indent=\<INDENT>, l\[ine\-number\], m\[odified\-\]t\[ime\], p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR>, su\[mmary\] and trim\-line\.
 
 **`[-d|--dry-run]`**
 
@@ -82,7 +82,7 @@ Show command line help\.
 
 **`[-t|--highlight] <HIGHLIGHT>`**
 
-Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\], r\[eplacement\], e\[mpty\-\]m\[atch\], e\[mpty\-\]r\[eplacement\], e\[mpty\-\]s\[plit\], e\[mpty\], b\[oundary\], t\[ab\], c\[arriage\-\]r\[eturn\], l\[ine\]f\[eed\], n\[ew\-\]l\[ine\] and space\.
+Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\], r\[eplacement\], e\[mpty\-\]m\[atch\], e\[mpty\-\]r\[eplacement\], e\[mpty\], b\[oundary\], t\[ab\], c\[arriage\-\]r\[eturn\], l\[ine\]f\[eed\], n\[ew\-\]l\[ine\] and space\.
 
 **`[-i|--include-directory] <REGEX>`**
 
@@ -90,11 +90,11 @@ Regular expression for a directory name\. Syntax is \<PATTERN> \[\<PATTERN\_OPTI
 
 **`[--input] <INPUT>`**
 
-Text to search\.
+The input string to be searched\. Syntax is \<INPUT> \[\<INPUT\_OPTIONS>\]\. Allowed value is e\[scape\]\.
 
 **`[-m|--max-count] <MAX_OPTIONS>`**
 
-Stop searching after specified number is reached\. Allowed values are \<NUM>, m\[atches\]=\<NUM> and m\[atching\-\]f\[iles\]\.
+Stop searching after specified number is reached\. Allowed values are \<NUM> and m\[atches\]=\<NUM>\.
 
 **`[--modify] <REPLACE_MODIFY>`**
 
@@ -126,7 +126,7 @@ A filter for file properties\. Allowed values are c\[reation\-\]t\[ime\], m\[odi
 
 **`[-r|--replacement] <REPLACEMENT>`**
 
-Replacement pattern\. Syntax is \<REPLACEMENT> \[\<REPLACEMENT\_OPTIONS>\]\. Allowed values are f\[rom\-file\], l\[iteral\] and c\[haracter\-\]e\[scapes\]\.
+Replacement pattern\. Syntax is \<REPLACEMENT> \[\<REPLACEMENT\_OPTIONS>\]\. Allowed values are f\[rom\-file\], l\[iteral\] and e\[scape\]\.
 
 **`[-s|--sort] <SORT_OPTIONS>`**
 
@@ -226,7 +226,7 @@ Normalize newline to CR+LF for all files in a current directory.
 ```
 orang replace ^
  --content "(?<!\r)\n" ^
- --replacement "\r\n" multiline ^
+ --replacement "\r\n" escape ^
  --verbosity minimal
 ```
 
@@ -235,7 +235,7 @@ orang replace ^
 ```
 orang replace ^
  -c "(?<!\r)\n" ^
- -r "\r\n" m ^
+ -r "\r\n" e ^
  -v m
 ```
 

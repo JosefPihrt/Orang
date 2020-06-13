@@ -17,7 +17,7 @@ namespace Orang.CommandLine
     internal static class OptionValueProviders
     {
         private static readonly Regex _metaValueRegex = new Regex(@"\<\w+\>");
-        private static ImmutableDictionary<string, OptionValueProvider> _providersByName;
+        private static ImmutableDictionary<string, OptionValueProvider>? _providersByName;
 
         public static OptionValueProvider PatternOptionsProvider { get; } = new OptionValueProvider(MetaValues.PatternOptions,
             OptionValues.PatternOptions_Compiled,
@@ -90,11 +90,11 @@ namespace Orang.CommandLine
         public static OptionValueProvider ReplacementOptionsProvider { get; } = new OptionValueProvider(MetaValues.ReplacementOptions,
             SimpleOptionValue.Create(ReplacementOptions.FromFile, description: "Load replacement string from a file whose path is specified in <REPLACEMENT> value."),
             SimpleOptionValue.Create(ReplacementOptions.Literal, description: "Replacement should be treated as a literal expression and not as a replacement expression."),
-            SimpleOptionValue.Create(ReplacementOptions.CharacterEscapes, shortValue: "ce", helpValue: "c[haracter-]e[scapes]", description: @"Interpret literals \a, \b, \f, \n, \r, \t and \v as character escapes.")
+            SimpleOptionValue.Create(ReplacementOptions.Escape, description: @"Interpret literals \a, \b, \f, \n, \r, \t and \v as character escapes.")
         );
 
         public static OptionValueProvider InputOptionsProvider { get; } = new OptionValueProvider(MetaValues.InputOptions,
-            SimpleOptionValue.Create(InputOptions.CharacterEscapes, shortValue: "ce", helpValue: "c[haracter-]e[scapes]", description: @"Interpret literals \a, \b, \f, \n, \r, \t and \v as character escapes.")
+            SimpleOptionValue.Create(InputOptions.Escape, description: @"Interpret literals \a, \b, \f, \n, \r, \t and \v as character escapes.")
         );
 
         public static OptionValueProvider VerbosityProvider { get; } = new OptionValueProvider(MetaValues.Verbosity,
@@ -131,10 +131,20 @@ namespace Orang.CommandLine
             OptionValues.FileSystemAttributes_File);
 
         public static OptionValueProvider NamePartKindProvider { get; } = new OptionValueProvider(MetaValues.NamePart,
-            SimpleOptionValue.Create(NamePartKind.Extension, description: "Search in file extension."),
-            SimpleOptionValue.Create(NamePartKind.FullName, description: "Search in full path."),
-            SimpleOptionValue.Create(NamePartKind.Name, description: "Search in file name and its extension."),
-            SimpleOptionValue.Create(NamePartKind.NameWithoutExtension, shortValue: "w", description: "Search in file name without extension.")
+            OptionValues.NamePart_Extension,
+            OptionValues.NamePart_FullName,
+            OptionValues.NamePart_Name,
+            OptionValues.NamePart_NameWithoutExtension
+        );
+
+        public static OptionValueProvider NamePartKindProvider_WithoutFullName { get; } = NamePartKindProvider.WithoutValues(
+            OptionValueProviderNames.NamePart_WithoutFullName,
+            OptionValues.NamePart_FullName
+        );
+
+        public static OptionValueProvider NamePartKindProvider_WithoutExtension { get; } = NamePartKindProvider.WithoutValues(
+            OptionValueProviderNames.NamePart_WithoutExtension,
+            OptionValues.NamePart_Extension
         );
 
         public static OptionValueProvider SyntaxSectionProvider { get; } = new OptionValueProvider(MetaValues.SyntaxSections,
@@ -345,8 +355,13 @@ namespace Orang.CommandLine
         public static OptionValueProvider ConflictResolutionProvider { get; } = new OptionValueProvider(MetaValues.ConflictResolution,
             OptionValues.ConflictResolution_Ask,
             OptionValues.ConflictResolution_Overwrite,
-            OptionValues.ConflictResolution_Rename,
+            OptionValues.ConflictResolution_Suffix,
             OptionValues.ConflictResolution_Skip
+        );
+
+        public static OptionValueProvider ConflictResolutionProvider_WithoutSuffix { get; } = ConflictResolutionProvider.WithoutValues(
+            OptionValueProviderNames.ConflictResolution_WithoutSuffix,
+            OptionValues.ConflictResolution_Suffix
         );
 
         public static OptionValueProvider FileCompareOptionsProvider { get; } = new OptionValueProvider(MetaValues.CompareOptions,
@@ -373,7 +388,7 @@ namespace Orang.CommandLine
                     return fieldInfo
                         .Where(f => f.PropertyType.Equals(typeof(OptionValueProvider)))
                         .OrderBy(f => f.Name)
-                        .Select(f => (OptionValueProvider)f.GetValue(null))
+                        .Select(f => (OptionValueProvider)f.GetValue(null)!)
                         .ToImmutableDictionary(f => f.Name, f => f);
                 }
             }
@@ -381,11 +396,11 @@ namespace Orang.CommandLine
 
         public static IEnumerable<OptionValueProvider> Providers => ProvidersByName.Select(f => f.Value);
 
-        public static IEnumerable<OptionValueProvider> GetProviders(IEnumerable<CommandOption> options, IEnumerable<OptionValueProvider> allProviders = null)
+        public static IEnumerable<OptionValueProvider> GetProviders(IEnumerable<CommandOption> options, IEnumerable<OptionValueProvider>? allProviders = null)
         {
             IEnumerable<string> metaValues = options
                 .SelectMany(f => _metaValueRegex.Matches(f.Description).Select(m => m.Value))
-                .Concat(options.Select(f => f.MetaValue))
+                .Concat(options.Where(f => f.MetaValue != null).Select(f => f.MetaValue).Cast<string>())
                 .Distinct();
 
             ImmutableArray<OptionValueProvider> providers = metaValues
@@ -403,7 +418,7 @@ namespace Orang.CommandLine
                 .OrderBy(f => f.Name);
         }
 
-        public static string GetHelpText(OptionValueProvider provider, Func<OptionValue, bool> predicate = null, bool multiline = false)
+        public static string? GetHelpText(OptionValueProvider? provider, Func<OptionValue, bool>? predicate = null, bool multiline = false)
         {
             if (provider == null)
                 return null;

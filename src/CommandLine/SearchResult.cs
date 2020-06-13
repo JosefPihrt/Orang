@@ -2,7 +2,6 @@
 
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using Orang.FileSystem;
 
@@ -15,8 +14,8 @@ namespace Orang.CommandLine
 
         public SearchResult(
             FileMatch fileMatch,
-            string baseDirectoryPath,
-            ContentWriterOptions writerOptions = null)
+            string? baseDirectoryPath,
+            ContentWriterOptions? writerOptions = null)
         {
             FileMatch = fileMatch;
             BaseDirectoryPath = baseDirectoryPath;
@@ -25,19 +24,17 @@ namespace Orang.CommandLine
 
         public FileMatch FileMatch { get; }
 
-        public string BaseDirectoryPath { get; }
+        public string? BaseDirectoryPath { get; }
 
-        public ContentWriterOptions WriterOptions { get; }
+        public ContentWriterOptions? WriterOptions { get; }
 
         public string Path => FileMatch.Path;
 
         public bool IsDirectory => FileMatch.IsDirectory;
 
-        public Match ContentMatch => FileMatch.ContentMatch;
+        public Match? ContentMatch => FileMatch.ContentMatch;
 
         public string ContentText => FileMatch.ContentText;
-
-        public Encoding Encoding => FileMatch.Encoding;
 
         public FileSystemInfo FileSystemInfo => FileMatch.FileSystemInfo;
 

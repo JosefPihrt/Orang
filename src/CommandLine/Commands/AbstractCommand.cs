@@ -19,7 +19,7 @@ namespace Orang.CommandLine
 
         public CommandResult Execute()
         {
-            CancellationTokenSource cts = null;
+            CancellationTokenSource? cts = null;
 
             try
             {
@@ -43,7 +43,7 @@ namespace Orang.CommandLine
                 }
                 catch (AggregateException ex)
                 {
-                    OperationCanceledException operationCanceledException = ex.GetOperationCanceledException();
+                    OperationCanceledException? operationCanceledException = ex.GetOperationCanceledException();
 
                     if (operationCanceledException != null)
                     {

@@ -13,7 +13,7 @@ namespace Orang.CommandLine
         [Option(longName: OptionNames.Modify,
             HelpText = "Functions to modify results.",
             MetaValue = MetaValues.ModifyOptions)]
-        public IEnumerable<string> Modify { get; set; }
+        public IEnumerable<string> Modify { get; set; } = null!;
 
         public bool TryParse(FindCommandOptions options)
         {
@@ -24,7 +24,7 @@ namespace Orang.CommandLine
 
             options = (FindCommandOptions)baseOptions;
 
-            if (!TryParseModifyOptions(Modify, OptionNames.Modify, out ModifyOptions modifyOptions, out bool aggregateOnly))
+            if (!TryParseModifyOptions(Modify, OptionNames.Modify, out ModifyOptions? modifyOptions, out bool aggregateOnly))
                 return false;
 
             OutputDisplayFormat format = options.Format;

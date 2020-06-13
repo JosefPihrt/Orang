@@ -8,7 +8,7 @@ namespace Orang
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class KeyValuePairOptionValue : OptionValue
     {
-        public KeyValuePairOptionValue(string key, string value, string shortKey, string helpValue, string description = null, bool hidden = false, bool canContainExpression = false)
+        public KeyValuePairOptionValue(string key, string value, string shortKey, string helpValue, string? description = null, bool hidden = false, bool canContainExpression = false)
             : base(key, helpValue, description, hidden, canContainExpression)
         {
             Key = key;
@@ -35,9 +35,9 @@ namespace Orang
         public static KeyValuePairOptionValue Create(
             string key,
             string value,
-            string shortKey = null,
-            string helpValue = null,
-            string description = null,
+            string? shortKey = null,
+            string? helpValue = null,
+            string? description = null,
             bool hidden = false,
             bool canContainExpression = false)
         {

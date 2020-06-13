@@ -34,7 +34,8 @@ namespace Orang.CommandLine
                         if (!options.Help)
                             return;
 
-                        Command command = CommandLoader.LoadCommand(typeof(Program).Assembly, args?.FirstOrDefault());
+                        string? commandName = args?.FirstOrDefault();
+                        Command? command = (commandName != null) ? CommandLoader.LoadCommand(typeof(Program).Assembly, commandName) : null;
 
                         ParseVerbosityAndOutput(options);
                         WriteArgs(args);
@@ -85,7 +86,7 @@ namespace Orang.CommandLine
 
                     helpText = HelpText.DefaultParsingErrorsHandler(parserResult, helpText);
 
-                    VerbAttribute verbAttribute = parserResult.TypeInfo.Current.GetCustomAttribute<VerbAttribute>();
+                    VerbAttribute? verbAttribute = parserResult.TypeInfo.Current.GetCustomAttribute<VerbAttribute>();
 
                     if (verbAttribute != null)
                     {
@@ -168,7 +169,7 @@ namespace Orang.CommandLine
 
             if (options is BaseCommandLineOptions baseOptions)
             {
-                if (!TryParseOutputOptions(baseOptions.Output, OptionNames.Output, out string filePath, out Verbosity fileVerbosity, out Encoding encoding, out bool append))
+                if (!TryParseOutputOptions(baseOptions.Output, OptionNames.Output, out string? filePath, out Verbosity fileVerbosity, out Encoding? encoding, out bool append))
                     return false;
 
                 if (filePath != null)
@@ -187,7 +188,7 @@ namespace Orang.CommandLine
         }
 
         [Conditional("DEBUG")]
-        private static void WriteArgs(string[] args)
+        private static void WriteArgs(string[]? args)
         {
             if (args != null)
             {

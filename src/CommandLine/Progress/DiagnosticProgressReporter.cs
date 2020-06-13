@@ -25,9 +25,9 @@ namespace Orang.FileSystem
 
         public FileSystemCommandOptions Options { get; }
 
-        public override void Report(FileSystemFilterProgress value)
+        public override void Report(SearchProgress value)
         {
-            if (value.Error != null)
+            if (value.Exception != null)
             {
                 WriteError(value);
             }
@@ -35,7 +35,7 @@ namespace Orang.FileSystem
             {
                 switch (value.Kind)
                 {
-                    case ProgressKind.SearchedDirectory:
+                    case SearchProgressKind.SearchDirectory:
                         {
                             SearchedDirectoryCount++;
 
@@ -50,13 +50,13 @@ namespace Orang.FileSystem
 
                             break;
                         }
-                    case ProgressKind.Directory:
+                    case SearchProgressKind.Directory:
                         {
                             DirectoryCount++;
                             WritePath(value.Path, value.Kind);
                             break;
                         }
-                    case ProgressKind.File:
+                    case SearchProgressKind.File:
                         {
                             FileCount++;
                             WritePath(value.Path, value.Kind);
@@ -70,7 +70,7 @@ namespace Orang.FileSystem
             }
         }
 
-        private void WritePath(string path, ProgressKind kind)
+        private void WritePath(string path, SearchProgressKind kind)
         {
             if (ConsoleReportMode == ProgressReportMode.Dot)
             {
@@ -89,14 +89,14 @@ namespace Orang.FileSystem
             }
         }
 
-        private void WritePathToFile(string path, ProgressKind kind, string indent = null)
+        private void WritePathToFile(string path, SearchProgressKind kind, string? indent = null)
         {
-            Out.Write(indent);
+            Out!.Write(indent);
             Out.Write(GetPrefix(kind));
             Out.WriteLine(GetPath(path));
         }
 
-        private void WritePath(string path, ProgressKind kind, string indent = null)
+        private void WritePath(string path, SearchProgressKind kind, string? indent = null)
         {
             ReadOnlySpan<char> pathDisplay = GetPath(path);
 
@@ -106,7 +106,7 @@ namespace Orang.FileSystem
 
             if (FileReportMode == ProgressReportMode.Path)
             {
-                Out.Write(indent);
+                Out!.Write(indent);
                 Out.Write(GetPrefix(kind));
                 Out.WriteLine(pathDisplay);
             }
@@ -119,7 +119,7 @@ namespace Orang.FileSystem
 
         private static ReadOnlySpan<char> GetPath(
             string path,
-            string basePath,
+            string? basePath,
             bool relativePath)
         {
             if (string.Equals(path, basePath, FileSystemHelpers.Comparison))
@@ -141,13 +141,13 @@ namespace Orang.FileSystem
             return path;
         }
 
-        private static string GetPrefix(ProgressKind kind)
+        private static string GetPrefix(SearchProgressKind kind)
         {
             return kind switch
             {
-                ProgressKind.SearchedDirectory => "[S] ",
-                ProgressKind.Directory => "[D] ",
-                ProgressKind.File => "[F] ",
+                SearchProgressKind.SearchDirectory => "[S] ",
+                SearchProgressKind.Directory => "[D] ",
+                SearchProgressKind.File => "[F] ",
                 _ => throw new InvalidOperationException($"Unknown enum value '{kind}'."),
             };
         }

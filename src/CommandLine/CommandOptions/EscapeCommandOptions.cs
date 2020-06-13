@@ -8,7 +8,7 @@ namespace Orang.CommandLine
         {
         }
 
-        public string Input { get; internal set; }
+        public string Input { get; internal set; } = null!;
 
         public bool InCharGroup { get; internal set; }
 

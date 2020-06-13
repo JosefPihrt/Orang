@@ -15,7 +15,7 @@ namespace Orang.CommandLine
             Required = true,
             HelpText = "Regular expression for the input string. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
-        public IEnumerable<string> Content { get; set; }
+        public IEnumerable<string> Content { get; set; } = null!;
 
         [Option(shortName: OptionShortNames.MaxCount, longName: OptionNames.MaxCount,
             Default = 0,
@@ -36,13 +36,13 @@ namespace Orang.CommandLine
 
             options = (SplitCommandOptions)baseOptions;
 
-            if (!FilterParser.TryParse(Content, OptionNames.Content, OptionValueProviders.PatternOptionsWithoutGroupAndPartAndNegativeProvider, out Filter filter))
+            if (!FilterParser.TryParse(Content, OptionNames.Content, OptionValueProviders.PatternOptionsWithoutGroupAndPartAndNegativeProvider, out Filter? filter))
                 return false;
 
             if (!TryParseAsEnumFlags(Highlight, OptionNames.Highlight, out HighlightOptions highlightOptions, defaultValue: HighlightOptions.Split, provider: OptionValueProviders.SplitHighlightOptionsProvider))
                 return false;
 
-            options.Filter = filter;
+            options.Filter = filter!;
             options.HighlightOptions = highlightOptions;
             options.OmitGroups = NoGroups;
             options.MaxCount = MaxCount;

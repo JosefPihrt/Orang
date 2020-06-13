@@ -8,7 +8,7 @@ namespace Orang.CommandLine.Help
 
         public HelpWriterOptions(
             string indent = "  ",
-            Filter filter = null)
+            Filter? filter = null)
         {
             Indent = indent;
             Filter = filter;
@@ -16,6 +16,6 @@ namespace Orang.CommandLine.Help
 
         public string Indent { get; }
 
-        public Filter Filter { get; }
+        public Filter? Filter { get; }
     }
 }

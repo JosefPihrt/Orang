@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Orang.Text.RegularExpressions;
 
 namespace Orang.CommandLine
 {
@@ -39,8 +40,8 @@ namespace Orang.CommandLine
                 || options.ContentDisplayStyle == ContentDisplayStyle.ValueDetail)
             {
                 bool addDetails = options.ContentDisplayStyle == ContentDisplayStyle.ValueDetail;
-                MatchOutputInfo outputInfo = null;
-                string indent = null;
+                MatchOutputInfo? outputInfo = null;
+                string? indent = null;
 
                 if (addDetails)
                 {
@@ -142,7 +143,7 @@ namespace Orang.CommandLine
             {
                 bool addDetails = options.ContentDisplayStyle == ContentDisplayStyle.ValueDetail;
 
-                MatchOutputInfo outputInfo = (addDetails) ? MatchOutputInfo.Create(matchData, groupNumber) : null;
+                MatchOutputInfo? outputInfo = (addDetails) ? MatchOutputInfo.Create(matchData, groupNumber) : null;
 
                 var valueWriter = new OutputValueWriter(null, HighlightOptions);
 
@@ -228,8 +229,8 @@ namespace Orang.CommandLine
                 else
                 {
                     bool addDetails = options.ContentDisplayStyle == ContentDisplayStyle.ValueDetail;
-                    SplitOutputInfo outputInfo = null;
-                    string indent = null;
+                    SplitOutputInfo? outputInfo = null;
+                    string? indent = null;
 
                     if (addDetails)
                     {
@@ -303,7 +304,7 @@ namespace Orang.CommandLine
 
         private class OutputValueWriter : ValueWriter
         {
-            public OutputValueWriter(string indent, HighlightOptions highlightOptions) : base(new ContentTextWriter(Verbosity.Minimal), indent, includeEndingIndent: false)
+            public OutputValueWriter(string? indent, HighlightOptions highlightOptions) : base(new ContentTextWriter(Verbosity.Minimal), indent, includeEndingIndent: false)
             {
                 HighlightOptions = highlightOptions;
             }

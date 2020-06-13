@@ -6,12 +6,13 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Orang.FileSystem;
+using Orang.Text.RegularExpressions;
 
 namespace Orang.CommandLine
 {
     internal abstract class FileSystemCommandOptions : CommonRegexCommandOptions
     {
-        private string _doubleIndent;
+        private string? _doubleIndent;
 
         internal FileSystemCommandOptions()
         {
@@ -19,17 +20,17 @@ namespace Orang.CommandLine
 
         public ImmutableArray<PathInfo> Paths { get; internal set; }
 
-        public Filter NameFilter { get; internal set; }
+        public Filter? NameFilter { get; internal set; }
 
-        public NamePartKind NamePart { get; internal set; }
+        public FileNamePart NamePart { get; internal set; }
 
-        public Filter ExtensionFilter { get; internal set; }
+        public Filter? ExtensionFilter { get; internal set; }
 
-        public Filter ContentFilter { get; internal set; }
+        public Filter? ContentFilter { get; internal set; }
 
-        public Filter DirectoryFilter { get; internal set; }
+        public Filter? DirectoryFilter { get; internal set; }
 
-        public NamePartKind DirectoryNamePart { get; internal set; }
+        public FileNamePart DirectoryNamePart { get; internal set; }
 
         public SearchTarget SearchTarget { get; internal set; }
 
@@ -41,21 +42,21 @@ namespace Orang.CommandLine
 
         public bool Progress { get; internal set; }
 
-        public Encoding DefaultEncoding { get; internal set; }
+        public Encoding DefaultEncoding { get; internal set; } = null!;
 
-        public FileEmptyFilter EmptyFilter { get; internal set; }
+        public FileEmptyOption EmptyOption { get; internal set; }
 
         public int MaxMatchingFiles { get; internal set; }
 
-        public SortOptions SortOptions { get; internal set; }
+        public SortOptions? SortOptions { get; internal set; }
 
-        public FilePropertyFilter FilePropertyFilter { get; internal set; }
+        public FilePropertyFilter? FilePropertyFilter { get; internal set; }
 
-        public FilterPredicate<DateTime> CreationTimePredicate { get; internal set; }
+        public FilterPredicate<DateTime>? CreationTimePredicate { get; internal set; }
 
-        public FilterPredicate<DateTime> ModifiedTimePredicate { get; internal set; }
+        public FilterPredicate<DateTime>? ModifiedTimePredicate { get; internal set; }
 
-        public FilterPredicate<long> SizePredicate { get; internal set; }
+        public FilterPredicate<long>? SizePredicate { get; internal set; }
 
         public ContentDisplayStyle ContentDisplayStyle => Format.ContentDisplayStyle;
 
@@ -71,20 +72,15 @@ namespace Orang.CommandLine
 
         internal bool IncludeBaseDirectory => Format.IncludeBaseDirectory;
 
-        internal MatchOutputInfo CreateOutputInfo(FileMatch fileMatch)
-        {
-            return CreateOutputInfo(fileMatch.ContentText, fileMatch.ContentMatch);
-        }
-
-        internal MatchOutputInfo CreateOutputInfo(string input, Match match)
+        internal MatchOutputInfo? CreateOutputInfo(string input, Match match, Filter filter)
         {
             if (ContentDisplayStyle != ContentDisplayStyle.ValueDetail)
                 return null;
 
-            int groupNumber = ContentFilter.GroupNumber;
+            int groupNumber = filter.GroupNumber;
 
             return MatchOutputInfo.Create(
-                MatchData.Create(input, ContentFilter.Regex, match),
+                MatchData.Create(input, filter.Regex, match),
                 groupNumber,
                 includeGroupNumber: groupNumber >= 0,
                 includeCaptureNumber: false,

@@ -7,25 +7,25 @@ namespace Orang.CommandLine
     internal class AllLinesContentWriter : ContentWriter
     {
         private int _lastPos;
-        private ValueWriter _valueWriter;
+        private ValueWriter? _valueWriter;
 
         public AllLinesContentWriter(
             string input,
-            ContentWriterOptions options = null,
-            IResultStorage storage = null) : this(input, ContentTextWriter.Default, options, storage)
+            ContentWriterOptions options,
+            IResultStorage? storage = null) : this(input, ContentTextWriter.Default, options, storage)
         {
         }
 
         public AllLinesContentWriter(
             string input,
-            ContentTextWriter writer,
-            ContentWriterOptions options = null,
-            IResultStorage storage = null) : base(input, writer, options)
+            ContentTextWriter? writer,
+            ContentWriterOptions options,
+            IResultStorage? storage = null) : base(input, writer, options)
         {
             ResultStorage = storage;
         }
 
-        public IResultStorage ResultStorage { get; }
+        public IResultStorage? ResultStorage { get; }
 
         protected override ValueWriter ValueWriter
         {

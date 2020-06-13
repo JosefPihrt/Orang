@@ -18,7 +18,7 @@ namespace Orang.Documentation
         {
             _writer.WriteString(option.Description);
 
-            OptionValueProvider provider;
+            OptionValueProvider provider = null!;
 
             if (TryGetProvider())
             {
@@ -42,8 +42,11 @@ namespace Orang.Documentation
                 if (option.ValueProviderName != null)
                     return OptionValueProviders.ProvidersByName.TryGetValue(option.ValueProviderName, out provider);
 
-                if (OptionValueProviders.ProvidersByName.TryGetValue(option.MetaValue, out provider))
+                if (option.MetaValue != null
+                    && OptionValueProviders.ProvidersByName.TryGetValue(option.MetaValue, out provider))
+                {
                     return true;
+                }
 
                 Match match = _metaValueRegex.Match(option.Description);
 

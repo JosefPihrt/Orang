@@ -39,11 +39,11 @@ Show command line help\.
 
 **`[-t|--highlight] <HIGHLIGHT>`**
 
-Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\], e\[mpty\-\]m\[atch\], e\[mpty\-\]s\[plit\], e\[mpty\], b\[oundary\], t\[ab\], c\[arriage\-\]r\[eturn\], l\[ine\]f\[eed\], n\[ew\-\]l\[ine\] and space\.
+Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\], e\[mpty\-\]m\[atch\], e\[mpty\], b\[oundary\], t\[ab\], c\[arriage\-\]r\[eturn\], l\[ine\]f\[eed\], n\[ew\-\]l\[ine\] and space\.
 
 **`[-i|--input] <INPUT>`**
 
-Text to search\.
+The input string to be searched\. Syntax is \<INPUT> \[\<INPUT\_OPTIONS>\]\. Allowed value is e\[scape\]\.
 
 **`[-m|--max-count] <NUM>`**
 
