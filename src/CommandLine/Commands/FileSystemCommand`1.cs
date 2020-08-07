@@ -33,6 +33,8 @@ namespace Orang.CommandLine
 
         public virtual bool CanEndProgress => !Options.OmitPath;
 
+        public virtual bool CanUseResults => true;
+
         protected virtual FileSystemSearch CreateSearch()
         {
             var filter = new FileSystemFilter(
@@ -78,9 +80,15 @@ namespace Orang.CommandLine
 
         protected sealed override CommandResult ExecuteCore(CancellationToken cancellationToken = default)
         {
-            List<SearchResult>? results = (Options.SortOptions != null || Options.Format.FileProperties.Any())
-                ? new List<SearchResult>()
-                : null;
+            List<SearchResult>? results = null;
+
+            if (CanUseResults)
+            {
+                if (Options.SortOptions != null || Options.Format.FileProperties.Any())
+                {
+                    results = new List<SearchResult>();
+                }
+            }
 
             var context = new SearchContext(new SearchTelemetry(), progress: ProgressReporter, results: results, cancellationToken: cancellationToken);
 
@@ -458,48 +466,56 @@ namespace Orang.CommandLine
 
         protected void WriteProperties(SearchContext context, FileMatch fileMatch, ColumnWidths? columnWidths)
         {
-            if (columnWidths != null
-                && ShouldLog(Verbosity.Minimal))
-            {
-                StringBuilder sb = StringBuilderCache.GetInstance();
+            if (!ShouldLog(Verbosity.Minimal))
+                return;
 
+            if (columnWidths == null
+                && (CanUseResults || !Options.Format.FileProperties.Any()))
+            {
+                return;
+            }
+
+            StringBuilder sb = StringBuilderCache.GetInstance();
+
+            if (columnWidths != null)
                 sb.Append(' ', columnWidths.NameWidth - fileMatch.Path.Length);
 
-                foreach (FileProperty fileProperty in Options.Format.FileProperties)
+            foreach (FileProperty fileProperty in Options.Format.FileProperties)
+            {
+                if (fileProperty == FileProperty.Size)
                 {
-                    if (fileProperty == FileProperty.Size)
-                    {
-                        sb.Append("  ");
+                    sb.Append("  ");
 
-                        long size = (fileMatch.IsDirectory)
-                            ? context.DirectorySizeMap![fileMatch.Path]
-                            : new FileInfo(fileMatch.Path).Length;
+                    long size = (fileMatch.IsDirectory)
+                        ? (context.DirectorySizeMap?[fileMatch.Path] ?? FileSystemHelpers.GetDirectorySize(fileMatch.Path))
+                        : new FileInfo(fileMatch.Path).Length;
 
-                        string sizeText = size.ToString("n0");
+                    string sizeText = size.ToString("n0");
 
+                    if (columnWidths != null)
                         sb.Append(' ', columnWidths.SizeWidth - sizeText.Length);
-                        sb.Append(sizeText);
 
-                        context.Telemetry.FilesTotalSize += size;
-                    }
-                    else if (fileProperty == FileProperty.CreationTime)
-                    {
-                        sb.Append("  ");
-                        sb.Append(File.GetCreationTime(fileMatch.Path).ToString("yyyy-MM-dd HH:mm:ss"));
-                    }
-                    else if (fileProperty == FileProperty.ModifiedTime)
-                    {
-                        sb.Append("  ");
-                        sb.Append(File.GetLastWriteTime(fileMatch.Path).ToString("yyyy-MM-dd HH:mm:ss"));
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"Unknown enum value '{fileProperty}'.");
-                    }
+                    sb.Append(sizeText);
+
+                    context.Telemetry.FilesTotalSize += size;
                 }
-
-                Write(StringBuilderCache.GetStringAndFree(sb), Verbosity.Minimal);
+                else if (fileProperty == FileProperty.CreationTime)
+                {
+                    sb.Append("  ");
+                    sb.Append(File.GetCreationTime(fileMatch.Path).ToString("yyyy-MM-dd HH:mm:ss"));
+                }
+                else if (fileProperty == FileProperty.ModifiedTime)
+                {
+                    sb.Append("  ");
+                    sb.Append(File.GetLastWriteTime(fileMatch.Path).ToString("yyyy-MM-dd HH:mm:ss"));
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Unknown enum value '{fileProperty}'.");
+                }
             }
+
+            Write(StringBuilderCache.GetStringAndFree(sb), Verbosity.Minimal);
         }
     }
 }

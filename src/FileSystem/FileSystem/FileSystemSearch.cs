@@ -46,6 +46,8 @@ namespace Orang.FileSystem
 
         internal bool MatchPartOnly { get; set; }
 
+        internal bool CanRecurseMatch { get; set; } = true;
+
         private FileNamePart Part => Filter.Part;
 
         private Filter? Name => Filter.Name;
@@ -183,7 +185,12 @@ namespace Orang.FileSystem
                                     FileMatch? match = MatchDirectory(currentDirectory);
 
                                     if (match != null)
+                                    {
                                         yield return match;
+
+                                        if (!CanRecurseMatch)
+                                            currentDirectory = null;
+                                    }
                                 }
                             }
 
@@ -510,7 +517,18 @@ namespace Orang.FileSystem
                 MaxMatchingFiles = 0,
             };
 
-            command.Execute(directoryPath);
+            bool canRecurseMatch = CanRecurseMatch;
+
+            try
+            {
+                CanRecurseMatch = false;
+
+                command.Execute(directoryPath);
+            }
+            finally
+            {
+                CanRecurseMatch = canRecurseMatch;
+            }
         }
 
         public void Rename(
@@ -549,6 +567,9 @@ namespace Orang.FileSystem
                 MaxMatchingFiles = 0,
             };
 
+            bool disallowEnumeration = DisallowEnumeration;
+            bool matchPartOnly = MatchPartOnly;
+
             try
             {
                 DisallowEnumeration = !dryRun;
@@ -558,8 +579,8 @@ namespace Orang.FileSystem
             }
             finally
             {
-                DisallowEnumeration = false;
-                MatchPartOnly = false;
+                DisallowEnumeration = disallowEnumeration;
+                MatchPartOnly = matchPartOnly;
             }
         }
 

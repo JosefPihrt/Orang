@@ -7,7 +7,7 @@ set _msbuildPath=%_visualStudioPath%\MSBuild\Current\Bin
 
 "%_msbuildPath%\msbuild" "%_roslynatorPath%\CommandLine.sln" /t:Build /p:Configuration=Release /v:m /m
 
-"%_roslynatorPath%\CommandLine\bin\Release\net472\roslynator" fix "..\src\Orang.sln" ^
+"%_roslynatorPath%\CommandLine\bin\Release\net48\roslynator" fix "..\src\Orang.sln" ^
  --msbuild-path "%_msbuildPath%" ^
  --analyzer-assemblies ^
   "%_roslynatorPath%\Analyzers.CodeFixes\bin\Release\netstandard2.0\Roslynator.CSharp.Analyzers.dll" ^

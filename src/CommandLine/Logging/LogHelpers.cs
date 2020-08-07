@@ -64,7 +64,24 @@ namespace Orang.CommandLine
             }
 
             if (telemetry.FilesTotalSize > 0)
-                WriteCount("  Files total size", telemetry.FilesTotalSize, verbosity: verbosity);
+            {
+                if (searchTarget == SearchTarget.Files)
+                {
+                    WriteCount("  Files total size", telemetry.FilesTotalSize, verbosity: verbosity);
+                }
+                else if (searchTarget == SearchTarget.Directories)
+                {
+                    WriteCount("  Directories total size", telemetry.FilesTotalSize, verbosity: verbosity);
+                }
+                else if (searchTarget == SearchTarget.All)
+                {
+                    WriteCount("  Total size", telemetry.FilesTotalSize, verbosity: verbosity);
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
 
             if (telemetry.Elapsed != default)
                 Write($"  Elapsed time: {telemetry.Elapsed:mm\\:ss\\.ff}", verbosity);

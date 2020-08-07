@@ -24,6 +24,8 @@ namespace Orang.CommandLine
             protected set { Options.ConflictResolution = value; }
         }
 
+        public override bool CanUseResults => false;
+
         protected override FileSystemSearch CreateSearch()
         {
             FileSystemSearch search = base.CreateSearch();
