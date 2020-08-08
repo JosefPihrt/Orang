@@ -142,7 +142,8 @@ namespace Orang.CommandLine
                                 _directoryData.Load(Path.GetDirectoryName(destinationPath)!);
                             }
 
-                            renamePath = _directoryData.FindRenamedFile(sourcePath);
+                            if (_directoryData.Files.Count > 0)
+                                renamePath = _directoryData.FindRenamedFile(sourcePath);
                         }
                     }
 
@@ -533,7 +534,7 @@ namespace Orang.CommandLine
         }
 
         [DebuggerDisplay("{DebuggerDisplay,nq}")]
-        private class DirectoryData
+        private sealed class DirectoryData
         {
             public string? Path { get; private set; }
 
@@ -547,7 +548,9 @@ namespace Orang.CommandLine
                 Path = path;
 
                 Files.Clear();
-                Files.AddRange(Directory.EnumerateFiles(path).Select(f => new FileData(f, File.GetLastWriteTimeUtc(f))));
+
+                if (Directory.Exists(path))
+                    Files.AddRange(Directory.EnumerateFiles(path).Select(f => new FileData(f, File.GetLastWriteTimeUtc(f))));
             }
 
             public string? FindRenamedFile(string filePath)
