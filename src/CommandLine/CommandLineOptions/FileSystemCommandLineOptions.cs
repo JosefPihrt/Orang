@@ -27,7 +27,7 @@ namespace Orang.CommandLine
         MetaValue = MetaValues.Attributes)]
         public IEnumerable<string> Attributes { get; set; } = null!;
 
-        [Option(longName: OptionNames.AttributesToSkip,
+        [Option(shortName: OptionShortNames.AttributesToSkip, longName: OptionNames.AttributesToSkip,
             HelpText = "File attributes that should be skipped.",
             MetaValue = MetaValues.Attributes)]
         public IEnumerable<string> AttributesToSkip { get; set; } = null!;

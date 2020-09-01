@@ -18,14 +18,20 @@ namespace Orang.CommandLine
 
         public static SearchResultComparer Match { get; } = new SearchResultMatchComparer();
 
-        public override abstract int Compare(SearchResult x, SearchResult y);
+        public override abstract int Compare(SearchResult? x, SearchResult? y);
 
         private class SearchResultNameComparer : SearchResultComparer
         {
-            public override int Compare(SearchResult x, SearchResult y)
+            public override int Compare(SearchResult? x, SearchResult? y)
             {
                 if (object.ReferenceEquals(x, y))
                     return 0;
+
+                if (x == null)
+                    return -1;
+
+                if (y == null)
+                    return 1;
 
                 string path1 = x.Path;
                 string path2 = y.Path;
@@ -93,10 +99,16 @@ namespace Orang.CommandLine
 
         private class SearchResultCreationTimeComparer : SearchResultComparer
         {
-            public override int Compare(SearchResult x, SearchResult y)
+            public override int Compare(SearchResult? x, SearchResult? y)
             {
                 if (object.ReferenceEquals(x, y))
                     return 0;
+
+                if (x == null)
+                    return -1;
+
+                if (y == null)
+                    return 1;
 
                 return x.FileSystemInfo.CreationTime.CompareTo(y.FileSystemInfo.CreationTime);
             }
@@ -104,10 +116,16 @@ namespace Orang.CommandLine
 
         private class SearchResultModifiedTimeComparer : SearchResultComparer
         {
-            public override int Compare(SearchResult x, SearchResult y)
+            public override int Compare(SearchResult? x, SearchResult? y)
             {
                 if (object.ReferenceEquals(x, y))
                     return 0;
+
+                if (x == null)
+                    return -1;
+
+                if (y == null)
+                    return 1;
 
                 return x.FileSystemInfo.LastWriteTime.CompareTo(y.FileSystemInfo.LastWriteTime);
             }
@@ -115,10 +133,16 @@ namespace Orang.CommandLine
 
         private class SearchResultSizeComparer : SearchResultComparer
         {
-            public override int Compare(SearchResult x, SearchResult y)
+            public override int Compare(SearchResult? x, SearchResult? y)
             {
                 if (object.ReferenceEquals(x, y))
                     return 0;
+
+                if (x == null)
+                    return -1;
+
+                if (y == null)
+                    return 1;
 
                 int diff = x.GetSize().CompareTo(y.GetSize());
 
@@ -131,8 +155,17 @@ namespace Orang.CommandLine
 
         private class SearchResultMatchComparer : SearchResultComparer
         {
-            public override int Compare(SearchResult x, SearchResult y)
+            public override int Compare(SearchResult? x, SearchResult? y)
             {
+                if (object.ReferenceEquals(x, y))
+                    return 0;
+
+                if (x == null)
+                    return -1;
+
+                if (y == null)
+                    return 1;
+
                 return string.Compare(x.FileMatch.NameMatch!.Value, y.FileMatch.NameMatch!.Value, StringComparison.CurrentCulture);
             }
         }

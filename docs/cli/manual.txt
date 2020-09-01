@@ -1,4 +1,4 @@
-Orang Command-Line Tool version 0.1.0.2
+Orang Command-Line Tool version 0.1.0.3
 Usage: orang [command] [arguments]
 
 Commands:
@@ -28,7 +28,7 @@ Arguments:
 Options:
   [    --ask]                <ASK_MODE>            Ask for permission after each file or value.
   [-a, --attributes]         <ATTRIBUTES>          File attributes that are required.
-  [    --attributes-to-skip] <ATTRIBUTES>          File attributes that should be skipped.
+  [-b, --attributes-to-skip] <ATTRIBUTES>          File attributes that should be skipped.
   [    --compare]            <COMPARE_OPTIONS>     File properties to be compared.
   [    --conflict]           <CONFLICT_RESOLUTION> Defines how to resolve conflict when a file/directory already exists.
   [-c, --content]            <REGEX>               Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
@@ -65,7 +65,7 @@ Arguments:
 Options:
   [    --ask]                                   Ask for a permission to delete file or directory.
   [-a, --attributes]         <ATTRIBUTES>       File attributes that are required.
-  [    --attributes-to-skip] <ATTRIBUTES>       File attributes that should be skipped.
+  [-b, --attributes-to-skip] <ATTRIBUTES>       File attributes that should be skipped.
   [-c, --content]            <REGEX>            Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [    --content-only]                          Delete content of a file or directory but not the file or directory itself.
   [-y, --display]            <DISPLAY_OPTIONS>  Display of the results.
@@ -116,7 +116,7 @@ Arguments:
 Options:
   [    --ask]                <ASK_MODE>         Ask for permission after each file or value.
   [-a, --attributes]         <ATTRIBUTES>       File attributes that are required.
-  [    --attributes-to-skip] <ATTRIBUTES>       File attributes that should be skipped.
+  [-b, --attributes-to-skip] <ATTRIBUTES>       File attributes that should be skipped.
   [-c, --content]            <REGEX>            Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [-y, --display]            <DISPLAY_OPTIONS>  Display of the results.
   [    --encoding]           <ENCODING>         Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.
@@ -207,7 +207,7 @@ Arguments:
 Options:
   [    --ask]                <ASK_MODE>            Ask for permission after each file or value.
   [-a, --attributes]         <ATTRIBUTES>          File attributes that are required.
-  [    --attributes-to-skip] <ATTRIBUTES>          File attributes that should be skipped.
+  [-b, --attributes-to-skip] <ATTRIBUTES>          File attributes that should be skipped.
   [    --compare]            <COMPARE_OPTIONS>     File properties to be compared.
   [    --conflict]           <CONFLICT_RESOLUTION> Defines how to resolve conflict when a file/directory already exists.
   [-c, --content]            <REGEX>               Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
@@ -244,7 +244,7 @@ Arguments:
 Options:
   [    --ask]                                      Ask for a permission to rename file or directory.
   [-a, --attributes]         <ATTRIBUTES>          File attributes that are required.
-  [    --attributes-to-skip] <ATTRIBUTES>          File attributes that should be skipped.
+  [-b, --attributes-to-skip] <ATTRIBUTES>          File attributes that should be skipped.
   [    --conflict]           <CONFLICT_RESOLUTION> Defines how to resolve conflict when a file/directory already exists.
   [-c, --content]            <REGEX>               Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [-y, --display]            <DISPLAY_OPTIONS>     Display of the results.
@@ -281,7 +281,7 @@ Arguments:
 Options:
   [    --ask]                <ASK_MODE>         Ask for permission after each file or value.
   [-a, --attributes]         <ATTRIBUTES>       File attributes that are required.
-  [    --attributes-to-skip] <ATTRIBUTES>       File attributes that should be skipped.
+  [-b, --attributes-to-skip] <ATTRIBUTES>       File attributes that should be skipped.
    -c, --content             <REGEX>            Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [-y, --display]            <DISPLAY_OPTIONS>  Display of the results.
   [-d, --dry-run]                               Display which files should be updated but do not actually update any file.
@@ -372,8 +372,8 @@ Values:
 <DISPLAY_OPTIONS>
   content=<CONTENT_DISPLAY>  c
   context=<NUM>              t  A number of lines to display before and after matching line.
-  context-before=<NUM>       -  A number of lines to display before matching line.
-  context-after=<NUM>        -  A number of lines to display after matching line.
+  context-before=<NUM>       tb A number of lines to display before matching line.
+  context-after=<NUM>        ta A number of lines to display after matching line.
   count                      c  Include number of matches in file.
   creation-time              ct Include file creation time.
   indent=<INDENT>            -  Indentation for a list of results. Default indentation are 2 spaces.

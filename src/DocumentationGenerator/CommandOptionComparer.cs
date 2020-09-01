@@ -9,7 +9,7 @@ namespace Orang.Documentation
     {
         public static CommandOptionComparer Instance { get; } = new CommandOptionComparer();
 
-        public int Compare(CommandOption x, CommandOption y)
+        public int Compare(CommandOption? x, CommandOption? y)
         {
             if (object.ReferenceEquals(x, y))
                 return 0;

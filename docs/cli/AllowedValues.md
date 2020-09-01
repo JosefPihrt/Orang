@@ -88,8 +88,8 @@
 | ------------------------------- | ---------------------------------------------------------------------- |
 | c\[ontent\]=\<CONTENT\_DISPLAY> |
 | t \[context\]=\<NUM>            | A number of lines to display before and after matching line\.          |
-| context\-before=\<NUM>          | A number of lines to display before matching line\.                    |
-| context\-after=\<NUM>           | A number of lines to display after matching line\.                     |
+| tb \[context\-before\]=\<NUM>   | A number of lines to display before matching line\.                    |
+| ta \[context\-after\]=\<NUM>    | A number of lines to display after matching line\.                     |
 | c\[ount\]                       | Include number of matches in file\.                                    |
 | c\[reation\-\]t\[ime\]          | Include file creation time\.                                           |
 | indent=\<INDENT>                | Indentation for a list of results\. Default indentation are 2 spaces\. |

@@ -85,8 +85,8 @@ namespace Orang.CommandLine
         public static readonly SimpleOptionValue TrimStart = SimpleOptionValue.Create(ReplaceFlags.TrimStart, shortValue: "ts", description: "Trim leading white-space.");
 
         public static readonly KeyValuePairOptionValue Display_Context = KeyValuePairOptionValue.Create("context", "<NUM>", shortKey: "t", description: "A number of lines to display before and after matching line.");
-        public static readonly KeyValuePairOptionValue Display_ContextBefore = KeyValuePairOptionValue.Create("context-before", "<NUM>", shortKey: "", description: "A number of lines to display before matching line.");
-        public static readonly KeyValuePairOptionValue Display_ContextAfter = KeyValuePairOptionValue.Create("context-after", "<NUM>", shortKey: "", description: "A number of lines to display after matching line.");
+        public static readonly KeyValuePairOptionValue Display_ContextBefore = KeyValuePairOptionValue.Create("context-before", "<NUM>", shortKey: "tb", description: "A number of lines to display before matching line.");
+        public static readonly KeyValuePairOptionValue Display_ContextAfter = KeyValuePairOptionValue.Create("context-after", "<NUM>", shortKey: "ta", description: "A number of lines to display after matching line.");
         public static readonly KeyValuePairOptionValue Display_Content = KeyValuePairOptionValue.Create("content", MetaValues.ContentDisplay, shortKey: "c");
         public static readonly KeyValuePairOptionValue Display_Indent = KeyValuePairOptionValue.Create("indent", "<INDENT>", shortKey: "", description: "Indentation for a list of results. Default indentation are 2 spaces.");
         public static readonly KeyValuePairOptionValue Display_Path = KeyValuePairOptionValue.Create("path", MetaValues.PathDisplay, shortKey: "p");

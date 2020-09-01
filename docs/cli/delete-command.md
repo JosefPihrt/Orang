@@ -8,7 +8,7 @@ Deletes files and directories\.
 orang delete [<PATH>]
 [   --ask]
 [-a|--attributes]         <ATTRIBUTES>
-[   --attributes-to-skip] <ATTRIBUTES>
+[-b|--attributes-to-skip] <ATTRIBUTES>
 [-c|--content]            <REGEX>
 [   --content-only]
 [-y|--display]            <DISPLAY_OPTIONS>
@@ -46,7 +46,7 @@ Ask for a permission to delete file or directory\.
 
 File attributes that are required\. Allowed values are archive, compressed, d\[irectory\], e\[mpty\], encrypted, f\[ile\], h\[idden\], normal, offline, r\[ead\-only\], r\[eparse\]\-p\[oint\], s\[ystem\] and temporary\.
 
-**`[--attributes-to-skip] <ATTRIBUTES>`**
+**`[-b|--attributes-to-skip] <ATTRIBUTES>`**
 
 File attributes that should be skipped\. Allowed values are archive, compressed, e\[mpty\], encrypted, h\[idden\], normal, offline, r\[ead\-only\], r\[eparse\]\-p\[oint\], s\[ystem\] and temporary\.
 

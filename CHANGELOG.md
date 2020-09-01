@@ -1,3 +1,9 @@
+## 0.1.0 (2020-09-01)
+
+* Add shortcut 'b' for option '--attributes-to-skip'
+* Add shortcut 'tb' for option 'context-before'
+* Add shortcut 'ta' for option 'context-after'
+
 ## 0.1.0-rc2 (2020-06-09)
 
 * Change target framework to 'netcoreapp3.0'
