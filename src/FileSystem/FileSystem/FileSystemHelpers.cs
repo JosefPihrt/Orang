@@ -120,6 +120,61 @@ namespace Orang.FileSystem
             return true;
         }
 
+        internal static FileCompareOptions CompareFiles(string path1, string path2, FileCompareOptions options)
+        {
+            if ((options & FileCompareOptions.ModifiedTime) != 0
+                && File.GetLastWriteTimeUtc(path1) != File.GetLastWriteTimeUtc(path2))
+            {
+                return FileCompareOptions.ModifiedTime;
+            }
+
+            if ((options & FileCompareOptions.Attributes) != 0
+                && File.GetAttributes(path1) != File.GetAttributes(path2))
+            {
+                if ((options & (FileCompareOptions.Size | FileCompareOptions.Content)) != 0)
+                {
+                    using (var fs1 = new FileStream(path1, FileMode.Open, FileAccess.Read))
+                    using (var fs2 = new FileStream(path2, FileMode.Open, FileAccess.Read))
+                    {
+                        if ((options & FileCompareOptions.Size) != 0
+                            && fs1.Length != fs2.Length)
+                        {
+                            return FileCompareOptions.Size;
+                        }
+
+                        if ((options & FileCompareOptions.Content) != 0
+                            && !StreamComparer.Default.ByteEquals(fs1, fs2))
+                        {
+                            return FileCompareOptions.Content;
+                        }
+                    }
+                }
+
+                return FileCompareOptions.Attributes;
+            }
+
+            if ((options & (FileCompareOptions.Size | FileCompareOptions.Content)) != 0)
+            {
+                using (var fs1 = new FileStream(path1, FileMode.Open, FileAccess.Read))
+                using (var fs2 = new FileStream(path2, FileMode.Open, FileAccess.Read))
+                {
+                    if ((options & FileCompareOptions.Size) != 0
+                        && fs1.Length != fs2.Length)
+                    {
+                        return FileCompareOptions.Size;
+                    }
+
+                    if ((options & FileCompareOptions.Content) != 0
+                        && !StreamComparer.Default.ByteEquals(fs1, fs2))
+                    {
+                        return FileCompareOptions.Content;
+                    }
+                }
+            }
+
+            return FileCompareOptions.None;
+        }
+
         internal static bool IsSubdirectory(string basePath, string path)
         {
             return path.Length > basePath.Length

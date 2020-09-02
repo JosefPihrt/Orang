@@ -84,6 +84,7 @@ namespace Orang.CommandLine
                 bool fileExists = File.Exists(destinationPath);
                 bool directoryExists = !fileExists && Directory.Exists(destinationPath);
                 bool? preferLeft = null;
+                FileCompareOptions? diffProperty = null;
 
                 if (isDirectory)
                 {
@@ -124,13 +125,15 @@ namespace Orang.CommandLine
                     {
                         if (fileExists)
                         {
-                            if (Options.CompareOptions != FileCompareOptions.None
-                                && FileSystemHelpers.FileEquals(sourcePath, destinationPath, Options.CompareOptions))
+                            if (Options.CompareOptions != FileCompareOptions.None)
                             {
-                                return;
+                                diffProperty = FileSystemHelpers.CompareFiles(sourcePath, destinationPath, Options.CompareOptions);
+
+                                if (diffProperty == FileCompareOptions.None)
+                                    return;
                             }
                         }
-                        else
+                        else if ((Options.CompareOptions & FileCompareOptions.Content) != 0)
                         {
                             if (_directoryData == null)
                             {
@@ -204,6 +207,9 @@ namespace Orang.CommandLine
                                     throw new InvalidOperationException($"Unknown enum value '{dialogResult}'.");
                                 }
                         }
+
+                        if (_isRightToLeft)
+                            preferLeft = !preferLeft;
                     }
                     else if (ConflictResolution == SyncConflictResolution.LeftWins)
                     {
@@ -219,10 +225,7 @@ namespace Orang.CommandLine
                     }
                 }
 
-                preferLeft ??= true;
-
-                if (_isRightToLeft)
-                    preferLeft = !preferLeft;
+                preferLeft ??= !_isRightToLeft;
 
                 if (isDirectory)
                 {
@@ -234,7 +237,7 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    ExecuteFileOperations(context.Telemetry, sourcePath, destinationPath, fileExists, directoryExists, preferLeft.Value, indent);
+                    ExecuteFileOperations(context.Telemetry, sourcePath, destinationPath, fileExists, directoryExists, preferLeft.Value, diffProperty, indent);
                 }
 
                 string GetPrefix(bool invert)
@@ -329,15 +332,25 @@ namespace Orang.CommandLine
             bool fileExists,
             bool directoryExists,
             bool preferLeft,
+            FileCompareOptions? diffProperty,
             string indent)
         {
             if (preferLeft)
             {
                 if (fileExists)
                 {
-                    // copy file (and overwrite existing file)
                     WritePath(destinationPath, OperationKind.Update, indent);
-                    DeleteFile(destinationPath);
+
+                    if (diffProperty == FileCompareOptions.Attributes)
+                    {
+                        // update attributes
+                        File.SetAttributes(destinationPath, File.GetAttributes(sourcePath));
+                    }
+                    else
+                    {
+                        // copy file (and overwrite existing file)
+                        DeleteFile(destinationPath);
+                    }
                 }
                 else if (directoryExists)
                 {
@@ -354,7 +367,11 @@ namespace Orang.CommandLine
                 if (!fileExists)
                     WritePath(destinationPath, OperationKind.Add, indent);
 
-                CopyFile(sourcePath, destinationPath);
+                if (!fileExists
+                    || diffProperty != FileCompareOptions.Attributes)
+                {
+                    CopyFile(sourcePath, destinationPath);
+                }
 
                 if (fileExists)
                 {
@@ -368,15 +385,29 @@ namespace Orang.CommandLine
             else
             {
                 WritePath(sourcePath, (fileExists) ? OperationKind.Update : OperationKind.Delete, indent);
-                DeleteFile(sourcePath);
 
-                if (!fileExists)
-                    telemetry.DeletedCount++;
+                if (!fileExists
+                    || diffProperty != FileCompareOptions.Attributes)
+                {
+                    DeleteFile(sourcePath);
+
+                    if (!fileExists)
+                        telemetry.DeletedCount++;
+                }
 
                 if (fileExists)
                 {
-                    // copy file (and overwrite existing file)
-                    CopyFile(destinationPath, sourcePath);
+                    if (diffProperty == FileCompareOptions.Attributes)
+                    {
+                        // update attributes
+                        File.SetAttributes(sourcePath, File.GetAttributes(destinationPath));
+                    }
+                    else
+                    {
+                        // copy file (and overwrite existing file)
+                        CopyFile(destinationPath, sourcePath);
+                    }
+
                     telemetry.UpdatedCount++;
                 }
                 else if (directoryExists)

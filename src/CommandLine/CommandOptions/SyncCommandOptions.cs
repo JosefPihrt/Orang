@@ -12,10 +12,9 @@ namespace Orang.CommandLine
 
         new public SyncConflictResolution ConflictResolution { get; internal set; }
 
-        //TODO: 
+        //TODO: SyncCommandOptions.WriteDiagnosticCore
         protected override void WriteDiagnosticCore()
         {
-            throw new NotImplementedException();
         }
     }
 }
