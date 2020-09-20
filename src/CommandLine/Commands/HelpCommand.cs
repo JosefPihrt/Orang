@@ -65,7 +65,7 @@ namespace Orang.CommandLine
         {
             var writer = new ConsoleHelpWriter(new HelpWriterOptions(filter: filter));
 
-            command = command.WithOptions(command.Options.Sort(CompareOptions));
+            command = command.WithOptions(command.Options.Sort((f, f2) => CompareOptions(f, f2)));
 
             CommandHelp commandHelp = CommandHelp.Create(command, OptionValueProviders.Providers, filter: filter);
 

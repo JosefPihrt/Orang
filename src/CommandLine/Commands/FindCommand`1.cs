@@ -23,7 +23,7 @@ namespace Orang.CommandLine
         {
         }
 
-        private OutputSymbols Symbols => _symbols ?? (_symbols = OutputSymbols.Create(Options.HighlightOptions));
+        private OutputSymbols Symbols => _symbols ??= OutputSymbols.Create(Options.HighlightOptions);
 
         public override bool CanEndProgress
         {

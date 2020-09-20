@@ -146,7 +146,7 @@ namespace Orang.CommandLine
                     }
                 }
 
-                (options ?? (options = new List<string>())).Add(option);
+                (options ??= new List<string>()).Add(option);
             }
 
             if (!TryParseRegexOptions(options, optionName, out RegexOptions regexOptions, out PatternOptions patternOptions, includedPatternOptions, provider))

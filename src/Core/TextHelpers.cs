@@ -99,26 +99,26 @@ namespace Orang
                     char ch = value[i];
                     int j = i;
                     Func<char, bool> predicate;
-                    bool fCaps = false;
-                    bool fAppend = true;
+                    var fCaps = false;
+                    var fAppend = true;
                     if (char.IsLetter(ch))
                     {
                         if (char.IsUpper(ch) && (i + 1) < len && char.IsUpper(value[i + 1]))
                         {
-                            predicate = char.IsUpper;
+                            predicate = f => char.IsUpper(f);
                             fCaps = true;
                             j++;
                         }
                         else
                         {
-                            predicate = char.IsLower;
+                            predicate = f => char.IsLower(f);
                         }
 
                         j++;
                     }
                     else if (char.IsDigit(ch))
                     {
-                        predicate = char.IsDigit;
+                        predicate = f => char.IsDigit(f);
                         j++;
                     }
                     else

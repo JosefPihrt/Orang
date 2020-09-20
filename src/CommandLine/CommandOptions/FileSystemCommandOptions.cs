@@ -68,7 +68,7 @@ namespace Orang.CommandLine
 
         public string Indent => Format.Indent;
 
-        internal string DoubleIndent => _doubleIndent ?? (_doubleIndent = Indent + Indent);
+        internal string DoubleIndent => _doubleIndent ??= Indent + Indent;
 
         internal bool IncludeBaseDirectory => Format.IncludeBaseDirectory;
 

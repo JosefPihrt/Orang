@@ -90,7 +90,7 @@ namespace Orang.CommandLine
                 else
                 {
                     var valueWriter = new OutputValueWriter(indent, HighlightOptions);
-                    bool addSeparator = false;
+                    var addSeparator = false;
                     int captureCount = 0;
 
                     for (int i = 0; i < matchItems.Count; i++)
@@ -98,14 +98,14 @@ namespace Orang.CommandLine
                         cancellationToken.ThrowIfCancellationRequested();
 
                         MatchItem matchItem = matchItems[i];
-                        bool omitMatchInfo = false;
+                        var omitMatchInfo = false;
 
                         foreach (GroupItem groupItem in matchItem.GroupItems
                             .Where(f => (groupNumber >= 0) ? groupNumber == f.Number : true)
                             .OrderBy(f => f.Index)
                             .ThenBy(f => f.Number))
                         {
-                            bool omitGroupInfo = false;
+                            var omitGroupInfo = false;
 
                             for (int j = 0; j < groupItem.CaptureItems.Count; j++)
                             {

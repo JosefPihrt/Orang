@@ -23,9 +23,9 @@ namespace Orang.CommandLine
         private FileSystemSearch? _search;
         private ProgressReporter? _progressReporter;
 
-        protected FileSystemSearch Search => _search ?? (_search = CreateSearch());
+        protected FileSystemSearch Search => _search ??= CreateSearch();
 
-        private ProgressReporter? ProgressReporter => _progressReporter ?? (_progressReporter = CreateProgressReporter());
+        private ProgressReporter? ProgressReporter => _progressReporter ??= CreateProgressReporter();
 
         public Filter? NameFilter => Options.NameFilter;
 
@@ -143,7 +143,7 @@ namespace Orang.CommandLine
 
         protected virtual void ExecuteCore(SearchContext context)
         {
-            bool canceled = false;
+            var canceled = false;
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             foreach (PathInfo pathInfo in Options.Paths)

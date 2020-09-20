@@ -5,15 +5,15 @@ set _visualStudioPath=C:\Program Files\Microsoft Visual Studio\2019\Community
 set _microsoftAnalyzersPath=%_visualStudioPath%\Common7\IDE\CommonExtensions\Microsoft\ManagedLanguages\VBCSharp\LanguageServices
 set _msbuildPath=%_visualStudioPath%\MSBuild\Current\Bin
 
-"%_msbuildPath%\msbuild" "%_roslynatorPath%\CommandLine.sln" /t:Build /p:Configuration=Release /v:m /m
+"%_msbuildPath%\msbuild" "%_roslynatorPath%\CommandLine.sln" /t:Build /p:Configuration=Debug /v:m /m
 
-"%_roslynatorPath%\CommandLine\bin\Release\net48\roslynator" fix "..\src\Orang.sln" ^
+"%_roslynatorPath%\CommandLine\bin\Debug\net48\roslynator" fix "..\src\Orang.sln" ^
  --msbuild-path "%_msbuildPath%" ^
  --analyzer-assemblies ^
-  "%_roslynatorPath%\Analyzers.CodeFixes\bin\Release\netstandard2.0\Roslynator.CSharp.Analyzers.dll" ^
-  "%_roslynatorPath%\Analyzers.CodeFixes\bin\Release\netstandard2.0\Roslynator.CSharp.Analyzers.CodeFixes.dll" ^
-  "%_roslynatorPath%\Formatting.Analyzers.CodeFixes\bin\Release\netstandard2.0\Roslynator.Formatting.Analyzers.dll" ^
-  "%_roslynatorPath%\Formatting.Analyzers.CodeFixes\bin\Release\netstandard2.0\Roslynator.Formatting.Analyzers.CodeFixes.dll" ^
+  "%_roslynatorPath%\Analyzers.CodeFixes\bin\Debug\netstandard2.0\Roslynator.CSharp.Analyzers.dll" ^
+  "%_roslynatorPath%\Analyzers.CodeFixes\bin\Debug\netstandard2.0\Roslynator.CSharp.Analyzers.CodeFixes.dll" ^
+  "%_roslynatorPath%\Formatting.Analyzers.CodeFixes\bin\Debug\netstandard2.0\Roslynator.Formatting.Analyzers.dll" ^
+  "%_roslynatorPath%\Formatting.Analyzers.CodeFixes\bin\Debug\netstandard2.0\Roslynator.Formatting.Analyzers.CodeFixes.dll" ^
   "%_microsoftAnalyzersPath%\Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" ^
   "%_microsoftAnalyzersPath%\Microsoft.CodeAnalysis.CSharp.Features.dll" ^
   "%_microsoftAnalyzersPath%\Microsoft.CodeAnalysis.EditorFeatures.dll" ^

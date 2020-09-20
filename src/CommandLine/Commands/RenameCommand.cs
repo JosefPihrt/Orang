@@ -115,7 +115,7 @@ namespace Orang.CommandLine
                     return;
             }
 
-            bool renamed = false;
+            var renamed = false;
 
             try
             {

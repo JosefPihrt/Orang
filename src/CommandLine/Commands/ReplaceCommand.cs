@@ -24,7 +24,7 @@ namespace Orang.CommandLine
 
         protected override bool CanDisplaySummary => Options.Input == null;
 
-        private OutputSymbols Symbols => _symbols ?? (_symbols = OutputSymbols.Create(Options.HighlightOptions));
+        private OutputSymbols Symbols => _symbols ??= OutputSymbols.Create(Options.HighlightOptions);
 
         protected override void ExecuteCore(SearchContext context)
         {

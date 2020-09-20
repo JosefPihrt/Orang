@@ -102,7 +102,7 @@ namespace Orang.CommandLine
         {
             bool fileExists = File.Exists(destinationPath);
             bool directoryExists = !fileExists && Directory.Exists(destinationPath);
-            bool ask = false;
+            var ask = false;
 
             if (isDirectory)
             {

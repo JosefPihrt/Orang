@@ -123,7 +123,7 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    (options ?? (options = new List<string>())).Add(value);
+                    (options ??= new List<string>()).Add(value);
                 }
             }
 
@@ -186,7 +186,7 @@ namespace Orang.CommandLine
 
             void AddDescriptor(SortProperty p, SortDirection d)
             {
-                (descriptors ?? (descriptors = new List<SortDescriptor>())).Add(new SortDescriptor(p, d));
+                (descriptors ??= new List<SortDescriptor>()).Add(new SortDescriptor(p, d));
             }
         }
 
@@ -224,7 +224,7 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    (options ?? (options = new List<string>())).Add(value);
+                    (options ??= new List<string>()).Add(value);
                 }
             }
 
@@ -437,15 +437,15 @@ namespace Orang.CommandLine
                 }
                 else if (OptionValues.Display_CreationTime.IsValueOrShortValue(value))
                 {
-                    (builder ?? (builder = ImmutableArray.CreateBuilder<FileProperty>())).Add(FileProperty.CreationTime);
+                    (builder ??= ImmutableArray.CreateBuilder<FileProperty>()).Add(FileProperty.CreationTime);
                 }
                 else if (OptionValues.Display_ModifiedTime.IsValueOrShortValue(value))
                 {
-                    (builder ?? (builder = ImmutableArray.CreateBuilder<FileProperty>())).Add(FileProperty.ModifiedTime);
+                    (builder ??= ImmutableArray.CreateBuilder<FileProperty>()).Add(FileProperty.ModifiedTime);
                 }
                 else if (OptionValues.Display_Size.IsValueOrShortValue(value))
                 {
-                    (builder ?? (builder = ImmutableArray.CreateBuilder<FileProperty>())).Add(FileProperty.Size);
+                    (builder ??= ImmutableArray.CreateBuilder<FileProperty>()).Add(FileProperty.Size);
                 }
                 else if (OptionValues.Display_LineNumber.IsValueOrShortValue(value))
                 {

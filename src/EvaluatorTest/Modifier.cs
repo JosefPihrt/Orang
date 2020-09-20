@@ -9,7 +9,7 @@ namespace Orang.Runtime
     {
         public static IEnumerable<string> Modify(IEnumerable<string> values)
         {
-            return values.Select(Helpers.FirstCharToUpper);
+            return values.Select(f => Helpers.FirstCharToUpper(f));
         }
     }
 }

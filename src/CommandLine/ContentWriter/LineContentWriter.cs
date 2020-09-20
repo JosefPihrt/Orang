@@ -35,9 +35,9 @@ namespace Orang.CommandLine
         {
             get
             {
-                return _valueWriter ?? (_valueWriter = (Options.IncludeLineNumber)
+                return _valueWriter ??= (Options.IncludeLineNumber)
                     ? new LineNumberValueWriter(Writer, Options.Indent, includeEndingIndent: false)
-                    : new ValueWriter(Writer, Options.Indent, includeEndingIndent: false));
+                    : new ValueWriter(Writer, Options.Indent, includeEndingIndent: false);
             }
         }
 

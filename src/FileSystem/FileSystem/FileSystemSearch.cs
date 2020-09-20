@@ -258,7 +258,7 @@ namespace Orang.FileSystem
             }
 
             FileEmptyOption emptyOption = EmptyOption;
-            bool isEmpty = false;
+            var isEmpty = false;
             FileInfo? fileInfo = null;
 
             if (Attributes != 0

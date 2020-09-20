@@ -63,7 +63,7 @@ namespace Orang.Operations
                 }
             }
 
-            bool renamed = false;
+            var renamed = false;
 
             try
             {

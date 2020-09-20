@@ -23,7 +23,7 @@ namespace Orang.CommandLine
 
         public Filter? ContentFilter => Options.ContentFilter;
 
-        private OutputSymbols Symbols => _symbols ?? (_symbols = OutputSymbols.Create(Options.HighlightOptions));
+        private OutputSymbols Symbols => _symbols ??= OutputSymbols.Create(Options.HighlightOptions);
 
         protected AskMode AskMode { get; set; }
 

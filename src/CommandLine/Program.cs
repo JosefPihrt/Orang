@@ -25,7 +25,7 @@ namespace Orang.CommandLine
             {
                 Parser parser = CreateParser(ignoreUnknownArguments: true);
 
-                bool help = false;
+                var help = false;
 
                 ParserResult<BaseCommandLineOptions> defaultResult = parser
                     .ParseArguments<BaseCommandLineOptions>(args)
@@ -62,7 +62,7 @@ namespace Orang.CommandLine
                 if (help)
                     return 0;
 
-                bool success = true;
+                var success = true;
 
                 parser = CreateParser();
 

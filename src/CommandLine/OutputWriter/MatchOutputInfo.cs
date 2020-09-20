@@ -54,11 +54,11 @@ namespace Orang
         {
             get
             {
-                return _matchSpaces ?? (_matchSpaces = new string(' ',
+                return _matchSpaces ??= new string(' ',
                         MatchWidth
                         + 1
                         + PrefixSeparator.Length
-                        + ItemSeparator.Length));
+                        + ItemSeparator.Length);
             }
         }
 
@@ -66,11 +66,11 @@ namespace Orang
         {
             get
             {
-                return _groupSpaces ?? (_groupSpaces = new string(' ',
+                return _groupSpaces ??= new string(' ',
                         GroupWidth
                         + 1
                         + PrefixSeparator.Length
-                        + ItemSeparator.Length));
+                        + ItemSeparator.Length);
             }
         }
 

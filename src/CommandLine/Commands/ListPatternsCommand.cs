@@ -136,7 +136,7 @@ namespace Orang.CommandLine
 
             WriteLine();
 
-            foreach (var (name, description) in rows)
+            foreach ((string name, string description) in rows)
                 WriteRow(name, description);
 
             WriteLine();

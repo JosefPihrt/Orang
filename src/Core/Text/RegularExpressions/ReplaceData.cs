@@ -39,7 +39,7 @@ namespace Orang.Text.RegularExpressions
             if (replacement == null)
                 replacement = "";
 
-            return Create(regex, input, Evaluate, count, cancellationToken);
+            return Create(regex, input, f => Evaluate(f), count, cancellationToken);
 
             string Evaluate(Match match)
             {

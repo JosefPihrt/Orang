@@ -243,7 +243,7 @@ namespace Orang.Text.RegularExpressions
             }
         }
 
-        private static readonly CharEscapeMode[] _escapeModes = new CharEscapeMode[] {
+        private static readonly CharEscapeMode[] _escapeModes = new[] {
             // 0 0x00
             CharEscapeMode.AsciiHexadecimal,
             // 1 0x01
@@ -758,7 +758,7 @@ namespace Orang.Text.RegularExpressions
             CharEscapeMode.None
         };
 
-        private static readonly CharEscapeMode[] _charGroupEscapeModes = new CharEscapeMode[] {
+        private static readonly CharEscapeMode[] _charGroupEscapeModes = new[] {
             // 0 0x00
             CharEscapeMode.AsciiHexadecimal,
             // 1 0x01
