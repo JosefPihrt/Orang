@@ -11,7 +11,8 @@ using static Orang.Logger;
 
 namespace Orang.CommandLine
 {
-    internal abstract class CommonFindCommand<TOptions> : FileSystemCommand<TOptions> where TOptions : CommonFindCommandOptions
+    internal abstract class CommonFindCommand<TOptions> :
+        FileSystemCommand<TOptions> where TOptions : CommonFindCommandOptions
     {
         private OutputSymbols? _symbols;
         private ContentWriterOptions? _fileWriterOptions;
@@ -184,7 +185,12 @@ namespace Orang.CommandLine
         {
             if (ContentFilter != null)
             {
-                ExecuteMatchWithContentCore(result.FileMatch, context, result.WriterOptions!, result.BaseDirectoryPath, columnWidths);
+                ExecuteMatchWithContentCore(
+                    result.FileMatch,
+                    context,
+                    result.WriterOptions!,
+                    result.BaseDirectoryPath,
+                    columnWidths);
             }
             else
             {
@@ -253,7 +259,13 @@ namespace Orang.CommandLine
 
             Debug.Assert(count >= 0, count.ToString());
 
-            MaxReason maxReason = CaptureFactory.GetCaptures(ref captures, match, groupNumber, count, predicate, context.CancellationToken);
+            MaxReason maxReason = CaptureFactory.GetCaptures(
+                ref captures,
+                match,
+                groupNumber,
+                count,
+                predicate,
+                context.CancellationToken);
 
             if ((maxReason == MaxReason.CountEqualsMax || maxReason == MaxReason.CountExceedsMax)
                 && maxTotalMatches > 0
@@ -299,7 +311,12 @@ namespace Orang.CommandLine
             return maxReason;
         }
 
-        protected override void WritePath(SearchContext context, FileMatch fileMatch, string? baseDirectoryPath, string indent, ColumnWidths? columnWidths)
+        protected override void WritePath(
+            SearchContext context,
+            FileMatch fileMatch,
+            string? baseDirectoryPath,
+            string indent,
+            ColumnWidths? columnWidths)
         {
             if (ContentFilter != null)
             {

@@ -35,7 +35,9 @@ namespace Orang.CommandLine
                             return;
 
                         string? commandName = args?.FirstOrDefault();
-                        Command? command = (commandName != null) ? CommandLoader.LoadCommand(typeof(Program).Assembly, commandName) : null;
+                        Command? command = (commandName != null)
+                            ? CommandLoader.LoadCommand(typeof(Program).Assembly, commandName)
+                            : null;
 
                         ParseVerbosityAndOutput(options);
                         WriteArgs(args);
@@ -171,8 +173,16 @@ namespace Orang.CommandLine
 
             if (options is BaseCommandLineOptions baseOptions)
             {
-                if (!TryParseOutputOptions(baseOptions.Output, OptionNames.Output, out string? filePath, out Verbosity fileVerbosity, out Encoding? encoding, out bool append))
+                if (!TryParseOutputOptions(
+                    baseOptions.Output,
+                    OptionNames.Output,
+                    out string? filePath,
+                    out Verbosity fileVerbosity,
+                    out Encoding? encoding,
+                    out bool append))
+                {
                     return false;
+                }
 
                 if (filePath != null)
                 {

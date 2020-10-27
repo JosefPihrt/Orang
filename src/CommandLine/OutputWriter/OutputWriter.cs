@@ -21,7 +21,10 @@ namespace Orang.CommandLine
 
         public bool HighlightBoundary => (HighlightOptions & HighlightOptions.Boundary) != 0;
 
-        public int WriteMatches(MatchData matchData, MatchCommandOptions options, in CancellationToken cancellationToken = default)
+        public int WriteMatches(
+            MatchData matchData,
+            MatchCommandOptions options,
+            in CancellationToken cancellationToken = default)
         {
             string input = options.Input;
 
@@ -69,7 +72,10 @@ namespace Orang.CommandLine
                             {
                                 cancellationToken.ThrowIfCancellationRequested();
 
-                                valueWriter.WriteMatch(en.Current, symbols, (HighlightOptions & HighlightOptions.Match) != 0);
+                                valueWriter.WriteMatch(
+                                    en.Current,
+                                    symbols,
+                                    (HighlightOptions & HighlightOptions.Match) != 0);
 
                                 count++;
 
@@ -172,7 +178,10 @@ namespace Orang.CommandLine
             }
         }
 
-        public int WriteSplits(SplitData splitData, SplitCommandOptions options, in CancellationToken cancellationToken = default)
+        public int WriteSplits(
+            SplitData splitData,
+            SplitCommandOptions options,
+            in CancellationToken cancellationToken = default)
         {
             OutputSymbols symbols = OutputSymbols.Create(HighlightOptions);
             ConsoleColors splitColors = (HighlightSplit) ? Colors.Split : default;
@@ -294,7 +303,12 @@ namespace Orang.CommandLine
 
         private class OutputValueWriter : ValueWriter
         {
-            public OutputValueWriter(string? indent, HighlightOptions highlightOptions) : base(new ContentTextWriter(Verbosity.Minimal), indent, includeEndingIndent: false)
+            public OutputValueWriter(
+                string? indent,
+                HighlightOptions highlightOptions) : base(
+                    new ContentTextWriter(Verbosity.Minimal),
+                    indent,
+                    includeEndingIndent: false)
             {
                 HighlightOptions = highlightOptions;
             }
@@ -314,7 +328,9 @@ namespace Orang.CommandLine
                         value,
                         symbols,
                         colors: (highlightMatch) ? Colors.Match : default,
-                        boundaryColors: ((HighlightOptions & HighlightOptions.Boundary) != 0) ? Colors.MatchBoundary : default);
+                        boundaryColors: ((HighlightOptions & HighlightOptions.Boundary) != 0)
+                            ? Colors.MatchBoundary
+                            : default);
                 }
                 else if ((HighlightOptions & HighlightOptions.EmptyMatch) != 0)
                 {
@@ -322,7 +338,11 @@ namespace Orang.CommandLine
                 }
             }
 
-            public void WriteSplit(string value, OutputSymbols symbols, in ConsoleColors colors, in ConsoleColors boundaryColors)
+            public void WriteSplit(
+                string value,
+                OutputSymbols symbols,
+                in ConsoleColors colors,
+                in ConsoleColors boundaryColors)
             {
                 if (value.Length > 0)
                 {

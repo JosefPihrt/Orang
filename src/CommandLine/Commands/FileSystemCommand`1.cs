@@ -72,7 +72,11 @@ namespace Orang.CommandLine
 
         protected abstract void ExecuteFile(string filePath, SearchContext context);
 
-        protected abstract void ExecuteMatchCore(FileMatch fileMatch, SearchContext context, string? baseDirectoryPath, ColumnWidths? columnWidths);
+        protected abstract void ExecuteMatchCore(
+            FileMatch fileMatch,
+            SearchContext context,
+            string? baseDirectoryPath,
+            ColumnWidths? columnWidths);
 
         protected abstract void ExecuteResult(SearchResult result, SearchContext context, ColumnWidths? columnWidths);
 
@@ -84,13 +88,22 @@ namespace Orang.CommandLine
 
             if (CanUseResults)
             {
-                if (Options.SortOptions != null || Options.Format.FileProperties.Any())
+                if (Options.SortOptions != null)
+                {
+                    results = new List<SearchResult>();
+                }
+                else if (Options.Format.AlignColumns
+                    && Options.Format.FileProperties.Any())
                 {
                     results = new List<SearchResult>();
                 }
             }
 
-            var context = new SearchContext(new SearchTelemetry(), progress: ProgressReporter, results: results, cancellationToken: cancellationToken);
+            var context = new SearchContext(
+                new SearchTelemetry(),
+                progress: ProgressReporter,
+                results: results,
+                cancellationToken: cancellationToken);
 
             ExecuteCore(context);
 
@@ -233,7 +246,8 @@ namespace Orang.CommandLine
             ImmutableArray<FileProperty> fileProperties = Options.Format.FileProperties;
             ColumnWidths? columnWidths = null;
 
-            if (fileProperties.Any())
+            if (fileProperties.Any()
+                && Options.Format.AlignColumns)
             {
                 List<SearchResult> resultList = results.ToList();
 
@@ -430,14 +444,25 @@ namespace Orang.CommandLine
                 : "";
         }
 
-        protected virtual void WritePath(SearchContext context, FileMatch fileMatch, string? baseDirectoryPath, string indent, ColumnWidths? columnWidths)
+        protected virtual void WritePath(
+            SearchContext context,
+            FileMatch fileMatch,
+            string? baseDirectoryPath,
+            string indent,
+            ColumnWidths? columnWidths)
         {
             WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, Colors.Match);
 
             WriteLine(Verbosity.Minimal);
         }
 
-        protected void WritePath(SearchContext context, FileMatch fileMatch, string? baseDirectoryPath, string indent, ColumnWidths? columnWidths, ConsoleColors matchColors)
+        protected void WritePath(
+            SearchContext context,
+            FileMatch fileMatch,
+            string? baseDirectoryPath,
+            string indent,
+            ColumnWidths? columnWidths,
+            ConsoleColors matchColors)
         {
             if (Options.PathDisplayStyle == PathDisplayStyle.Match
                 && fileMatch.NameMatch != null
@@ -469,11 +494,8 @@ namespace Orang.CommandLine
             if (!ShouldLog(Verbosity.Minimal))
                 return;
 
-            if (columnWidths == null
-                && (CanUseResults || !Options.Format.FileProperties.Any()))
-            {
+            if (!Options.Format.FileProperties.Any())
                 return;
-            }
 
             StringBuilder sb = StringBuilderCache.GetInstance();
 

@@ -88,7 +88,11 @@ namespace Orang.CommandLine
             AskToContinue(context, indent);
         }
 
-        protected override void ExecuteMatchCore(FileMatch fileMatch, SearchContext context, string? baseDirectoryPath = null, ColumnWidths? columnWidths = null)
+        protected override void ExecuteMatchCore(
+            FileMatch fileMatch,
+            SearchContext context,
+            string? baseDirectoryPath = null,
+            ColumnWidths? columnWidths = null)
         {
             string indent = GetPathIndent(baseDirectoryPath);
 
@@ -119,7 +123,13 @@ namespace Orang.CommandLine
             {
                 captures = ListCache<Capture>.GetInstance();
 
-                GetCaptures(fileMatch.ContentMatch!, writerOptions.GroupNumber, context, isPathWritten: !Options.OmitPath, predicate: ContentFilter!.Predicate, captures: captures);
+                GetCaptures(
+                    fileMatch.ContentMatch!,
+                    writerOptions.GroupNumber,
+                    context,
+                    isPathWritten: !Options.OmitPath,
+                    predicate: ContentFilter!.Predicate,
+                    captures: captures);
 
                 bool hasAnyFunction = Options.ModifyOptions.HasAnyFunction;
 
@@ -163,7 +173,10 @@ namespace Orang.CommandLine
                     ConsoleColors colors = (Options.HighlightMatch) ? Colors.Match : default;
                     ConsoleColors boundaryColors = (Options.HighlightBoundary) ? Colors.MatchBoundary : default;
 
-                    var valueWriter = new ValueWriter(ContentTextWriter.Default, writerOptions.Indent, includeEndingIndent: false);
+                    var valueWriter = new ValueWriter(
+                        ContentTextWriter.Default,
+                        writerOptions.Indent,
+                        includeEndingIndent: false);
 
                     foreach (string value in _fileValues!.Modify(Options.ModifyOptions))
                     {
@@ -221,12 +234,17 @@ namespace Orang.CommandLine
 
             if (_storageIndexes?.Count > 1)
             {
-                Debug.Assert((modifyOptions.Functions & ModifyFunctions.ExceptIntersect) != 0, modifyOptions.Functions.ToString());
+                Debug.Assert(
+                    (modifyOptions.Functions & ModifyFunctions.ExceptIntersect) != 0,
+                    modifyOptions.Functions.ToString());
 
                 if ((modifyOptions.Functions & ModifyFunctions.Except) != 0)
                 {
                     if (_storageIndexes.Count > 2)
-                        throw new InvalidOperationException($"'Except' operation cannot be applied on more than two {((ContentFilter != null) ? "files" : "directories")}.");
+                    {
+                        throw new InvalidOperationException("'Except' operation cannot be applied on more than two " +
+                            $"{((ContentFilter != null) ? "files" : "directories")}.");
+                    }
 
                     int index = _storageIndexes[0];
 
@@ -248,7 +266,11 @@ namespace Orang.CommandLine
                 if (en.MoveNext())
                 {
                     OutputSymbols symbols = OutputSymbols.Create(Options.HighlightOptions);
-                    ConsoleColors colors = ((Options.HighlightOptions & HighlightOptions.Match) != 0) ? Colors.Match : default;
+
+                    ConsoleColors colors = ((Options.HighlightOptions & HighlightOptions.Match) != 0)
+                        ? Colors.Match
+                        : default;
+
                     ConsoleColors boundaryColors = (Options.HighlightBoundary) ? Colors.MatchBoundary : default;
                     var valueWriter = new ValueWriter(new ContentTextWriter(Verbosity.Minimal), includeEndingIndent: false);
 

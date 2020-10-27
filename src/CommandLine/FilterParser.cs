@@ -103,9 +103,15 @@ namespace Orang.CommandLine
                     }
                     else if (OptionValues.Part.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseAsEnum(value, out namePart, provider: namePartProvider ?? OptionValueProviders.NamePartKindProvider))
+                        if (!TryParseAsEnum(
+                            value,
+                            out namePart,
+                            provider: namePartProvider ?? OptionValueProviders.NamePartKindProvider))
                         {
-                            WriteOptionValueError(value, OptionValues.Part, namePartProvider ?? OptionValueProviders.NamePartKindProvider);
+                            WriteOptionValueError(
+                                value,
+                                OptionValues.Part,
+                                namePartProvider ?? OptionValueProviders.NamePartKindProvider);
                             return false;
                         }
 
@@ -135,7 +141,10 @@ namespace Orang.CommandLine
                         }
                         catch (ArgumentException)
                         {
-                            WriteOptionValueError(expression.Value, OptionValues.Length, HelpProvider.GetExpressionsText("  ", includeDate: false));
+                            WriteOptionValueError(
+                                expression.Value,
+                                OptionValues.Length,
+                                HelpProvider.GetExpressionsText("  ", includeDate: false));
                             return false;
                         }
                     }
@@ -149,8 +158,16 @@ namespace Orang.CommandLine
                 (options ??= new List<string>()).Add(option);
             }
 
-            if (!TryParseRegexOptions(options, optionName, out RegexOptions regexOptions, out PatternOptions patternOptions, includedPatternOptions, provider))
+            if (!TryParseRegexOptions(
+                options,
+                optionName,
+                out RegexOptions regexOptions,
+                out PatternOptions patternOptions,
+                includedPatternOptions,
+                provider))
+            {
                 return false;
+            }
 
             switch (patternOptions & (PatternOptions.WholeWord | PatternOptions.WholeLine))
             {
@@ -162,7 +179,14 @@ namespace Orang.CommandLine
                     }
                 default:
                     {
-                        WriteError($"Values '{OptionValueProviders.PatternOptionsProvider.GetValue(nameof(PatternOptions.WholeWord)).HelpValue}' and '{OptionValueProviders.PatternOptionsProvider.GetValue(nameof(PatternOptions.WholeLine)).HelpValue}' cannot be combined.");
+                        string helpValue = OptionValueProviders.PatternOptionsProvider
+                            .GetValue(nameof(PatternOptions.WholeWord)).HelpValue;
+
+                        string helpValue2 = OptionValueProviders.PatternOptionsProvider
+                            .GetValue(nameof(PatternOptions.WholeLine)).HelpValue;
+
+                        WriteError($"Values '{helpValue}' and '{helpValue2}' cannot be combined.");
+
                         return false;
                     }
             }
@@ -199,7 +223,10 @@ namespace Orang.CommandLine
                     string[] groupNames = regex.GetGroupNames();
 
                     if (groupNames.Length > 1)
-                        message += $" Existing group names: {TextHelpers.Join(", ", " and ", groupNames.Where(f => f != "0"))}.";
+                    {
+                        message += " Existing group names: " +
+                            $"{TextHelpers.Join(", ", " and ", groupNames.Where(f => f != "0"))}.";
+                    }
 
                     WriteError(message);
                     return false;
@@ -323,10 +350,17 @@ namespace Orang.CommandLine
         {
             regexOptions = RegexOptions.None;
 
-            if (!TryParseAsEnumFlags(options, optionsParameterName, out patternOptions, provider: provider ?? OptionValueProviders.PatternOptionsProvider))
+            if (!TryParseAsEnumFlags(
+                options,
+                optionsParameterName,
+                out patternOptions,
+                provider: provider ?? OptionValueProviders.PatternOptionsProvider))
+            {
                 return false;
+            }
 
-            Debug.Assert((patternOptions & (PatternOptions.CaseSensitive | PatternOptions.IgnoreCase)) != (PatternOptions.CaseSensitive | PatternOptions.IgnoreCase));
+            Debug.Assert((patternOptions & (PatternOptions.CaseSensitive | PatternOptions.IgnoreCase))
+                != (PatternOptions.CaseSensitive | PatternOptions.IgnoreCase));
 
             if ((patternOptions & PatternOptions.CaseSensitive) != 0)
             {

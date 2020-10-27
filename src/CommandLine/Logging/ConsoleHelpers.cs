@@ -80,7 +80,12 @@ namespace Orang.CommandLine
 
         public static DialogResult Ask(string question, string? indent = null)
         {
-            return Ask(question, " (Y[A]/N[A]/C): ", "Y (Yes), YA (Yes to All), N (No), NA (No to All), C (Cancel)", DialogResultMap.All, indent);
+            return Ask(
+                question,
+                " (Y[A]/N[A]/C): ",
+                "Y (Yes), YA (Yes to All), N (No), NA (No to All), C (Cancel)",
+                DialogResultMap.All,
+                indent);
         }
 
         private static DialogResult Ask(

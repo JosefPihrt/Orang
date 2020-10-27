@@ -7,7 +7,14 @@ namespace Orang
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class SimpleOptionValue : OptionValue
     {
-        public SimpleOptionValue(string name, string value, string shortValue, string helpValue, string? description = null, bool hidden = false, bool canContainExpression = false)
+        public SimpleOptionValue(
+            string name,
+            string value,
+            string shortValue,
+            string helpValue,
+            string? description = null,
+            bool hidden = false,
+            bool canContainExpression = false)
             : base(name, helpValue, description, hidden, canContainExpression)
         {
             Value = value;
@@ -76,7 +83,14 @@ namespace Orang
                 }
             }
 
-            return new SimpleOptionValue(name, value, shortValue, helpValue, description, hidden: hidden, canContainExpression: canContainExpression);
+            return new SimpleOptionValue(
+                name,
+                value,
+                shortValue,
+                helpValue,
+                description,
+                hidden: hidden,
+                canContainExpression: canContainExpression);
         }
     }
 }

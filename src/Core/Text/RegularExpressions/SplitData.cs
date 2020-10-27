@@ -10,7 +10,13 @@ namespace Orang.Text.RegularExpressions
 {
     internal sealed class SplitData
     {
-        private SplitData(Regex regex, string input, int maxCount, SplitItemCollection items, bool omitGroups, GroupDefinitionCollection groupDefinitions)
+        private SplitData(
+            Regex regex,
+            string input,
+            int maxCount,
+            SplitItemCollection items,
+            bool omitGroups,
+            GroupDefinitionCollection groupDefinitions)
         {
             Regex = regex;
             Input = input;
@@ -20,7 +26,12 @@ namespace Orang.Text.RegularExpressions
             Items = items;
         }
 
-        public static SplitData Create(Regex regex, string input, int count = 0, bool omitGroups = false, CancellationToken cancellationToken = default)
+        public static SplitData Create(
+            Regex regex,
+            string input,
+            int count = 0,
+            bool omitGroups = false,
+            CancellationToken cancellationToken = default)
         {
             if (regex == null)
                 throw new ArgumentNullException(nameof(regex));
@@ -53,7 +64,13 @@ namespace Orang.Text.RegularExpressions
             return new SplitData(regex, input, count, new SplitItemCollection(items), omitGroups, groupDefinitions);
         }
 
-        private static List<SplitItem> GetItems(Regex regex, string input, int maxCount, GroupDefinitionCollection groupDefinitions, bool omitGroups, CancellationToken cancellationToken)
+        private static List<SplitItem> GetItems(
+            Regex regex,
+            string input,
+            int maxCount,
+            GroupDefinitionCollection groupDefinitions,
+            bool omitGroups,
+            CancellationToken cancellationToken)
         {
             var splits = new List<SplitItem>();
 
@@ -121,7 +138,11 @@ namespace Orang.Text.RegularExpressions
             return splits;
         }
 
-        private static IEnumerable<Match> EnumerateMatches(Regex regex, Match match, int count, CancellationToken cancellationToken)
+        private static IEnumerable<Match> EnumerateMatches(
+            Regex regex,
+            Match match,
+            int count,
+            CancellationToken cancellationToken)
         {
             count--;
 

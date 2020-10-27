@@ -27,7 +27,11 @@ namespace Orang.FileSystem
             Filter = filter ?? throw new ArgumentNullException(nameof(filter));
 
             if (directoryFilter?.Part == FileNamePart.Extension)
-                throw new ArgumentException($"Directory filter has invalid part '{FileNamePart.Extension}'.", nameof(directoryFilter));
+            {
+                throw new ArgumentException(
+                    $"Directory filter has invalid part '{FileNamePart.Extension}'.",
+                    nameof(directoryFilter));
+            }
 
             DirectoryFilter = directoryFilter;
             SearchProgress = searchProgress;
@@ -97,7 +101,8 @@ namespace Orang.FileSystem
 
             if (notifyDirectoryChanged != null)
             {
-                notifyDirectoryChanged.DirectoryChanged += (object sender, DirectoryChangedEventArgs e) => currentDirectory = e.NewName;
+                notifyDirectoryChanged.DirectoryChanged
+                    += (object sender, DirectoryChangedEventArgs e) => currentDirectory = e.NewName;
             }
 
             bool? isMatch = (DirectoryFilter?.IsNegative == false)
@@ -351,7 +356,10 @@ namespace Orang.FileSystem
                                 {
                                     string content = reader.ReadToEnd();
 
-                                    fileContent = new FileContent(content, reader.CurrentEncoding, hasBom: bomEncoding != null);
+                                    fileContent = new FileContent(
+                                        content,
+                                        reader.CurrentEncoding,
+                                        hasBom: bomEncoding != null);
                                 }
                             }
                         }
@@ -666,23 +674,32 @@ namespace Orang.FileSystem
 
             string sourcePathNormalized = directoryPath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
-            string destinationPathNormalize = destinationPath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            string destinationPathNormalize = destinationPath.Replace(
+                Path.AltDirectorySeparatorChar,
+                Path.DirectorySeparatorChar);
 
             if (IsSubdirectory(sourcePathNormalized, destinationPathNormalize)
                 || IsSubdirectory(destinationPathNormalize, sourcePathNormalized))
             {
-                throw new ArgumentException("Source directory cannot be subdirectory of a destination directory or vice versa.", nameof(directoryPath));
+                throw new ArgumentException(
+                    "Source directory cannot be subdirectory of a destination directory or vice versa.",
+                    nameof(directoryPath));
             }
 
             VerifyConflictResolution(copyOptions.ConflictResolution, dialogProvider);
         }
 
-        private static void VerifyConflictResolution(ConflictResolution conflictResolution, IDialogProvider<OperationProgress>? dialogProvider)
+        private static void VerifyConflictResolution(
+            ConflictResolution conflictResolution,
+            IDialogProvider<OperationProgress>? dialogProvider)
         {
             if (conflictResolution == ConflictResolution.Ask
                 && dialogProvider == null)
             {
-                throw new ArgumentNullException(nameof(dialogProvider), $"'{nameof(dialogProvider)}' cannot be null when {nameof(ConflictResolution)} is set to {nameof(ConflictResolution.Ask)}.");
+                throw new ArgumentNullException(
+                    nameof(dialogProvider),
+                    $"'{nameof(dialogProvider)}' cannot be null when {nameof(ConflictResolution)} " +
+                        $"is set to {nameof(ConflictResolution.Ask)}.");
             }
         }
 

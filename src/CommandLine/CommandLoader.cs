@@ -57,7 +57,12 @@ namespace Orang.CommandLine
 
                 foreach (Attribute attribute in propertyInfo.GetCustomAttributes())
                 {
-                    if (attribute is ValueAttribute valueAttribute)
+                    if (attribute is HiddenAttribute)
+                    {
+                        optionAttribute = null;
+                        break;
+                    }
+                    else if (attribute is ValueAttribute valueAttribute)
                     {
                         var argument = new CommandArgument(
                             index: valueAttribute.Index,
@@ -79,7 +84,9 @@ namespace Orang.CommandLine
 
                 if (optionAttribute != null)
                 {
-                    Debug.Assert(propertyInfo.PropertyType != typeof(bool) || string.IsNullOrEmpty(optionAttribute.MetaValue), $"{type.Name}.{propertyInfo.Name}");
+                    Debug.Assert(
+                        propertyInfo.PropertyType != typeof(bool) || string.IsNullOrEmpty(optionAttribute.MetaValue),
+                        $"{type.Name}.{propertyInfo.Name}");
 
                     var option = new CommandOption(
                         name: optionAttribute.LongName,
@@ -87,7 +94,9 @@ namespace Orang.CommandLine
                         metaValue: optionAttribute.MetaValue,
                         description: optionAttribute.HelpText,
                         isRequired: optionAttribute.Required,
-                        valueProviderName: (providerMap.TryGetValue(propertyInfo.Name, out string? valueProviderName)) ? valueProviderName : null);
+                        valueProviderName: (providerMap.TryGetValue(propertyInfo.Name, out string? valueProviderName))
+                            ? valueProviderName
+                            : null);
 
                     options.Add(option);
                 }
@@ -97,7 +106,7 @@ namespace Orang.CommandLine
                 verbAttribute.Name,
                 verbAttribute.HelpText,
                 arguments.OrderBy(f => f.Index),
-                options.OrderBy(f => f.Name, StringComparer.InvariantCulture));
+                options.OrderBy(f => f, CommandOptionComparer.Name));
         }
     }
 }

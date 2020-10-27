@@ -48,7 +48,13 @@ namespace Orang.Operations
 
             Debug.Assert(count >= 0, count.ToString());
 
-            MaxReason maxReason = CaptureFactory.GetCaptures(ref captures, match, groupNumber, count, predicate, CancellationToken);
+            MaxReason maxReason = CaptureFactory.GetCaptures(
+                ref captures,
+                match,
+                groupNumber,
+                count,
+                predicate,
+                CancellationToken);
 
             if ((maxReason == MaxReason.CountEqualsMax || maxReason == MaxReason.CountExceedsMax)
                 && maxTotalMatches > 0

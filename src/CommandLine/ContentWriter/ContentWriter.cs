@@ -57,7 +57,8 @@ namespace Orang.CommandLine
             MatchOutputInfo outputInfo,
             bool ask = false)
         {
-            return CreateFind(contentDisplayStyle,
+            return CreateFind(
+                contentDisplayStyle,
                 input,
                 options,
                 storage,

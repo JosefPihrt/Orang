@@ -11,5 +11,7 @@ namespace Orang.CommandLine
         Literal = 1,
         FromFile = 1 << 1,
         Escape = 1 << 2,
+        FromDll = 1 << 3,
+        CSharp = 1 << 4,
     }
 }

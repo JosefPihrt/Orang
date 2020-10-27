@@ -9,5 +9,6 @@ namespace Orang.FileSystem
         File = 2,
         RedirectedInput = 3,
         CurrentDirectory = 4,
+        Option = 5,
     }
 }

@@ -25,6 +25,7 @@ namespace Orang.CommandLine
         public const string NamePart = "<NAME_PART>";
         public const string Num = "<NUM>";
         public const string OutputOptions = "<OUTPUT_OPTIONS>";
+        public const string Path = "<PATH>";
         public const string PathDisplay = "<PATH_DISPLAY>";
         public const string PatternOptions = "<PATTERN_OPTIONS>";
         public const string Regex = "<REGEX>";

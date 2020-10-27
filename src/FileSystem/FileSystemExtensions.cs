@@ -8,12 +8,22 @@ namespace Orang
 {
     internal static class FileSystemExtensions
     {
-        public static void Report(this IProgress<SearchProgress> progress, string path, SearchProgressKind kind, bool isDirectory = false, Exception? exception = null)
+        public static void Report(
+            this IProgress<SearchProgress> progress,
+            string path,
+            SearchProgressKind kind,
+            bool isDirectory = false,
+            Exception? exception = null)
         {
             progress.Report(new SearchProgress(path, kind, isDirectory, exception));
         }
 
-        public static void Report(this IProgress<OperationProgress> progress, FileMatch fileMatch, string? newPath, OperationKind kind, Exception? exception = null)
+        public static void Report(
+            this IProgress<OperationProgress> progress,
+            FileMatch fileMatch,
+            string? newPath,
+            OperationKind kind,
+            Exception? exception = null)
         {
             progress.Report(new OperationProgress(fileMatch, newPath, kind, exception));
         }

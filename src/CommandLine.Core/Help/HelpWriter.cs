@@ -176,7 +176,10 @@ namespace Orang.CommandLine.Help
             foreach (OptionValueItem value in values)
             {
                 Write(Options.Indent);
-                WriteTextLine(value.Text);
+
+                string text = TextHelpers.Indent(value.Text, Options.Indent);
+
+                WriteTextLine(text);
             }
         }
 

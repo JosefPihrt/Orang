@@ -95,6 +95,7 @@
 | indent=\<INDENT>                | Indentation for a list of results\. Default indentation are 2 spaces\. |
 | l\[ine\-number\]                | Include line number\.                                                  |
 | m\[odified\-\]t\[ime\]          | Include file last modified time\.                                      |
+| no\-align                       | Do not align columns\.                                                 |
 | p\[ath\]=\<PATH\_DISPLAY>       |
 | s\[ize\]                        | Include file size\.                                                    |
 | s\[eparator\]=\<SEPARATOR>      | String that separate each value\.                                      |
@@ -256,11 +257,13 @@
 
 ## \<REPLACEMENT\_OPTIONS>
 
-| Value          | Description                                                                                 |
-| -------------- | ------------------------------------------------------------------------------------------- |
-| f\[rom\-file\] | Load replacement string from a file whose path is specified in \<REPLACEMENT> value\.       |
-| l\[iteral\]    | Replacement should be treated as a literal expression and not as a replacement expression\. |
-| e\[scape\]     | Interpret literals \\a, \\b, \\f, \\n, \\r, \\t and \\v as character escapes\.              |
+| Value          | Description                                                                                                                                                                                                                                                                                                                                                |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| f\[rom\-file\] | Load text from a file whose path is specified in \<REPLACEMENT> value\.                                                                                                                                                                                                                                                                                    |
+| l\[iteral\]    | Replacement should be treated as a literal expression and not as a replacement expression\.                                                                                                                                                                                                                                                                |
+| e\[scape\]     | Interpret literals \\a, \\b, \\f, \\n, \\r, \\t and \\v as character escapes\.                                                                                                                                                                                                                                                                             |
+| cs\[harp\]     | \<REPLACEMENT> is either expression\-body of a method with signature 'string M\(Match match\)' or a path to a code file that contains public method with signature 'string M\(Match match\)'\. Imported namespaces \(when inline expression is specified\): System System\.Collections\.Generic System\.Linq System\.Text System\.Text\.RegularExpressions |
+| from\-dll      | \<REPLACEMENT> is a path to a method in DLL file\. The format is 'DllPath,FullTypeName\.MethodName'\.                                                                                                                                                                                                                                                      |
 
 ## \<SORT\_OPTIONS>
 

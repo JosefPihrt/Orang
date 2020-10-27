@@ -109,8 +109,11 @@ namespace Orang
                     sb2.Append(' ', 3);
                 }
 
-                sb2.Append("--");
-                sb2.Append(option.Name);
+                if (!string.IsNullOrEmpty(option.Name))
+                {
+                    sb2.Append("--");
+                    sb2.Append(option.Name);
+                }
 
                 if (!option.IsRequired)
                     sb2.Append("]");
@@ -206,8 +209,11 @@ namespace Orang
                 sb.Append("|");
             }
 
-            sb.Append("--");
-            sb.Append(option.Name);
+            if (!string.IsNullOrEmpty(option.Name))
+            {
+                sb.Append("--");
+                sb.Append(option.Name);
+            }
 
             if (!option.IsRequired)
                 sb.Append("]");

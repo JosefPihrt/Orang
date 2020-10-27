@@ -43,7 +43,10 @@ namespace Orang.CommandLine
 #endif
         }
 
-        public static void WriteSearchedFilesAndDirectories(SearchTelemetry telemetry, SearchTarget searchTarget, Verbosity verbosity = Verbosity.Detailed)
+        public static void WriteSearchedFilesAndDirectories(
+            SearchTelemetry telemetry,
+            SearchTarget searchTarget,
+            Verbosity verbosity = Verbosity.Detailed)
         {
             if (!ShouldLog(verbosity))
                 return;
@@ -149,7 +152,10 @@ namespace Orang.CommandLine
             WriteLine(verbosity);
         }
 
-        public static void WriteGroups(GroupDefinitionCollection groupDefinitions, Dictionary<int, ConsoleColors>? colors = null, Verbosity verbosity = Verbosity.Detailed)
+        public static void WriteGroups(
+            GroupDefinitionCollection groupDefinitions,
+            Dictionary<int, ConsoleColors>? colors = null,
+            Verbosity verbosity = Verbosity.Detailed)
         {
             if (!ShouldLog(verbosity))
                 return;
@@ -192,22 +198,40 @@ namespace Orang.CommandLine
             }
         }
 
-        public static int WriteCount(string name, int count, in ConsoleColors colors = default, Verbosity verbosity = Verbosity.Quiet)
+        public static int WriteCount(
+            string name,
+            int count,
+            in ConsoleColors colors = default,
+            Verbosity verbosity = Verbosity.Quiet)
         {
             return WriteCount(name, count.ToString("n0"), colors, verbosity);
         }
 
-        public static int WriteCount(string name, long count, in ConsoleColors colors = default, Verbosity verbosity = Verbosity.Quiet)
+        public static int WriteCount(
+            string name,
+            long count,
+            in ConsoleColors colors = default,
+            Verbosity verbosity = Verbosity.Quiet)
         {
             return WriteCount(name, count.ToString("n0"), colors, verbosity);
         }
 
-        public static int WriteCount(string name, string count, in ConsoleColors colors = default, Verbosity verbosity = Verbosity.Quiet)
+        public static int WriteCount(
+            string name,
+            string count,
+            in ConsoleColors colors = default,
+            Verbosity verbosity = Verbosity.Quiet)
         {
             return WriteCount(name, count, name.Length, count.Length, colors, verbosity);
         }
 
-        internal static int WriteCount(string name, string count, int nameWidth, int countWidth, in ConsoleColors colors, Verbosity verbosity = Verbosity.Quiet)
+        internal static int WriteCount(
+            string name,
+            string count,
+            int nameWidth,
+            int countWidth,
+            in ConsoleColors colors,
+            Verbosity verbosity = Verbosity.Quiet)
         {
             if (name.Length > 0)
             {
@@ -234,7 +258,15 @@ namespace Orang.CommandLine
             string path = fileMatch.Path;
             int matchIndex = fileMatch.Index;
 
-            (int startIndex, bool isWritten) = WritePathImpl(path, basePath, relativePath, colors, stopAtMatch: !matchColors.IsDefault, matchIndex, indent, verbosity);
+            (int startIndex, bool isWritten) = WritePathImpl(
+                path,
+                basePath,
+                relativePath,
+                colors,
+                stopAtMatch: !matchColors.IsDefault,
+                matchIndex,
+                indent,
+                verbosity);
 
             if (!isWritten)
             {
@@ -260,7 +292,15 @@ namespace Orang.CommandLine
             string path = fileMatch.Path;
             int matchIndex = fileMatch.NameSpan.Start + fileMatch.Index;
 
-            (int startIndex, bool isWritten) = WritePathImpl(path, basePath, relativePath, colors, stopAtMatch: true, matchIndex, indent, verbosity);
+            (int startIndex, bool isWritten) = WritePathImpl(
+                path,
+                basePath,
+                relativePath,
+                colors,
+                stopAtMatch: true,
+                matchIndex,
+                indent,
+                verbosity);
 
             if (!isWritten)
             {

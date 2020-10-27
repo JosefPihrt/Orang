@@ -43,9 +43,10 @@ namespace Orang.CommandLine
 
         public long GetSize()
         {
-            return _size ?? (_size = (IsDirectory)
-                ? FileSystemHelpers.GetDirectorySize(Path)
-                : ((FileInfo)FileSystemInfo).Length).Value;
+            return _size
+                ?? (_size = (IsDirectory)
+                    ? FileSystemHelpers.GetDirectorySize(Path)
+                    : ((FileInfo)FileSystemInfo).Length).Value;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -19,6 +18,7 @@ namespace Orang.CommandLine
             IEnumerable<FileProperty>? fileProperties = null,
             string? indent = null,
             string? separator = null,
+            bool alignColumns = true,
             bool includeBaseDirectory = false)
         {
             ContentDisplayStyle = contentDisplayStyle;
@@ -29,6 +29,7 @@ namespace Orang.CommandLine
             FileProperties = fileProperties?.ToImmutableArray() ?? ImmutableArray<FileProperty>.Empty;
             Indent = indent ?? DefaultIndent;
             Separator = separator;
+            AlignColumns = alignColumns;
             IncludeBaseDirectory = includeBaseDirectory;
         }
 
@@ -47,6 +48,8 @@ namespace Orang.CommandLine
         public string Indent { get; }
 
         public string? Separator { get; }
+
+        public bool AlignColumns { get; }
 
         public bool IncludeBaseDirectory { get; }
 

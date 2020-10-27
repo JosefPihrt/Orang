@@ -62,7 +62,10 @@ namespace Orang.CommandLine
             }
             else if (Options.IncludeLineNumber)
             {
-                ((LineNumberValueWriter)ValueWriter).LineNumber += TextHelpers.CountLines(Input, capture.Index, capture.Length);
+                ((LineNumberValueWriter)ValueWriter).LineNumber += TextHelpers.CountLines(
+                    Input,
+                    capture.Index,
+                    capture.Length);
             }
         }
 

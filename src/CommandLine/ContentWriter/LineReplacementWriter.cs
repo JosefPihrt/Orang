@@ -45,7 +45,8 @@ namespace Orang.CommandLine
             }
         }
 
-        private ValueWriter ReplacementValueWriter => _replacementValueWriter ??= new ValueWriter(Writer, Options.Indent, includeEndingIndent: false);
+        private ValueWriter ReplacementValueWriter
+            => _replacementValueWriter ??= new ValueWriter(Writer, Options.Indent, includeEndingIndent: false);
 
         protected override void WriteStartMatches()
         {

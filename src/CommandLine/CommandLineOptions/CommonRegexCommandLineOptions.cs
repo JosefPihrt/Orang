@@ -7,12 +7,16 @@ namespace Orang.CommandLine
 {
     internal abstract class CommonRegexCommandLineOptions : BaseCommandLineOptions
     {
-        [Option(shortName: OptionShortNames.Display, longName: OptionNames.Display,
+        [Option(
+            shortName: OptionShortNames.Display,
+            longName: OptionNames.Display,
             HelpText = "Display of the results.",
             MetaValue = MetaValues.DisplayOptions)]
         public IEnumerable<string> Display { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Highlight, longName: OptionNames.Highlight,
+        [Option(
+            shortName: OptionShortNames.Highlight,
+            longName: OptionNames.Highlight,
             HelpText = "Parts of the output to highlight.",
             MetaValue = MetaValues.Highlight)]
         public IEnumerable<string> Highlight { get; set; } = null!;

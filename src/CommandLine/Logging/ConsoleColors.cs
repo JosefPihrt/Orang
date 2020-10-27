@@ -26,7 +26,14 @@ namespace Orang
         public bool IsDefault => Foreground == null && Background == null;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private string DebuggerDisplay => $"{((Foreground != null) ? Foreground.ToString() : "None")}  {((Background != null) ? Background.ToString() : "None")}";
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return $"{((Foreground != null) ? Foreground.ToString() : "None")}  " +
+                    $"{((Background != null) ? Background.ToString() : "None")}";
+            }
+        }
 
         public override bool Equals(object? obj)
         {

@@ -23,7 +23,11 @@ namespace Orang.Text.RegularExpressions
             GroupDefinitions = groupDefinitions;
         }
 
-        public static MatchData Create(string input, Regex regex, int maxCount = -1, CancellationToken cancellationToken = default)
+        public static MatchData Create(
+            string input,
+            Regex regex,
+            int maxCount = -1,
+            CancellationToken cancellationToken = default)
         {
             if (regex == null)
                 throw new ArgumentNullException(nameof(regex));
@@ -36,7 +40,12 @@ namespace Orang.Text.RegularExpressions
             return Create(input, regex, match, maxCount, cancellationToken);
         }
 
-        internal static MatchData Create(string input, Regex regex, Match match, int maxCount = -1, CancellationToken cancellationToken = default)
+        internal static MatchData Create(
+            string input,
+            Regex regex,
+            Match match,
+            int maxCount = -1,
+            CancellationToken cancellationToken = default)
         {
             var groupDefinitions = new GroupDefinitionCollection(regex);
 

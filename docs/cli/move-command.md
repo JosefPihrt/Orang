@@ -24,6 +24,7 @@ orang move [<PATH>]
 [-n|--name]               <REGEX>
 [   --no-recurse]
 [-o|--output]             <OUTPUT_OPTIONS>
+[   --paths]              <PATH>
 [   --paths-from]         <FILE_PATH>
 [   --progress]
 [-p|--properties]         <FILE_PROPERTIES>
@@ -66,7 +67,7 @@ Regular expression for files' content\. Syntax is \<PATTERN> \[\<PATTERN\_OPTION
 
 **`[-y|--display] <DISPLAY_OPTIONS>`**
 
-Display of the results\. Allowed values are c\[ontent\]=\<CONTENT\_DISPLAY>, t \[context\]=\<NUM>, tb \[context\-before\]=\<NUM>, ta \[context\-after\]=\<NUM>, c\[ount\], c\[reation\-\]t\[ime\], indent=\<INDENT>, l\[ine\-number\], m\[odified\-\]t\[ime\], p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR>, su\[mmary\] and trim\-line\.
+Display of the results\. Allowed values are c\[ontent\]=\<CONTENT\_DISPLAY>, t \[context\]=\<NUM>, tb \[context\-before\]=\<NUM>, ta \[context\-after\]=\<NUM>, c\[ount\], c\[reation\-\]t\[ime\], indent=\<INDENT>, l\[ine\-number\], m\[odified\-\]t\[ime\], no\-align, p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR>, su\[mmary\] and trim\-line\.
 
 **`[-d|--dry-run]`**
 
@@ -111,6 +112,10 @@ Do not search subdirectories\.
 **`[-o|--output] <OUTPUT_OPTIONS>`**
 
 Path to a file that should store output\. Syntax is \<PATH> \[\<OUTPUT\_OPTIONS>\]\. Allowed values are e\[ncoding\]=\<ENCODING>, v\[erbosity\]=\<VERBOSITY> and a\[ppend\]\.
+
+**`[--paths] <PATH>`**
+
+Path to one or more files and/or directories that should be searched\.
 
 **`[--paths-from] <FILE_PATH>`**
 

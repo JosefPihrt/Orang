@@ -166,7 +166,10 @@ namespace Orang.CommandLine
                 if (y == null)
                     return 1;
 
-                return string.Compare(x.FileMatch.NameMatch!.Value, y.FileMatch.NameMatch!.Value, StringComparison.CurrentCulture);
+                return string.Compare(
+                    x.FileMatch.NameMatch!.Value,
+                    y.FileMatch.NameMatch!.Value,
+                    StringComparison.CurrentCulture);
             }
         }
     }

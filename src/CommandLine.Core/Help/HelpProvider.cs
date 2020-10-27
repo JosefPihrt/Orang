@@ -36,7 +36,9 @@ namespace Orang.CommandLine.Help
             return builder.ToImmutableArray();
         }
 
-        public static ImmutableArray<ArgumentItem> GetArgumentItems(IEnumerable<CommandArgument> arguments, Filter? filter = null)
+        public static ImmutableArray<ArgumentItem> GetArgumentItems(
+            IEnumerable<CommandArgument> arguments,
+            Filter? filter = null)
         {
             int width = CalculateArgumentsWidths(arguments);
 
@@ -102,15 +104,20 @@ namespace Orang.CommandLine.Help
                 {
                     sb.Append("-");
                     sb.Append(option.ShortName);
-                    sb.Append(", ");
+
+                    if (!string.IsNullOrEmpty(option.Name))
+                        sb.Append(", ");
                 }
                 else if (anyHasShortName)
                 {
                     sb.Append(' ', 4);
                 }
 
-                sb.Append("--");
-                sb.Append(option.Name);
+                if (!string.IsNullOrEmpty(option.Name))
+                {
+                    sb.Append("--");
+                    sb.Append(option.Name);
+                }
 
                 if (!option.IsRequired)
                     sb.Append("]");
@@ -164,7 +171,10 @@ namespace Orang.CommandLine.Help
                 : builder.ToImmutableArray();
         }
 
-        public static ImmutableArray<OptionValueItem> GetOptionValueItems(IEnumerable<OptionValue> optionValues, int width1, int width2)
+        public static ImmutableArray<OptionValueItem> GetOptionValueItems(
+            IEnumerable<OptionValue> optionValues,
+            int width1,
+            int width2)
         {
             ImmutableArray<OptionValueItem>.Builder builder = ImmutableArray.CreateBuilder<OptionValueItem>();
 
@@ -189,7 +199,8 @@ namespace Orang.CommandLine.Help
                 if (!string.IsNullOrEmpty(description))
                 {
                     sb.AppendSpaces(width2 - shortValue.Length);
-                    sb.Append(description);
+
+                    TextHelpers.Indent(description!, width1 + width2, ref sb);
                 }
 
                 builder.Add(new OptionValueItem(optionValue, StringBuilderCache.GetStringAndFree(sb)));
@@ -218,7 +229,9 @@ namespace Orang.CommandLine.Help
             }
         }
 
-        private static ImmutableArray<OptionValueList> FilterAllowedValues(IEnumerable<OptionValueList> values, Filter filter)
+        private static ImmutableArray<OptionValueList> FilterAllowedValues(
+            IEnumerable<OptionValueList> values,
+            Filter filter)
         {
             ImmutableArray<OptionValueList>.Builder builder = ImmutableArray.CreateBuilder<OptionValueList>();
 
@@ -309,7 +322,8 @@ namespace Orang.CommandLine.Help
                     KeyValuePairOptionValue keyOptionValue => keyOptionValue.Key.Length + 1 + keyOptionValue.Value.Length,
                     _ => throw new InvalidOperationException(),
                 };
-            }) + 1;
+            })
+                + 1;
             int width2 = optionValues.DefaultIfEmpty().Max(f =>
             {
                 return f switch
@@ -318,7 +332,8 @@ namespace Orang.CommandLine.Help
                     KeyValuePairOptionValue keyOptionValue => keyOptionValue.ShortKey.Length,
                     _ => throw new InvalidOperationException(),
                 };
-            }) + 1;
+            })
+                + 1;
 
             return (width1, width2);
         }

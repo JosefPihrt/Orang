@@ -1,5 +1,17 @@
 @echo off
 
+set _version=0.1.1
+
+orang replace -e cmd -c "(?<=--version )\d+\.\d+\.\d+" -r "%_version%"
+
+orang replace "..\src" -e csproj -c "(?<=<PackageVersion>)\d+\.\d+\.\d+(?=</PackageVersion>)" -r "%_version%"
+
+echo.
+
+orang delete "..\src" -a d -n "bin|obj" e --content-only -t n -y su s
+
+echo.
+
 dotnet restore --force "..\src\Orang.sln"
 
 "%ProgramFiles%\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild" "..\src\Orang.sln" ^

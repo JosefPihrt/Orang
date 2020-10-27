@@ -23,7 +23,8 @@ namespace Orang.CommandLine
 
                 static ImmutableDictionary<string, DialogResult> Create()
                 {
-                    ImmutableDictionary<string, DialogResult>.Builder builder = ImmutableDictionary.CreateBuilder<string, DialogResult>();
+                    ImmutableDictionary<string, DialogResult>.Builder builder
+                        = ImmutableDictionary.CreateBuilder<string, DialogResult>();
 
                     builder.Add("y", DialogResult.Yes);
                     builder.Add("yes", DialogResult.Yes);
@@ -52,7 +53,8 @@ namespace Orang.CommandLine
 
                 static ImmutableDictionary<string, DialogResult> Create()
                 {
-                    ImmutableDictionary<string, DialogResult>.Builder builder = ImmutableDictionary.CreateBuilder<string, DialogResult>();
+                    ImmutableDictionary<string, DialogResult>.Builder builder
+                        = ImmutableDictionary.CreateBuilder<string, DialogResult>();
 
                     builder.Add("y", DialogResult.Yes);
                     builder.Add("yes", DialogResult.Yes);
@@ -77,7 +79,8 @@ namespace Orang.CommandLine
 
                 static ImmutableDictionary<string, DialogResult> Create()
                 {
-                    ImmutableDictionary<string, DialogResult>.Builder builder = ImmutableDictionary.CreateBuilder<string, DialogResult>();
+                    ImmutableDictionary<string, DialogResult>.Builder builder
+                        = ImmutableDictionary.CreateBuilder<string, DialogResult>();
 
                     builder.Add("y", DialogResult.Yes);
                     builder.Add("yes", DialogResult.Yes);

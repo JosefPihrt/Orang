@@ -76,7 +76,13 @@ namespace Orang.CommandLine
                 ? "Deleted directories (content only)"
                 : "Deleted directories";
 
-            WriteProcessedFilesAndDirectories(telemetry, Options.SearchTarget, filesTitle, directoriesTitle, Options.DryRun, verbosity);
+            WriteProcessedFilesAndDirectories(
+                telemetry,
+                Options.SearchTarget,
+                filesTitle,
+                directoriesTitle,
+                Options.DryRun,
+                verbosity);
         }
     }
 }

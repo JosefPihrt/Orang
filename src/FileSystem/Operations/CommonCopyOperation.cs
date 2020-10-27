@@ -109,7 +109,8 @@ namespace Orang.Operations
             if (ask
                 && ConflictResolution == ConflictResolution.Ask)
             {
-                DialogResult dialogResult = DialogProvider!.GetResult(new OperationProgress(fileMatch, destinationPath, OperationKind));
+                DialogResult dialogResult = DialogProvider!.GetResult(
+                    new OperationProgress(fileMatch, destinationPath, OperationKind));
 
                 switch (dialogResult)
                 {

@@ -56,13 +56,24 @@ namespace Orang.CommandLine
                 {
                     groups = ListCache<Capture>.GetInstance();
 
-                    maxReason = GetCaptures(match, FileWriterOptions.GroupNumber, context, isPathWritten: false, predicate: contentFilter.Predicate, captures: groups);
+                    maxReason = GetCaptures(
+                        match,
+                        FileWriterOptions.GroupNumber,
+                        context,
+                        isPathWritten: false,
+                        predicate: contentFilter.Predicate,
+                        captures: groups);
 
                     if (ShouldLog(Verbosity.Normal))
                     {
                         MatchOutputInfo? outputInfo = Options.CreateOutputInfo(input, match, contentFilter);
 
-                        contentWriter = ContentWriter.CreateReplace(Options.ContentDisplayStyle, input, Options.ReplaceOptions, FileWriterOptions, outputInfo: outputInfo);
+                        contentWriter = ContentWriter.CreateReplace(
+                            Options.ContentDisplayStyle,
+                            input,
+                            Options.ReplaceOptions,
+                            FileWriterOptions,
+                            outputInfo: outputInfo);
                     }
                     else
                     {
@@ -93,7 +104,11 @@ namespace Orang.CommandLine
             }
         }
 
-        protected override void ExecuteMatchCore(FileMatch fileMatch, SearchContext context, string? baseDirectoryPath = null, ColumnWidths? columnWidths = null)
+        protected override void ExecuteMatchCore(
+            FileMatch fileMatch,
+            SearchContext context,
+            string? baseDirectoryPath = null,
+            ColumnWidths? columnWidths = null)
         {
             throw new NotSupportedException();
         }
@@ -120,7 +135,13 @@ namespace Orang.CommandLine
             {
                 groups = ListCache<Capture>.GetInstance();
 
-                GetCaptures(fileMatch.ContentMatch!, writerOptions.GroupNumber, context, isPathWritten: !Options.OmitPath, predicate: Options.ContentFilter!.Predicate, captures: groups);
+                GetCaptures(
+                    fileMatch.ContentMatch!,
+                    writerOptions.GroupNumber,
+                    context,
+                    isPathWritten: !Options.OmitPath,
+                    predicate: Options.ContentFilter!.Predicate,
+                    captures: groups);
 
                 int fileMatchCount = 0;
                 int fileReplacementCount = 0;
@@ -140,7 +161,10 @@ namespace Orang.CommandLine
                 if (Options.AskMode == AskMode.Value
                     || ShouldLog(Verbosity.Normal))
                 {
-                    MatchOutputInfo? outputInfo = Options.CreateOutputInfo(fileMatch.ContentText, fileMatch.ContentMatch!, ContentFilter!);
+                    MatchOutputInfo? outputInfo = Options.CreateOutputInfo(
+                        fileMatch.ContentText,
+                        fileMatch.ContentMatch!,
+                        ContentFilter!);
 
                     if (Options.AskMode == AskMode.Value)
                     {
@@ -148,11 +172,23 @@ namespace Orang.CommandLine
                             ? null
                             : new Lazy<TextWriter>(() => new StreamWriter(fileMatch.Path, false, fileMatch.Encoding));
 
-                        contentWriter = AskReplacementWriter.Create(Options.ContentDisplayStyle, fileMatch.ContentText, Options.ReplaceOptions, lazyWriter, writerOptions, outputInfo);
+                        contentWriter = AskReplacementWriter.Create(
+                            Options.ContentDisplayStyle,
+                            fileMatch.ContentText,
+                            Options.ReplaceOptions,
+                            lazyWriter,
+                            writerOptions,
+                            outputInfo);
                     }
                     else
                     {
-                        contentWriter = ContentWriter.CreateReplace(Options.ContentDisplayStyle, fileMatch.ContentText, Options.ReplaceOptions, writerOptions, textWriter, outputInfo);
+                        contentWriter = ContentWriter.CreateReplace(
+                            Options.ContentDisplayStyle,
+                            fileMatch.ContentText,
+                            Options.ReplaceOptions,
+                            writerOptions,
+                            textWriter,
+                            outputInfo);
                     }
                 }
                 else if (Options.DryRun)
@@ -161,13 +197,21 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    contentWriter = new TextWriterContentWriter(fileMatch.ContentText, Options.ReplaceOptions, textWriter!, writerOptions);
+                    contentWriter = new TextWriterContentWriter(
+                        fileMatch.ContentText,
+                        Options.ReplaceOptions,
+                        textWriter!,
+                        writerOptions);
                 }
 
                 WriteMatches(contentWriter, groups, context);
 
                 fileMatchCount = contentWriter.MatchCount;
-                fileReplacementCount = (contentWriter is AskReplacementWriter askReplacementWriter) ? askReplacementWriter.ReplacementCount : fileMatchCount;
+
+                fileReplacementCount = (contentWriter is AskReplacementWriter askReplacementWriter)
+                    ? askReplacementWriter.ReplacementCount
+                    : fileMatchCount;
+
                 telemetry.MatchCount += fileMatchCount;
 
                 if (contentWriter.MatchingLineCount >= 0)

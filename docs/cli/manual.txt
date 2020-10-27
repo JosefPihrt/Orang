@@ -1,4 +1,4 @@
-Orang Command-Line Tool version 0.1.0.3
+Orang Command-Line Tool version 0.1.1.0
 Usage: orang [command] [arguments]
 
 Commands:
@@ -44,6 +44,7 @@ Options:
   [-n, --name]               <REGEX>               Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [    --no-recurse]                               Do not search subdirectories.
   [-o, --output]             <OUTPUT_OPTIONS>      Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths]              <PATH>                Path to one or more files and/or directories that should be searched.
   [    --paths-from]         <FILE_PATH>           Read the list of paths to search from a file. Paths should be separated by newlines.
   [    --progress]                                 Display dot (.) for every hundredth searched file or directory.
   [-p, --properties]         <FILE_PROPERTIES>     A filter for file properties.
@@ -80,6 +81,7 @@ Options:
   [-n, --name]               <REGEX>            Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [    --no-recurse]                            Do not search subdirectories.
   [-o, --output]             <OUTPUT_OPTIONS>   Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths]              <PATH>             Path to one or more files and/or directories that should be searched.
   [    --paths-from]         <FILE_PATH>        Read the list of paths to search from a file. Paths should be separated by newlines.
   [    --progress]                              Display dot (.) for every hundredth searched file or directory.
   [-p, --properties]         <FILE_PROPERTIES>  A filter for file properties.
@@ -129,6 +131,7 @@ Options:
   [-n, --name]               <REGEX>            Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [    --no-recurse]                            Do not search subdirectories.
   [-o, --output]             <OUTPUT_OPTIONS>   Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths]              <PATH>             Path to one or more files and/or directories that should be searched.
   [    --paths-from]         <FILE_PATH>        Read the list of paths to search from a file. Paths should be separated by newlines.
   [    --progress]                              Display dot (.) for every hundredth searched file or directory.
   [-p, --properties]         <FILE_PROPERTIES>  A filter for file properties.
@@ -223,6 +226,7 @@ Options:
   [-n, --name]               <REGEX>               Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [    --no-recurse]                               Do not search subdirectories.
   [-o, --output]             <OUTPUT_OPTIONS>      Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths]              <PATH>                Path to one or more files and/or directories that should be searched.
   [    --paths-from]         <FILE_PATH>           Read the list of paths to search from a file. Paths should be separated by newlines.
   [    --progress]                                 Display dot (.) for every hundredth searched file or directory.
   [-p, --properties]         <FILE_PROPERTIES>     A filter for file properties.
@@ -250,7 +254,6 @@ Options:
   [-y, --display]            <DISPLAY_OPTIONS>     Display of the results.
   [-d, --dry-run]                                  Display which files or directories should be renamed but do not actually rename any file or directory.
   [    --encoding]           <ENCODING>            Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.
-  [    --evaluator]          <EVALUATOR>           Path to the evaluator method to compute replacements. The format is "LibraryPath,FullTypeName.MethodName".
   [-e, --extension]          <EXTENSION_FILTER>    A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].
   [-h, --help]                                     Show command line help.
   [-t, --highlight]          <HIGHLIGHT>           Parts of the output to highlight.
@@ -260,6 +263,7 @@ Options:
    -n, --name                <REGEX>               Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [    --no-recurse]                               Do not search subdirectories.
   [-o, --output]             <OUTPUT_OPTIONS>      Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths]              <PATH>                Path to one or more files and/or directories that should be searched.
   [    --paths-from]         <FILE_PATH>           Read the list of paths to search from a file. Paths should be separated by newlines.
   [    --progress]                                 Display dot (.) for every hundredth searched file or directory.
   [-p, --properties]         <FILE_PROPERTIES>     A filter for file properties.
@@ -286,7 +290,6 @@ Options:
   [-y, --display]            <DISPLAY_OPTIONS>  Display of the results.
   [-d, --dry-run]                               Display which files should be updated but do not actually update any file.
   [    --encoding]           <ENCODING>         Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.
-  [    --evaluator]          <EVALUATOR>        Path to the evaluator method to compute replacements. The format is "LibraryPath,FullTypeName.MethodName".
   [-e, --extension]          <EXTENSION_FILTER> A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].
   [-h, --help]                                  Show command line help.
   [-t, --highlight]          <HIGHLIGHT>        Parts of the output to highlight.
@@ -297,6 +300,7 @@ Options:
   [-n, --name]               <REGEX>            Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].
   [    --no-recurse]                            Do not search subdirectories.
   [-o, --output]             <OUTPUT_OPTIONS>   Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].
+  [    --paths]              <PATH>             Path to one or more files and/or directories that should be searched.
   [    --paths-from]         <FILE_PATH>        Read the list of paths to search from a file. Paths should be separated by newlines.
   [    --progress]                              Display dot (.) for every hundredth searched file or directory.
   [-p, --properties]         <FILE_PROPERTIES>  A filter for file properties.
@@ -379,6 +383,7 @@ Values:
   indent=<INDENT>            -  Indentation for a list of results. Default indentation are 2 spaces.
   line-number                l  Include line number.
   modified-time              mt Include file last modified time.
+  no-align                   -  Do not align columns.
   path=<PATH_DISPLAY>        p
   size                       s  Include file size.
   separator=<SEPARATOR>      s  String that separate each value.
@@ -503,9 +508,18 @@ Values:
   trim-start                 ts Trim leading white-space.
 
 <REPLACEMENT_OPTIONS>
-  from-file                  f  Load replacement string from a file whose path is specified in <REPLACEMENT> value.
+  from-file                  f  Load text from a file whose path is specified in <REPLACEMENT> value.
   literal                    l  Replacement should be treated as a literal expression and not as a replacement expression.
   escape                     e  Interpret literals \a, \b, \f, \n, \r, \t and \v as character escapes.
+  csharp                     cs <REPLACEMENT> is either expression-body of a method with signature 'string M(Match match)'
+                                or a path to a code file that contains public method with signature 'string M(Match match)'.
+                                Imported namespaces (when inline expression is specified):
+                                  System
+                                  System.Collections.Generic
+                                  System.Linq
+                                  System.Text
+                                  System.Text.RegularExpressions
+  from-dll                   -  <REPLACEMENT> is a path to a method in DLL file. The format is 'DllPath,FullTypeName.MethodName'.
 
 <SORT_OPTIONS>
   ascending                  a  Sort items in ascending order.

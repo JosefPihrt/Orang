@@ -33,7 +33,11 @@ namespace Orang.Operations
             {
                 captures = ListCache<Capture>.GetInstance();
 
-                GetCaptures(fileMatch.ContentMatch!, ContentFilter!.GroupNumber, predicate: ContentFilter.Predicate, captures: captures);
+                GetCaptures(
+                    fileMatch.ContentMatch!,
+                    ContentFilter!.GroupNumber,
+                    predicate: ContentFilter.Predicate,
+                    captures: captures);
 
                 if (!DryRun)
                 {

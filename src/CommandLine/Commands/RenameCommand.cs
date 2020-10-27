@@ -44,7 +44,11 @@ namespace Orang.CommandLine
         {
             string indent = GetPathIndent(baseDirectoryPath);
 
-            List<ReplaceItem> replaceItems = ReplaceHelpers.GetReplaceItems(fileMatch.NameMatch!, Options.ReplaceOptions, NameFilter!.Predicate, context.CancellationToken);
+            List<ReplaceItem> replaceItems = ReplaceHelpers.GetReplaceItems(
+                fileMatch.NameMatch!,
+                Options.ReplaceOptions,
+                NameFilter!.Predicate,
+                context.CancellationToken);
 
             string path = fileMatch.Path;
             string newPath = ReplaceHelpers.GetNewPath(fileMatch, replaceItems);
@@ -167,7 +171,13 @@ namespace Orang.CommandLine
         protected override void WriteSummary(SearchTelemetry telemetry, Verbosity verbosity)
         {
             WriteSearchedFilesAndDirectories(telemetry, Options.SearchTarget, verbosity);
-            WriteProcessedFilesAndDirectories(telemetry, Options.SearchTarget, "Renamed files", "Renamed directories", Options.DryRun, verbosity);
+            WriteProcessedFilesAndDirectories(
+                telemetry,
+                Options.SearchTarget,
+                "Renamed files",
+                "Renamed directories",
+                Options.DryRun,
+                verbosity);
         }
 
         private bool AskToOverwrite(SearchContext context, string question, string indent)

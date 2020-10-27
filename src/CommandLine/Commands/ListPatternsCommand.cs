@@ -51,7 +51,8 @@ namespace Orang.CommandLine
             }
             else
             {
-                items = items.Where(f => f.Section != SyntaxSection.GeneralCategories && f.Section != SyntaxSection.NamedBlocks);
+                items = items.Where(
+                    f => f.Section != SyntaxSection.GeneralCategories && f.Section != SyntaxSection.NamedBlocks);
             }
 
             List<SyntaxItem> list;
@@ -156,7 +157,11 @@ namespace Orang.CommandLine
                 return CommandResult.NoMatch;
             }
 
-            void WriteRow(string value1, string? value2, in ConsoleColors colors1 = default, in ConsoleColors colors2 = default)
+            void WriteRow(
+                string value1,
+                string? value2,
+                in ConsoleColors colors1 = default,
+                in ConsoleColors colors2 = default)
             {
                 Write(value1, colors1);
                 Write(' ', width - value1.Length + 1);
@@ -166,7 +171,10 @@ namespace Orang.CommandLine
 
         private IEnumerable<PatternInfo> GetPatterns(char ch)
         {
-            IEnumerable<PatternInfo> patterns = GetPatterns(ch, inCharGroup: Options.InCharGroup, options: Options.RegexOptions);
+            IEnumerable<PatternInfo> patterns = GetPatterns(
+                ch,
+                inCharGroup: Options.InCharGroup,
+                options: Options.RegexOptions);
 
             string? filter = Options.Filter;
 
@@ -184,7 +192,10 @@ namespace Orang.CommandLine
             return patterns;
         }
 
-        private IEnumerable<PatternInfo> GetPatterns(int charCode, bool inCharGroup = false, RegexOptions options = RegexOptions.None)
+        private IEnumerable<PatternInfo> GetPatterns(
+            int charCode,
+            bool inCharGroup = false,
+            RegexOptions options = RegexOptions.None)
         {
             string s = ((char)charCode).ToString();
 
@@ -194,7 +205,10 @@ namespace Orang.CommandLine
                 {
                     case CharEscapeMode.Backslash:
                         {
-                            yield return new PatternInfo(@"\" + ((char)charCode).ToString(), SyntaxSection.CharacterEscapes, "Escaped character");
+                            yield return new PatternInfo(
+                                @"\" + ((char)charCode).ToString(),
+                                SyntaxSection.CharacterEscapes,
+                                "Escaped character");
                             break;
                         }
                     case CharEscapeMode.Bell:
@@ -278,7 +292,10 @@ namespace Orang.CommandLine
 
                     if (Regex.IsMatch(s, pattern, options))
                     {
-                        yield return new PatternInfo(pattern, SyntaxSection.GeneralCategories, $"Unicode category: {item.Description}");
+                        yield return new PatternInfo(
+                            pattern,
+                            SyntaxSection.GeneralCategories,
+                            $"Unicode category: {item.Description}");
                     }
                 }
             }
@@ -291,7 +308,10 @@ namespace Orang.CommandLine
 
                     if (Regex.IsMatch(s, pattern, options))
                     {
-                        yield return new PatternInfo(pattern, SyntaxSection.NamedBlocks, $"Unicode block: {item.Description}");
+                        yield return new PatternInfo(
+                            pattern,
+                            SyntaxSection.NamedBlocks,
+                            $"Unicode block: {item.Description}");
                         break;
                     }
                 }
@@ -299,16 +319,32 @@ namespace Orang.CommandLine
 
             if (charCode <= 0xFF)
             {
-                yield return new PatternInfo(@"\u" + charCode.ToString("X4", CultureInfo.InvariantCulture), SyntaxSection.CharacterEscapes, "Unicode character (four hexadecimal digits)");
+                yield return new PatternInfo(
+                    @"\u" + charCode.ToString("X4", CultureInfo.InvariantCulture),
+                    SyntaxSection.CharacterEscapes,
+                    "Unicode character (four hexadecimal digits)");
 
-                yield return new PatternInfo(@"\x" + charCode.ToString("X2", CultureInfo.InvariantCulture), SyntaxSection.CharacterEscapes, "ASCII character (two hexadecimal digits)");
+                yield return new PatternInfo(
+                    @"\x" + charCode.ToString("X2", CultureInfo.InvariantCulture),
+                    SyntaxSection.CharacterEscapes,
+                    "ASCII character (two hexadecimal digits)");
 
-                yield return new PatternInfo(@"\" + Convert.ToString(charCode, 8).PadLeft(2, '0'), SyntaxSection.CharacterEscapes, "ASCII character (two or three octal digits)");
+                yield return new PatternInfo(
+                    @"\" + Convert.ToString(charCode, 8).PadLeft(2, '0'),
+                    SyntaxSection.CharacterEscapes,
+                    "ASCII character (two or three octal digits)");
 
                 if (charCode > 0 && charCode <= 0x1A)
                 {
-                    yield return new PatternInfo(@"\c" + Convert.ToChar('a' + charCode - 1), SyntaxSection.CharacterEscapes, "ASCII control character");
-                    yield return new PatternInfo(@"\c" + Convert.ToChar('A' + charCode - 1), SyntaxSection.CharacterEscapes, "ASCII control character");
+                    yield return new PatternInfo(
+                        @"\c" + Convert.ToChar('a' + charCode - 1),
+                        SyntaxSection.CharacterEscapes,
+                        "ASCII control character");
+
+                    yield return new PatternInfo(
+                        @"\c" + Convert.ToChar('A' + charCode - 1),
+                        SyntaxSection.CharacterEscapes,
+                        "ASCII control character");
                 }
             }
         }

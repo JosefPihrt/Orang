@@ -14,7 +14,6 @@ orang rename [<PATH>]
 [-y|--display]            <DISPLAY_OPTIONS>
 [-d|--dry-run]
 [   --encoding]           <ENCODING>
-[   --evaluator]          <EVALUATOR>
 [-e|--extension]          <EXTENSION_FILTER>
 [-h|--help]
 [-t|--highlight]          <HIGHLIGHT>
@@ -24,6 +23,7 @@ orang rename [<PATH>]
  -n|--name                <REGEX>
 [   --no-recurse]
 [-o|--output]             <OUTPUT_OPTIONS>
+[   --paths]              <PATH>
 [   --paths-from]         <FILE_PATH>
 [   --progress]
 [-p|--properties]         <FILE_PROPERTIES>
@@ -62,7 +62,7 @@ Regular expression for files' content\. Syntax is \<PATTERN> \[\<PATTERN\_OPTION
 
 **`[-y|--display] <DISPLAY_OPTIONS>`**
 
-Display of the results\. Allowed values are c\[reation\-\]t\[ime\], indent=\<INDENT>, m\[odified\-\]t\[ime\], p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR> and su\[mmary\]\.
+Display of the results\. Allowed values are c\[reation\-\]t\[ime\], indent=\<INDENT>, m\[odified\-\]t\[ime\], no\-align, p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR> and su\[mmary\]\.
 
 **`[-d|--dry-run]`**
 
@@ -71,10 +71,6 @@ Display which files or directories should be renamed but do not actually rename 
 **`[--encoding] <ENCODING>`**
 
 Encoding to use when a file does not contain byte order mark\. Default encoding is UTF\-8\.
-
-**`[--evaluator] <EVALUATOR>`**
-
-Path to the evaluator method to compute replacements\. The format is "LibraryPath,FullTypeName\.MethodName"\.
 
 **`[-e|--extension] <EXTENSION_FILTER>`**
 
@@ -112,6 +108,10 @@ Do not search subdirectories\.
 
 Path to a file that should store output\. Syntax is \<PATH> \[\<OUTPUT\_OPTIONS>\]\. Allowed values are e\[ncoding\]=\<ENCODING>, v\[erbosity\]=\<VERBOSITY> and a\[ppend\]\.
 
+**`[--paths] <PATH>`**
+
+Path to one or more files and/or directories that should be searched\.
+
 **`[--paths-from] <FILE_PATH>`**
 
 Read the list of paths to search from a file\. Paths should be separated by newlines\.
@@ -126,7 +126,7 @@ A filter for file properties\. Allowed values are c\[reation\-\]t\[ime\], m\[odi
 
 **`[-r|--replacement] <REPLACEMENT>`**
 
-Replacement pattern\. Syntax is \<REPLACEMENT> \[\<REPLACEMENT\_OPTIONS>\]\. Allowed values are f\[rom\-file\], l\[iteral\] and e\[scape\]\.
+Replacement pattern\. Syntax is \<REPLACEMENT> \[\<REPLACEMENT\_OPTIONS>\]\. Allowed values are f\[rom\-file\], l\[iteral\], e\[scape\], cs\[harp\] and from\-dll\.
 
 **`[-s|--sort] <SORT_OPTIONS>`**
 

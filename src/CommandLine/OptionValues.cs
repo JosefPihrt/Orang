@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using Orang.FileSystem;
+
+#pragma warning disable RCS0056
 
 namespace Orang.CommandLine
 {
@@ -21,6 +24,7 @@ namespace Orang.CommandLine
         public static readonly SimpleOptionValue Display_CreationTime = SimpleOptionValue.Create("CreationTime", shortValue: "ct", helpValue: "c[reation-]t[ime]", description: "Include file creation time.");
         public static readonly SimpleOptionValue Display_LineNumber = SimpleOptionValue.Create("LineNumber", description: "Include line number.");
         public static readonly SimpleOptionValue Display_ModifiedTime = SimpleOptionValue.Create("ModifiedTime", shortValue: "mt", helpValue: "m[odified-]t[ime]", description: "Include file last modified time.");
+        public static readonly SimpleOptionValue Display_NoAlign = SimpleOptionValue.Create("NoAlign", shortValue: "", description: "Do not align columns.");
         public static readonly SimpleOptionValue Display_Size = SimpleOptionValue.Create("Size", description: "Include file size.");
         public static readonly SimpleOptionValue Display_Summary = SimpleOptionValue.Create("Summary", shortValue: "su", description: "Include summary.");
         public static readonly SimpleOptionValue Display_TrimLine = SimpleOptionValue.Create("TrimLine", shortValue: "", description: "Trim leading and trailing white-space from a line.");
@@ -83,6 +87,12 @@ namespace Orang.CommandLine
         public static readonly SimpleOptionValue Trim = SimpleOptionValue.Create(ReplaceFlags.Trim, description: "Trim leading and trailing white-space.");
         public static readonly SimpleOptionValue TrimEnd = SimpleOptionValue.Create(ReplaceFlags.TrimEnd, shortValue: "te", description: "Trim trailing white-space.");
         public static readonly SimpleOptionValue TrimStart = SimpleOptionValue.Create(ReplaceFlags.TrimStart, shortValue: "ts", description: "Trim leading white-space.");
+
+        public static readonly SimpleOptionValue ReplacementOptions_FromDll = SimpleOptionValue.Create(
+            ReplacementOptions.FromDll,
+            shortValue: "",
+            description: $"{MetaValues.Replacement} is a path to a method in DLL file. " +
+                "The format is 'DllPath,FullTypeName.MethodName'.");
 
         public static readonly KeyValuePairOptionValue Display_Context = KeyValuePairOptionValue.Create("context", "<NUM>", shortKey: "t", description: "A number of lines to display before and after matching line.");
         public static readonly KeyValuePairOptionValue Display_ContextBefore = KeyValuePairOptionValue.Create("context-before", "<NUM>", shortKey: "tb", description: "A number of lines to display before matching line.");

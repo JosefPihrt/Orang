@@ -17,46 +17,62 @@ namespace Orang.CommandLine
     [OptionValueProvider(nameof(Name), OptionValueProviderNames.PatternOptionsWithoutGroupAndNegative)]
     internal sealed class RenameCommandLineOptions : DeleteOrRenameCommandLineOptions
     {
-        [Option(longName: OptionNames.Ask,
+        [Option(
+            longName: OptionNames.Ask,
             HelpText = "Ask for a permission to rename file or directory.")]
         public bool Ask { get; set; }
 
-        [Option(longName: OptionNames.Conflict,
+        [Option(
+            longName: OptionNames.Conflict,
             HelpText = "Defines how to resolve conflict when a file/directory already exists.",
             MetaValue = MetaValues.ConflictResolution)]
         public string Conflict { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Content, longName: OptionNames.Content,
+        [Option(
+            shortName: OptionShortNames.Content,
+            longName: OptionNames.Content,
             HelpText = "Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Content { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.DryRun, longName: OptionNames.DryRun,
-            HelpText = "Display which files or directories should be renamed but do not actually rename any file or directory.")]
+        [Option(
+            shortName: OptionShortNames.DryRun,
+            longName: OptionNames.DryRun,
+            HelpText = "Display which files or directories should be renamed " +
+                "but do not actually rename any file or directory.")]
         public bool DryRun { get; set; }
 
-        [Option(longName: OptionNames.Evaluator,
-            HelpText = "Path to the evaluator method to compute replacements. The format is \"LibraryPath,FullTypeName.MethodName\".",
+        [Hidden]
+        [Option(
+            longName: OptionNames.Evaluator,
+            HelpText = "[deprecated] Use option -r, --replacement instead.",
             MetaValue = MetaValues.Evaluator)]
         public string Evaluator { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.MaxCount, longName: OptionNames.MaxCount,
+        [Option(
+            shortName: OptionShortNames.MaxCount,
+            longName: OptionNames.MaxCount,
             HelpText = "Stop renaming after specified number is reached.",
             MetaValue = MetaValues.Num)]
         public int MaxCount { get; set; }
 
-        [Option(longName: OptionNames.Modify,
+        [Option(
+            longName: OptionNames.Modify,
             HelpText = "Functions to modify result.",
             MetaValue = MetaValues.ReplaceModify)]
         public IEnumerable<string> Modify { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Name, longName: OptionNames.Name,
+        [Option(
+            shortName: OptionShortNames.Name,
+            longName: OptionNames.Name,
             Required = true,
             HelpText = "Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Name { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Replacement, longName: OptionNames.Replacement,
+        [Option(
+            shortName: OptionShortNames.Replacement,
+            longName: OptionNames.Replacement,
             HelpText = "Replacement pattern. Syntax is <REPLACEMENT> [<REPLACEMENT_OPTIONS>].",
             MetaValue = MetaValues.Replacement)]
         public IEnumerable<string> Replacement { get; set; } = null!;
@@ -70,32 +86,69 @@ namespace Orang.CommandLine
 
             options = (RenameCommandOptions)baseOptions;
 
-            if (!TryParseAsEnumFlags(Highlight, OptionNames.Highlight, out HighlightOptions highlightOptions, defaultValue: HighlightOptions.Replacement, provider: OptionValueProviders.RenameHighlightOptionsProvider))
-                return false;
-
-            if (!FilterParser.TryParse(Name, OptionNames.Name, OptionValueProviders.PatternOptionsWithoutGroupAndNegativeProvider, out Filter? nameFilter, out FileNamePart namePart, namePartProvider: OptionValueProviders.NamePartKindProvider_WithoutFullName))
-                return false;
-
-            if (!FilterParser.TryParse(Content, OptionNames.Content, OptionValueProviders.PatternOptionsWithoutPartProvider, out Filter? contentFilter, allowNull: true))
-                return false;
-
-            if (!TryParseReplacement(Replacement, out string? replacement))
-                return false;
-
-            if (!DelegateFactory.TryCreateMatchEvaluator(Evaluator, out MatchEvaluator? matchEvaluator))
-                return false;
-
-            if (replacement != null && matchEvaluator != null)
+            if (!TryParseAsEnumFlags(
+                Highlight,
+                OptionNames.Highlight,
+                out HighlightOptions highlightOptions,
+                defaultValue: HighlightOptions.Replacement,
+                provider: OptionValueProviders.RenameHighlightOptionsProvider))
             {
-                WriteError($"Options '{OptionNames.GetHelpText(OptionNames.Replacement)}' and '{OptionNames.GetHelpText(OptionNames.Evaluator)}' cannot be set both at the same time.");
                 return false;
             }
 
-            if (!TryParseReplaceOptions(Modify, OptionNames.Modify, replacement, matchEvaluator, out ReplaceOptions? replaceOptions))
+            if (!FilterParser.TryParse(
+                Name,
+                OptionNames.Name,
+                OptionValueProviders.PatternOptionsWithoutGroupAndNegativeProvider,
+                out Filter? nameFilter,
+                out FileNamePart namePart,
+                namePartProvider: OptionValueProviders.NamePartKindProvider_WithoutFullName))
+            {
+                return false;
+            }
+
+            if (!FilterParser.TryParse(
+                Content,
+                OptionNames.Content,
+                OptionValueProviders.PatternOptionsWithoutPartProvider,
+                out Filter? contentFilter,
+                allowNull: true))
+            {
+                return false;
+            }
+
+            if (!TryParseReplacement(Replacement, out string? replacement, out MatchEvaluator? matchEvaluator))
                 return false;
 
-            if (!TryParseAsEnum(Conflict, OptionNames.Conflict, out ConflictResolution conflictResolution, defaultValue: ConflictResolution.Ask, provider: OptionValueProviders.ConflictResolutionProvider_WithoutSuffix))
+            if (matchEvaluator == null
+                && Evaluator != null)
+            {
+                WriteWarning($"Option '{OptionNames.GetHelpText(OptionNames.Evaluator)}' is obsolete. " +
+                    $"Use option '{OptionNames.GetHelpText(OptionNames.Replacement)}' instead.");
+
+                if (!DelegateFactory.TryCreateFromAssembly(Evaluator, out matchEvaluator))
+                    return false;
+            }
+
+            if (!TryParseReplaceOptions(
+                Modify,
+                OptionNames.Modify,
+                replacement,
+                matchEvaluator,
+                out ReplaceOptions? replaceOptions))
+            {
                 return false;
+            }
+
+            if (!TryParseAsEnum(
+                Conflict,
+                OptionNames.Conflict,
+                out ConflictResolution conflictResolution,
+                defaultValue: ConflictResolution.Ask,
+                provider: OptionValueProviders.ConflictResolutionProvider_WithoutSuffix))
+            {
+                return false;
+            }
 
             if (!TryParseDisplay(
                 values: Display,
@@ -108,6 +161,7 @@ namespace Orang.CommandLine
                 fileProperties: out ImmutableArray<FileProperty> fileProperties,
                 indent: out string? indent,
                 separator: out string? separator,
+                noAlign: out bool noAlign,
                 contentDisplayStyleProvider: OptionValueProviders.ContentDisplayStyleProvider,
                 pathDisplayStyleProvider: OptionValueProviders.PathDisplayStyleProvider_Rename))
             {
@@ -129,7 +183,8 @@ namespace Orang.CommandLine
                 displayParts: displayParts,
                 fileProperties: fileProperties,
                 indent: indent,
-                separator: separator);
+                separator: separator,
+                alignColumns: !noAlign);
 
             options.HighlightOptions = highlightOptions;
             options.SearchTarget = GetSearchTarget();

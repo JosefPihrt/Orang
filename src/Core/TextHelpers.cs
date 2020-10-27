@@ -23,6 +23,66 @@ namespace Orang
             }
         }
 
+        public static string Indent(string value, int indentLength)
+        {
+            if (value.Contains("\n"))
+            {
+                var sb = new StringBuilder();
+
+                IndentImpl(value, new string(' ', indentLength), ref sb);
+
+                return sb.ToString();
+            }
+
+            return value;
+        }
+
+        public static string Indent(string value, string indent)
+        {
+            if (value.Contains("\n"))
+            {
+                var sb = new StringBuilder();
+
+                IndentImpl(value, indent, ref sb);
+
+                return sb.ToString();
+            }
+
+            return value;
+        }
+
+        public static void Indent(string value, int indentLength, ref StringBuilder sb)
+        {
+            if (value.Contains("\n"))
+            {
+                string indent = new string(' ', indentLength);
+
+                IndentImpl(value, indent, ref sb);
+            }
+            else
+            {
+                sb.Append(value);
+            }
+        }
+
+        private static void IndentImpl(string value, string indent, ref StringBuilder sb)
+        {
+            using (IEnumerator<string> en = ReadLines(value).GetEnumerator())
+            {
+                if (en.MoveNext())
+                {
+                    sb.Append(en.Current);
+
+                    while (en.MoveNext())
+                    {
+                        sb.AppendLine();
+                        sb.Append(indent);
+                        sb.Append(en.Current);
+                    }
+                }
+            }
+        }
+
         internal static string Join(string separator, string lastSeparator, IEnumerable<string> values)
         {
             using (IEnumerator<string> en = values.GetEnumerator())
