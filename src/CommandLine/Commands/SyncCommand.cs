@@ -12,7 +12,9 @@ using static Orang.Logger;
 
 namespace Orang.CommandLine
 {
-    internal sealed class SyncCommand : CommonCopyCommand<SyncCommandOptions>
+    internal sealed class SyncCommand :
+        CommonCopyCommand<SyncCommandOptions>,
+        INotifyDirectoryChanged
     {
         private bool _isRightToLeft;
         private HashSet<string>? _destinationPaths;
@@ -29,6 +31,15 @@ namespace Orang.CommandLine
         {
             get { return Options.ConflictResolution; }
             private set { Options.ConflictResolution = value; }
+        }
+
+        public override bool CanEndProgress => false;
+
+        public event EventHandler<DirectoryChangedEventArgs>? DirectoryChanged;
+
+        private void OnDirectoryChanged(DirectoryChangedEventArgs e)
+        {
+            DirectoryChanged?.Invoke(this, e);
         }
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
@@ -95,7 +106,7 @@ namespace Orang.CommandLine
                         if (_isRightToLeft)
                             return;
 
-                        if (File.GetAttributes(sourcePath) == File.GetAttributes(destinationPath))
+                        if (FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.IgnoredAttributes))
                             return;
                     }
                 }
@@ -106,7 +117,10 @@ namespace Orang.CommandLine
                     if (_isRightToLeft)
                         return;
 
-                    int diff = File.GetLastWriteTimeUtc(sourcePath).CompareTo(File.GetLastWriteTimeUtc(destinationPath));
+                    int diff = FileSystemHelpers.CompareLastWriteTimeUtc(
+                        sourcePath,
+                        destinationPath,
+                        Options.AllowedTimeDiff);
 
                     if (diff > 0)
                     {
@@ -127,7 +141,12 @@ namespace Orang.CommandLine
                         {
                             if (Options.CompareOptions != FileCompareOptions.None)
                             {
-                                diffProperty = FileSystemHelpers.CompareFiles(sourcePath, destinationPath, Options.CompareOptions);
+                                diffProperty = FileSystemHelpers.CompareFiles(
+                                    sourcePath,
+                                    destinationPath,
+                                    Options.CompareOptions,
+                                    Options.IgnoredAttributes,
+                                    Options.AllowedTimeDiff);
 
                                 if (diffProperty == FileCompareOptions.None)
                                     return;
@@ -152,6 +171,9 @@ namespace Orang.CommandLine
 
                     if (ConflictResolution == SyncConflictResolution.Ask)
                     {
+                        if (base.CanEndProgress)
+                            EndProgress(context);
+
                         if (renamePath != null)
                         {
                             WritePathPrefix(sourcePath, "FIL", default, indent);
@@ -229,15 +251,15 @@ namespace Orang.CommandLine
 
                 if (isDirectory)
                 {
-                    ExecuteDirectoryOperations(context.Telemetry, sourcePath, destinationPath, fileExists, directoryExists, preferLeft.Value, indent);
+                    ExecuteDirectoryOperations(context, sourcePath, destinationPath, fileExists, directoryExists, preferLeft.Value, indent);
                 }
                 else if (renamePath != null)
                 {
-                    RenameFile(context.Telemetry, (preferLeft.Value) ? sourcePath : renamePath, (preferLeft.Value) ? renamePath : sourcePath, indent);
+                    RenameFile(context, (preferLeft.Value) ? sourcePath : renamePath, (preferLeft.Value) ? renamePath : sourcePath, indent);
                 }
                 else
                 {
-                    ExecuteFileOperations(context.Telemetry, sourcePath, destinationPath, fileExists, directoryExists, preferLeft.Value, diffProperty, indent);
+                    ExecuteFileOperations(context, sourcePath, destinationPath, fileExists, directoryExists, preferLeft.Value, diffProperty, indent);
                 }
 
                 string GetPrefix(bool invert)
@@ -262,7 +284,7 @@ namespace Orang.CommandLine
         }
 
         private void ExecuteDirectoryOperations(
-            SearchTelemetry telemetry,
+            SearchContext context,
             string sourcePath,
             string destinationPath,
             bool fileExists,
@@ -275,48 +297,48 @@ namespace Orang.CommandLine
                 if (directoryExists)
                 {
                     // update directory's attributes
-                    WritePath(destinationPath, OperationKind.Update, indent);
+                    WritePath(context, destinationPath, OperationKind.Update, indent);
                     UpdateAttributes(sourcePath, destinationPath);
-                    telemetry.UpdatedCount++;
+                    context.Telemetry.UpdatedCount++;
                 }
                 else
                 {
                     if (fileExists)
                     {
                         // create directory (overwrite existing file)
-                        WritePath(destinationPath, OperationKind.Delete, indent);
+                        WritePath(context, destinationPath, OperationKind.Delete, indent);
                         DeleteFile(destinationPath);
-                        telemetry.DeletedCount++;
+                        context.Telemetry.DeletedCount++;
                     }
                     else
                     {
                         // create directory
                     }
 
-                    WritePath(destinationPath, OperationKind.Add, indent);
+                    WritePath(context, destinationPath, OperationKind.Add, indent);
                     CreateDirectory(destinationPath);
-                    telemetry.AddedCount++;
+                    context.Telemetry.AddedCount++;
                 }
             }
             else if (directoryExists)
             {
                 // update directory's attributes
-                WritePath(sourcePath, OperationKind.Update, indent);
+                WritePath(context, sourcePath, OperationKind.Update, indent);
                 UpdateAttributes(destinationPath, sourcePath);
-                telemetry.UpdatedCount++;
+                context.Telemetry.UpdatedCount++;
             }
             else
             {
-                WritePath(sourcePath, OperationKind.Delete, indent);
+                WritePath(context, sourcePath, OperationKind.Delete, indent);
                 DeleteDirectory(sourcePath);
-                telemetry.DeletedCount++;
+                context.Telemetry.DeletedCount++;
 
                 if (fileExists)
                 {
                     // copy file (and overwrite existing directory)
-                    WritePath(sourcePath, OperationKind.Add, indent);
+                    WritePath(context, sourcePath, OperationKind.Add, indent);
                     CopyFile(destinationPath, sourcePath);
-                    telemetry.AddedCount++;
+                    context.Telemetry.AddedCount++;
                 }
                 else
                 {
@@ -326,7 +348,7 @@ namespace Orang.CommandLine
         }
 
         private void ExecuteFileOperations(
-            SearchTelemetry telemetry,
+            SearchContext context,
             string sourcePath,
             string destinationPath,
             bool fileExists,
@@ -339,7 +361,7 @@ namespace Orang.CommandLine
             {
                 if (fileExists)
                 {
-                    WritePath(destinationPath, OperationKind.Update, indent);
+                    WritePath(context, destinationPath, OperationKind.Update, indent);
 
                     if (diffProperty == FileCompareOptions.Attributes)
                     {
@@ -355,9 +377,9 @@ namespace Orang.CommandLine
                 else if (directoryExists)
                 {
                     // copy file (and overwrite existing directory)
-                    WritePath(destinationPath, OperationKind.Delete, indent);
+                    WritePath(context, destinationPath, OperationKind.Delete, indent);
                     DeleteDirectory(destinationPath);
-                    telemetry.DeletedCount++;
+                    context.Telemetry.DeletedCount++;
                 }
                 else
                 {
@@ -365,7 +387,7 @@ namespace Orang.CommandLine
                 }
 
                 if (!fileExists)
-                    WritePath(destinationPath, OperationKind.Add, indent);
+                    WritePath(context, destinationPath, OperationKind.Add, indent);
 
                 if (!fileExists
                     || diffProperty != FileCompareOptions.Attributes)
@@ -375,16 +397,16 @@ namespace Orang.CommandLine
 
                 if (fileExists)
                 {
-                    telemetry.UpdatedCount++;
+                    context.Telemetry.UpdatedCount++;
                 }
                 else
                 {
-                    telemetry.AddedCount++;
+                    context.Telemetry.AddedCount++;
                 }
             }
             else
             {
-                WritePath(sourcePath, (fileExists) ? OperationKind.Update : OperationKind.Delete, indent);
+                WritePath(context, sourcePath, (fileExists) ? OperationKind.Update : OperationKind.Delete, indent);
 
                 if (!fileExists
                     || diffProperty != FileCompareOptions.Attributes)
@@ -392,7 +414,7 @@ namespace Orang.CommandLine
                     DeleteFile(sourcePath);
 
                     if (!fileExists)
-                        telemetry.DeletedCount++;
+                        context.Telemetry.DeletedCount++;
                 }
 
                 if (fileExists)
@@ -408,14 +430,14 @@ namespace Orang.CommandLine
                         CopyFile(destinationPath, sourcePath);
                     }
 
-                    telemetry.UpdatedCount++;
+                    context.Telemetry.UpdatedCount++;
                 }
                 else if (directoryExists)
                 {
                     // create directory (and overwrite existing file)
-                    WritePath(sourcePath, OperationKind.Add, indent);
+                    WritePath(context, sourcePath, OperationKind.Add, indent);
                     CreateDirectory(sourcePath);
-                    telemetry.AddedCount++;
+                    context.Telemetry.AddedCount++;
                 }
                 else
                 {
@@ -424,23 +446,29 @@ namespace Orang.CommandLine
             }
         }
 
-        private void RenameFile(SearchTelemetry telemetry, string sourcePath, string destinationPath, string indent)
+        private void RenameFile(
+            SearchContext context,
+            string sourcePath,
+            string destinationPath,
+            string indent)
         {
             //TODO: File.Exists(renamePath) ?
             string renamePath = Path.Combine(Path.GetDirectoryName(destinationPath)!, Path.GetFileName(sourcePath));
 
-            WritePath(destinationPath, OperationKind.Rename, indent);
-            WritePath(renamePath, OperationKind.None, indent);
+            WritePath(context, destinationPath, OperationKind.Rename, indent);
+            WritePath(context, renamePath, OperationKind.None, indent);
             DeleteFile(destinationPath);
             CopyFile(sourcePath, renamePath);
 
-            telemetry.RenamedCount++;
+            context.Telemetry.RenamedCount++;
         }
 
         private void DeleteDirectory(string path)
         {
             if (!DryRun)
                 Directory.Delete(path, recursive: true);
+
+            OnDirectoryChanged(new DirectoryChangedEventArgs(path, newName: null));
         }
 
         private void CreateDirectory(string path)
@@ -477,10 +505,13 @@ namespace Orang.CommandLine
             throw new InvalidOperationException("File cannot be synchronized.");
         }
 
-        private void WritePath(string path, OperationKind kind, string indent)
+        private void WritePath(SearchContext context, string path, OperationKind kind, string indent)
         {
             if (!ShouldLog(Verbosity.Minimal))
                 return;
+
+            if (base.CanEndProgress)
+                EndProgress(context);
 
             switch (kind)
             {
@@ -525,14 +556,18 @@ namespace Orang.CommandLine
             WriteLine(Verbosity.Minimal);
         }
 
-        protected override void WriteError(Exception ex, string path, string indent)
+        protected override void WriteError(SearchContext context, Exception ex, string path, string indent)
         {
+            if (base.CanEndProgress)
+                EndProgress(context);
+
             Write(indent, Verbosity.Minimal);
             Write("ERR", Colors.Sync_Error, Verbosity.Minimal);
             Write(" ", Verbosity.Minimal);
             Write(ex.Message, verbosity: Verbosity.Minimal);
             WriteLine(Verbosity.Minimal);
 #if DEBUG
+            WriteLine($"{indent}PATH: {path}");
             WriteLine($"{indent}STACK TRACE:");
             WriteLine(ex.StackTrace);
 #endif

@@ -99,7 +99,7 @@ namespace Orang.CommandLine
             catch (Exception ex) when (ex is IOException
                 || ex is UnauthorizedAccessException)
             {
-                WriteError(ex, sourcePath, indent: indent);
+                WriteError(context, ex, sourcePath, indent: indent);
             }
         }
 
@@ -122,7 +122,7 @@ namespace Orang.CommandLine
                 }
                 else if (directoryExists)
                 {
-                    if (File.GetAttributes(sourcePath) == File.GetAttributes(destinationPath))
+                    if (FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.IgnoredAttributes))
                         return;
 
                     ask = true;
@@ -131,7 +131,12 @@ namespace Orang.CommandLine
             else if (fileExists)
             {
                 if (Options.CompareOptions != FileCompareOptions.None
-                    && FileSystemHelpers.FileEquals(sourcePath, destinationPath, Options.CompareOptions))
+                    && FileSystemHelpers.FileEquals(
+                        sourcePath,
+                        destinationPath,
+                        Options.CompareOptions,
+                        Options.IgnoredAttributes,
+                        Options.AllowedTimeDiff))
                 {
                     return;
                 }
@@ -271,6 +276,7 @@ namespace Orang.CommandLine
         }
 
         protected virtual void WriteError(
+            SearchContext context,
             Exception ex,
             string path,
             string indent)

@@ -6,6 +6,7 @@ using static Orang.CommandLine.ParseHelpers;
 
 namespace Orang.CommandLine
 {
+    //TODO: --allowed-time-diff <SECONDS>
     [Verb("sync", HelpText = "Synchronizes content of two directories.")]
     internal sealed class SyncCommandLineOptions : CommonCopyCommandLineOptions
     {
@@ -50,7 +51,6 @@ namespace Orang.CommandLine
                 return false;
 
             options.SearchTarget = SearchTarget.All;
-
             options.CompareOptions = compareOptions;
             options.DryRun = DryRun;
             options.Target = rightDirectory;

@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Orang.FileSystem
 {
@@ -91,16 +91,21 @@ namespace Orang.FileSystem
             return true;
         }
 
-        internal static bool FileEquals(string path1, string path2, FileCompareOptions options)
+        internal static bool FileEquals(
+            string path1,
+            string path2,
+            FileCompareOptions options,
+            FileAttributes ignoredAttributes = 0,
+            TimeSpan? allowedTimeDiff = null)
         {
             if ((options & FileCompareOptions.ModifiedTime) != 0
-                && File.GetLastWriteTimeUtc(path1) != File.GetLastWriteTimeUtc(path2))
+                && !LastWriteTimeUtcEquals(path1, path2, allowedTimeDiff))
             {
                 return false;
             }
 
             if ((options & FileCompareOptions.Attributes) != 0
-                && File.GetAttributes(path1) != File.GetAttributes(path2))
+                && !AttributeEquals(path1, path2, ignoredAttributes))
             {
                 return false;
             }
@@ -127,16 +132,21 @@ namespace Orang.FileSystem
             return true;
         }
 
-        internal static FileCompareOptions CompareFiles(string path1, string path2, FileCompareOptions options)
+        internal static FileCompareOptions CompareFiles(
+            string path1,
+            string path2,
+            FileCompareOptions options,
+            FileAttributes ignoredAttributes = 0,
+            TimeSpan? allowedTimeDiff = null)
         {
             if ((options & FileCompareOptions.ModifiedTime) != 0
-                && File.GetLastWriteTimeUtc(path1) != File.GetLastWriteTimeUtc(path2))
+                && !LastWriteTimeUtcEquals(path1, path2, allowedTimeDiff))
             {
                 return FileCompareOptions.ModifiedTime;
             }
 
             if ((options & FileCompareOptions.Attributes) != 0
-                && File.GetAttributes(path1) != File.GetAttributes(path2))
+                && !AttributeEquals(path1, path2, ignoredAttributes))
             {
                 if ((options & (FileCompareOptions.Size | FileCompareOptions.Content)) != 0)
                 {
@@ -180,6 +190,40 @@ namespace Orang.FileSystem
             }
 
             return FileCompareOptions.None;
+        }
+
+        internal static bool AttributeEquals(
+            string path1,
+            string path2,
+            FileAttributes ignoredAttributes = 0)
+        {
+            FileAttributes attr1 = File.GetAttributes(path1) & ~ignoredAttributes;
+            FileAttributes attr2 = File.GetAttributes(path2) & ~ignoredAttributes;
+
+            return attr1 == attr2;
+        }
+
+        internal static bool LastWriteTimeUtcEquals(string path1, string path2, TimeSpan? allowedDiff = null)
+        {
+            return CompareLastWriteTimeUtc(path1, path2, allowedDiff) == 0;
+        }
+
+        internal static int CompareLastWriteTimeUtc(string path1, string path2, TimeSpan? allowedDiff = null)
+        {
+            DateTime dateTime1 = File.GetLastWriteTimeUtc(path1);
+            DateTime dateTime2 = File.GetLastWriteTimeUtc(path2);
+
+            if (allowedDiff == null)
+                return dateTime1.CompareTo(dateTime2);
+
+            TimeSpan diff = dateTime1 - dateTime2;
+
+            if (diff.Duration() < allowedDiff.Value)
+                return 0;
+
+            Debug.Assert(dateTime1.CompareTo(dateTime2) == ((diff.Ticks > 0) ? 1 : -1));
+
+            return (diff.Ticks > 0) ? 1 : -1;
         }
 
         internal static bool IsSubdirectory(string basePath, string path)

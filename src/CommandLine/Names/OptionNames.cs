@@ -10,6 +10,7 @@ namespace Orang.CommandLine
 {
     internal static class OptionNames
     {
+        public const string AllowedTimeDiff = "allowed-time-diff";
         public const string Ask = "ask";
         public const string Attributes = "attributes";
         public const string AttributesToSkip = "attributes-to-skip";
@@ -27,6 +28,7 @@ namespace Orang.CommandLine
         public const string Help = "help";
         public const string Highlight = "highlight";
         public const string CharGroup = "char-group";
+        public const string IgnoredAttributes = "ignored-attributes";
         public const string IncludeDirectory = "include-directory";
         public const string IncludingBom = "including-bom";
         public const string Input = "input";

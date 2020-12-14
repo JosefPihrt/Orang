@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Diagnostics.CodeAnalysis;
+using System;
+using System.IO;
 using Orang.FileSystem;
 
 namespace Orang.CommandLine
@@ -12,6 +13,10 @@ namespace Orang.CommandLine
         protected CommonCopyCommandOptions()
         {
         }
+
+        public TimeSpan AllowedTimeDiff { get; internal set; }
+
+        public FileAttributes IgnoredAttributes { get; internal set; }
 
         public FileCompareOptions CompareOptions { get; internal set; }
 

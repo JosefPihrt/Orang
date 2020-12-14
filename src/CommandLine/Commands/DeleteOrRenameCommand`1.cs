@@ -32,7 +32,7 @@ namespace Orang.CommandLine
 
         protected sealed override void ExecuteDirectory(string directoryPath, SearchContext context)
         {
-            foreach (FileMatch fileMatch in GetMatches(directoryPath, context, notifyDirectoryChanged: this))
+            foreach (FileMatch fileMatch in GetMatches(directoryPath, context))
             {
                 ExecuteMatch(fileMatch, context, directoryPath);
 
