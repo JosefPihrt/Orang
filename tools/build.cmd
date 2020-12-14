@@ -1,6 +1,6 @@
 @echo off
 
-set _version=0.1.1
+set _version=0.1.2
 
 orang replace -e cmd -c "(?<=--version )\d+\.\d+\.\d+" -r "%_version%"
 
@@ -48,5 +48,11 @@ if errorlevel 1 (
 )
 
 dotnet pack -c Release --no-build -v normal "..\src\CommandLine\CommandLine.csproj"
+
+set _outDir=..\out\Release
+
+md "%_outDir%"
+del /Q "%_outDir%\*"
+copy "..\src\CommandLine\bin\Release\Orang.DotNet.Cli.*.nupkg" "%_outDir%"
 
 pause

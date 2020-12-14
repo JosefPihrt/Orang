@@ -18,6 +18,8 @@ namespace Orang.CommandLine
 {
     internal static class FilterParser
     {
+        private static readonly char[] _equalsOrLessThanOrGreaterThanChars = new[] { '=', '<', '>' };
+
         public static bool TryParse(
             IEnumerable<string> values,
             string optionName,
@@ -77,7 +79,7 @@ namespace Orang.CommandLine
 
             foreach (string option in values.Skip(1))
             {
-                int index = option.IndexOf("=");
+                int index = option.IndexOfAny(_equalsOrLessThanOrGreaterThanChars);
 
                 if (index != -1)
                 {

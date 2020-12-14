@@ -1,3 +1,7 @@
+## 0.1.2 (2020-12-12)
+
+* Enable 'except' for more than two files
+
 ## 0.1.1 (2020-10-26)
 
 * Use C# code to compute replacements ([issue](https://github.com/JosefPihrt/Orang/issues/4))

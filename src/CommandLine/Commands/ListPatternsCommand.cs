@@ -133,7 +133,9 @@ namespace Orang.CommandLine
 
             List<PatternInfo> patterns = GetPatterns(ch).ToList();
 
-            int width = Math.Max(rows.Max(f => f.name.Length), patterns.Max(f => f.Pattern.Length));
+            int width = Math.Max(
+                rows.Max(f => f.name.Length),
+                patterns.Select(f => f.Pattern.Length).DefaultIfEmpty().Max());
 
             WriteLine();
 
@@ -153,7 +155,7 @@ namespace Orang.CommandLine
             }
             else
             {
-                WriteLine("No syntax found");
+                WriteLine("No pattern found");
                 return CommandResult.NoMatch;
             }
 

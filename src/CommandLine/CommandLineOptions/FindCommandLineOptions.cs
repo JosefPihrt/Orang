@@ -40,7 +40,9 @@ namespace Orang.CommandLine
 
             if (aggregateOnly)
             {
-                ConsoleOut.Verbosity = Orang.Verbosity.Minimal;
+                if (ConsoleOut.Verbosity > Orang.Verbosity.Minimal)
+                    ConsoleOut.Verbosity = Orang.Verbosity.Minimal;
+
                 pathDisplayStyle = PathDisplayStyle.Omit;
             }
 

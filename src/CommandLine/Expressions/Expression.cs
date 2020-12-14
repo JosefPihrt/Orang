@@ -131,9 +131,7 @@ namespace Orang.Expressions
                 while (i < length)
                 {
                     if (value[i] == ch)
-#pragma warning disable CS8762
                         return true;
-#pragma warning restore CS8762
 
                     i++;
                 }
@@ -148,9 +146,7 @@ namespace Orang.Expressions
                     if (value[i] == ch1
                         || value[i] == ch2)
                     {
-#pragma warning disable CS8762
                         return true;
-#pragma warning restore CS8762
                     }
 
                     i++;

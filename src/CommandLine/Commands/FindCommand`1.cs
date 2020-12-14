@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Orang.FileSystem;
 using static Orang.CommandLine.LogHelpers;
 using static Orang.Logger;
@@ -52,7 +53,7 @@ namespace Orang.CommandLine
             base.ExecuteCore(context);
 
             if (aggregate)
-                WriteAggregatedValues();
+                WriteAggregatedValues(context.CancellationToken);
         }
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
@@ -226,7 +227,7 @@ namespace Orang.CommandLine
             }
         }
 
-        private void WriteAggregatedValues()
+        private void WriteAggregatedValues(CancellationToken cancellationToken)
         {
             int count = 0;
             ModifyOptions modifyOptions = Options.ModifyOptions;
@@ -240,22 +241,11 @@ namespace Orang.CommandLine
 
                 if ((modifyOptions.Functions & ModifyFunctions.Except) != 0)
                 {
-                    if (_storageIndexes.Count > 2)
-                    {
-                        throw new InvalidOperationException("'Except' operation cannot be applied on more than two " +
-                            $"{((ContentFilter != null) ? "files" : "directories")}.");
-                    }
-
-                    int index = _storageIndexes[0];
-
-                    allValues = allValues
-                        .Take(index)
-                        .Except(GetRange(index, allValues.Count))
-                        .ToList();
+                    allValues = ExceptOrIntersect((x, y, c) => x.Except(y, c));
                 }
                 else if ((modifyOptions.Functions & ModifyFunctions.Intersect) != 0)
                 {
-                    allValues = Intersect();
+                    allValues = ExceptOrIntersect((x, y, c) => x.Intersect(y, c));
                 }
             }
 
@@ -279,6 +269,8 @@ namespace Orang.CommandLine
 
                     do
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         valueWriter.Write(en.Current, symbols, colors, boundaryColors);
                         WriteLine(Verbosity.Minimal);
                         count++;
@@ -295,15 +287,19 @@ namespace Orang.CommandLine
                 }
             }
 
-            List<string> Intersect()
+            List<string> ExceptOrIntersect(
+                Func<IEnumerable<string>, IEnumerable<string>, IEqualityComparer<string>, IEnumerable<string>> operation)
             {
                 var list = new List<string>(GetRange(0, _storageIndexes[0]));
 
                 for (int i = 1; i < _storageIndexes.Count; i++)
                 {
+                    if (list.Count == 0)
+                        break;
+
                     IEnumerable<string> second = GetRange(_storageIndexes[i - 1], _storageIndexes[i]);
 
-                    list = list.Intersect(second, modifyOptions.StringComparer).ToList();
+                    list = operation(list, second, modifyOptions.StringComparer).ToList();
                 }
 
                 return list;
