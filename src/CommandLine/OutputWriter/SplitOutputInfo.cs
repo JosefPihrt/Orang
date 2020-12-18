@@ -37,7 +37,9 @@ namespace Orang
             get
             {
                 return ((PrefixSeparator.Length + 2) * 3)
-                    + SplitWidth + IndexWidth + LengthWidth;
+                    + SplitWidth
+                    + IndexWidth
+                    + LengthWidth;
             }
         }
 

@@ -12,22 +12,29 @@ namespace Orang.CommandLine
     [Verb("list-patterns", HelpText = "Lists regular expression patterns.")]
     internal sealed class ListPatternsCommandLineOptions : CommonListCommandLineOptions
     {
-        [Value(index: 0,
+        [Value(
+            index: 0,
             Required = false,
-            HelpText = "Character or a decimal number that represents the character. For a number literal use escape like \\1.",
+            HelpText = "Character or a decimal number that represents the character. " +
+                "For a number literal use escape like \\1.",
             MetaName = ArgumentMetaNames.Char)]
         public string Value { get; set; } = null!;
 
-        [Option(longName: OptionNames.CharGroup,
+        [Option(
+            longName: OptionNames.CharGroup,
             HelpText = "Treat character as if it is in the character group.")]
         public bool CharGroup { get; set; }
 
-        [Option(shortName: OptionShortNames.Options, longName: OptionNames.Options,
+        [Option(
+            shortName: OptionShortNames.Options,
+            longName: OptionNames.Options,
             HelpText = "Regex options that should be used. Relevant values are [e]cma-[s]cript or [i]gnore-case.",
             MetaValue = MetaValues.RegexOptions)]
         public IEnumerable<string> Options { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Section, longName: OptionNames.Section,
+        [Option(
+            shortName: OptionShortNames.Section,
+            longName: OptionNames.Section,
             HelpText = "Syntax sections to filter.",
             MetaValue = MetaValues.SyntaxSections)]
         public IEnumerable<string> Section { get; set; } = null!;
@@ -51,11 +58,23 @@ namespace Orang.CommandLine
                 value = ch;
             }
 
-            if (!TryParseAsEnumFlags(Options, OptionNames.Options, out RegexOptions regexOptions, provider: OptionValueProviders.RegexOptionsProvider))
+            if (!TryParseAsEnumFlags(
+                Options,
+                OptionNames.Options,
+                out RegexOptions regexOptions,
+                provider: OptionValueProviders.RegexOptionsProvider))
+            {
                 return false;
+            }
 
-            if (!TryParseAsEnumValues(Section, OptionNames.Section, out ImmutableArray<SyntaxSection> sections, provider: OptionValueProviders.SyntaxSectionProvider))
+            if (!TryParseAsEnumValues(
+                Section,
+                OptionNames.Section,
+                out ImmutableArray<SyntaxSection> sections,
+                provider: OptionValueProviders.SyntaxSectionProvider))
+            {
                 return false;
+            }
 
             options.Value = value;
             options.RegexOptions = regexOptions;

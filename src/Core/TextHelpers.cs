@@ -23,6 +23,66 @@ namespace Orang
             }
         }
 
+        public static string Indent(string value, int indentLength)
+        {
+            if (value.Contains("\n"))
+            {
+                var sb = new StringBuilder();
+
+                IndentImpl(value, new string(' ', indentLength), ref sb);
+
+                return sb.ToString();
+            }
+
+            return value;
+        }
+
+        public static string Indent(string value, string indent)
+        {
+            if (value.Contains("\n"))
+            {
+                var sb = new StringBuilder();
+
+                IndentImpl(value, indent, ref sb);
+
+                return sb.ToString();
+            }
+
+            return value;
+        }
+
+        public static void Indent(string value, int indentLength, ref StringBuilder sb)
+        {
+            if (value.Contains("\n"))
+            {
+                string indent = new string(' ', indentLength);
+
+                IndentImpl(value, indent, ref sb);
+            }
+            else
+            {
+                sb.Append(value);
+            }
+        }
+
+        private static void IndentImpl(string value, string indent, ref StringBuilder sb)
+        {
+            using (IEnumerator<string> en = ReadLines(value).GetEnumerator())
+            {
+                if (en.MoveNext())
+                {
+                    sb.Append(en.Current);
+
+                    while (en.MoveNext())
+                    {
+                        sb.AppendLine();
+                        sb.Append(indent);
+                        sb.Append(en.Current);
+                    }
+                }
+            }
+        }
+
         internal static string Join(string separator, string lastSeparator, IEnumerable<string> values)
         {
             using (IEnumerator<string> en = values.GetEnumerator())
@@ -99,26 +159,26 @@ namespace Orang
                     char ch = value[i];
                     int j = i;
                     Func<char, bool> predicate;
-                    bool fCaps = false;
-                    bool fAppend = true;
+                    var fCaps = false;
+                    var fAppend = true;
                     if (char.IsLetter(ch))
                     {
                         if (char.IsUpper(ch) && (i + 1) < len && char.IsUpper(value[i + 1]))
                         {
-                            predicate = char.IsUpper;
+                            predicate = f => char.IsUpper(f);
                             fCaps = true;
                             j++;
                         }
                         else
                         {
-                            predicate = char.IsLower;
+                            predicate = f => char.IsLower(f);
                         }
 
                         j++;
                     }
                     else if (char.IsDigit(ch))
                     {
-                        predicate = char.IsDigit;
+                        predicate = f => char.IsDigit(f);
                         j++;
                     }
                     else

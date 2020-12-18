@@ -6,7 +6,10 @@ using Orang.FileSystem;
 
 namespace Orang.CommandLine
 {
-    internal abstract class DeleteOrRenameCommand<TOptions> : FileSystemCommand<TOptions>, INotifyDirectoryChanged where TOptions : DeleteOrRenameCommandOptions
+    internal abstract class DeleteOrRenameCommand<TOptions> :
+        FileSystemCommand<TOptions>,
+        INotifyDirectoryChanged
+        where TOptions : DeleteOrRenameCommandOptions
     {
         protected DeleteOrRenameCommand(TOptions options) : base(options)
         {

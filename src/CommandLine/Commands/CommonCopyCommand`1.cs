@@ -9,7 +9,8 @@ using static Orang.Logger;
 
 namespace Orang.CommandLine
 {
-    internal abstract class CommonCopyCommand<TOptions> : CommonFindCommand<TOptions> where TOptions : CommonCopyCommandOptions
+    internal abstract class CommonCopyCommand<TOptions> :
+        CommonFindCommand<TOptions> where TOptions : CommonCopyCommandOptions
     {
         protected CommonCopyCommand(TOptions options) : base(options)
         {
@@ -54,7 +55,11 @@ namespace Orang.CommandLine
             ExecuteMatchCore(fileMatch, context, baseDirectoryPath, columnWidths);
         }
 
-        protected sealed override void ExecuteMatchCore(FileMatch fileMatch, SearchContext context, string? baseDirectoryPath = null, ColumnWidths? columnWidths = null)
+        protected sealed override void ExecuteMatchCore(
+            FileMatch fileMatch,
+            SearchContext context,
+            string? baseDirectoryPath = null,
+            ColumnWidths? columnWidths = null)
         {
             ExecuteOperation(fileMatch, context, baseDirectoryPath, GetPathIndent(baseDirectoryPath));
 
@@ -101,11 +106,16 @@ namespace Orang.CommandLine
             }
         }
 
-        protected virtual void ExecuteOperation(SearchContext context, string sourcePath, string destinationPath, bool isDirectory, string indent)
+        protected virtual void ExecuteOperation(
+            SearchContext context,
+            string sourcePath,
+            string destinationPath,
+            bool isDirectory,
+            string indent)
         {
             bool fileExists = File.Exists(destinationPath);
             bool directoryExists = !fileExists && Directory.Exists(destinationPath);
-            bool ask = false;
+            var ask = false;
 
             if (isDirectory)
             {
@@ -151,7 +161,14 @@ namespace Orang.CommandLine
 
             if (!Options.OmitPath)
             {
-                LogHelpers.WritePath(destinationPath, basePath: Target, relativePath: Options.DisplayRelativePath, colors: Colors.Matched_Path, indent: indent, verbosity: Verbosity.Minimal);
+                LogHelpers.WritePath(
+                    destinationPath,
+                    basePath: Target,
+                    relativePath: Options.DisplayRelativePath,
+                    colors: Colors.Matched_Path,
+                    indent: indent,
+                    verbosity: Verbosity.Minimal);
+
                 WriteLine(Verbosity.Minimal);
             }
 
@@ -247,7 +264,12 @@ namespace Orang.CommandLine
             }
         }
 
-        protected sealed override void WritePath(SearchContext context, FileMatch fileMatch, string? baseDirectoryPath, string indent, ColumnWidths? columnWidths)
+        protected sealed override void WritePath(
+            SearchContext context,
+            FileMatch fileMatch,
+            string? baseDirectoryPath,
+            string indent,
+            ColumnWidths? columnWidths)
         {
         }
 

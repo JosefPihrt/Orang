@@ -7,7 +7,8 @@ namespace Orang.CommandLine
 {
     internal abstract class CommonCopyCommandLineOptions : CommonFindCommandLineOptions
     {
-        [Option(longName: OptionNames.Compare,
+        [Option(
+            longName: OptionNames.Compare,
             HelpText = "File properties to be compared.",
             MetaValue = MetaValues.CompareOptions)]
         public IEnumerable<string> Compare { get; set; } = null!;

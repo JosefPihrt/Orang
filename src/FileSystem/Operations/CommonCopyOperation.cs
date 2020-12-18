@@ -62,7 +62,7 @@ namespace Orang.Operations
             string sourcePath = fileMatch.Path;
             bool fileExists = File.Exists(destinationPath);
             bool directoryExists = !fileExists && Directory.Exists(destinationPath);
-            bool ask = false;
+            var ask = false;
 
             if (isDirectory)
             {
@@ -109,7 +109,8 @@ namespace Orang.Operations
             if (ask
                 && ConflictResolution == ConflictResolution.Ask)
             {
-                DialogResult dialogResult = DialogProvider!.GetResult(new OperationProgress(fileMatch, destinationPath, OperationKind));
+                DialogResult dialogResult = DialogProvider!.GetResult(
+                    new OperationProgress(fileMatch, destinationPath, OperationKind));
 
                 switch (dialogResult)
                 {

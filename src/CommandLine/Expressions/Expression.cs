@@ -54,7 +54,10 @@ namespace Orang.Expressions
                                     }
                                 case '-':
                                     {
-                                        expression = new DecrementExpression(value, value.Substring(0, i), value.Substring(i + 2));
+                                        expression = new DecrementExpression(
+                                            value,
+                                            value.Substring(0, i),
+                                            value.Substring(i + 2));
                                         return true;
                                     }
                                 default:
@@ -128,9 +131,7 @@ namespace Orang.Expressions
                 while (i < length)
                 {
                     if (value[i] == ch)
-#pragma warning disable CS8762
                         return true;
-#pragma warning restore CS8762
 
                     i++;
                 }
@@ -145,9 +146,7 @@ namespace Orang.Expressions
                     if (value[i] == ch1
                         || value[i] == ch2)
                     {
-#pragma warning disable CS8762
                         return true;
-#pragma warning restore CS8762
                     }
 
                     i++;
@@ -180,12 +179,22 @@ namespace Orang.Expressions
 
                 string intervalValue = value.Substring(openTokenIndex);
 
-                BinaryExpression? expression1 = CreateBinaryExpression(value, identifier, openTokenIndex, semicolonIndex, GetBinaryOperatorKind(value[openTokenIndex]));
+                BinaryExpression? expression1 = CreateBinaryExpression(
+                    value,
+                    identifier,
+                    openTokenIndex,
+                    semicolonIndex,
+                    GetBinaryOperatorKind(value[openTokenIndex]));
 
                 if (expression1 == null)
                     return null;
 
-                BinaryExpression? expression2 = CreateBinaryExpression(value, identifier, semicolonIndex, closeTokenIndex, GetBinaryOperatorKind(value[closeTokenIndex]));
+                BinaryExpression? expression2 = CreateBinaryExpression(
+                    value,
+                    identifier,
+                    semicolonIndex,
+                    closeTokenIndex,
+                    GetBinaryOperatorKind(value[closeTokenIndex]));
 
                 if (expression2 == null)
                     return null;
@@ -194,7 +203,12 @@ namespace Orang.Expressions
             }
         }
 
-        private static BinaryExpression? CreateBinaryExpression(string value, string identifier, int index1, int index2, ExpressionKind kind)
+        private static BinaryExpression? CreateBinaryExpression(
+            string value,
+            string identifier,
+            int index1,
+            int index2,
+            ExpressionKind kind)
         {
             if (kind == ExpressionKind.None)
                 return null;

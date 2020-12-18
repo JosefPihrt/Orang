@@ -30,7 +30,11 @@ namespace Orang.Operations
             FileMatch fileMatch,
             string directoryPath)
         {
-            List<ReplaceItem> replaceItems = ReplaceHelpers.GetReplaceItems(fileMatch.NameMatch!, RenameOptions, NameFilter?.Predicate, CancellationToken);
+            List<ReplaceItem> replaceItems = ReplaceHelpers.GetReplaceItems(
+                fileMatch.NameMatch!,
+                RenameOptions,
+                NameFilter?.Predicate,
+                CancellationToken);
 
             string path = fileMatch.Path;
             string newPath = ReplaceHelpers.GetNewPath(fileMatch, replaceItems);
@@ -63,7 +67,7 @@ namespace Orang.Operations
                 }
             }
 
-            bool renamed = false;
+            var renamed = false;
 
             try
             {

@@ -8,12 +8,11 @@ Searches the file system for files and replaces its content\.
 orang replace [<PATH>]
 [   --ask]                <ASK_MODE>
 [-a|--attributes]         <ATTRIBUTES>
-[   --attributes-to-skip] <ATTRIBUTES>
+[-b|--attributes-to-skip] <ATTRIBUTES>
  -c|--content             <REGEX>
 [-y|--display]            <DISPLAY_OPTIONS>
 [-d|--dry-run]
 [   --encoding]           <ENCODING>
-[   --evaluator]          <EVALUATOR>
 [-e|--extension]          <EXTENSION_FILTER>
 [-h|--help]
 [-t|--highlight]          <HIGHLIGHT>
@@ -24,6 +23,7 @@ orang replace [<PATH>]
 [-n|--name]               <REGEX>
 [   --no-recurse]
 [-o|--output]             <OUTPUT_OPTIONS>
+[   --paths]              <PATH>
 [   --paths-from]         <FILE_PATH>
 [   --progress]
 [-p|--properties]         <FILE_PROPERTIES>
@@ -48,7 +48,7 @@ Ask for permission after each file or value\. Allowed values are f\[ile\] and v\
 
 File attributes that are required\. Allowed values are archive, compressed, d\[irectory\], e\[mpty\], encrypted, f\[ile\], h\[idden\], normal, offline, r\[ead\-only\], r\[eparse\]\-p\[oint\], s\[ystem\] and temporary\.
 
-**`[--attributes-to-skip] <ATTRIBUTES>`**
+**`[-b|--attributes-to-skip] <ATTRIBUTES>`**
 
 File attributes that should be skipped\. Allowed values are archive, compressed, e\[mpty\], encrypted, h\[idden\], normal, offline, r\[ead\-only\], r\[eparse\]\-p\[oint\], s\[ystem\] and temporary\.
 
@@ -58,7 +58,7 @@ Regular expression for files' content\. Syntax is \<PATTERN> \[\<PATTERN\_OPTION
 
 **`[-y|--display] <DISPLAY_OPTIONS>`**
 
-Display of the results\. Allowed values are c\[ontent\]=\<CONTENT\_DISPLAY>, t \[context\]=\<NUM>, context\-before=\<NUM>, context\-after=\<NUM>, c\[ount\], c\[reation\-\]t\[ime\], indent=\<INDENT>, l\[ine\-number\], m\[odified\-\]t\[ime\], p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR>, su\[mmary\] and trim\-line\.
+Display of the results\. Allowed values are c\[ontent\]=\<CONTENT\_DISPLAY>, t \[context\]=\<NUM>, tb \[context\-before\]=\<NUM>, ta \[context\-after\]=\<NUM>, c\[ount\], c\[reation\-\]t\[ime\], indent=\<INDENT>, l\[ine\-number\], m\[odified\-\]t\[ime\], no\-align, p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR>, su\[mmary\] and trim\-line\.
 
 **`[-d|--dry-run]`**
 
@@ -67,10 +67,6 @@ Display which files should be updated but do not actually update any file\.
 **`[--encoding] <ENCODING>`**
 
 Encoding to use when a file does not contain byte order mark\. Default encoding is UTF\-8\.
-
-**`[--evaluator] <EVALUATOR>`**
-
-Path to the evaluator method to compute replacements\. The format is "LibraryPath,FullTypeName\.MethodName"\.
 
 **`[-e|--extension] <EXTENSION_FILTER>`**
 
@@ -112,6 +108,10 @@ Do not search subdirectories\.
 
 Path to a file that should store output\. Syntax is \<PATH> \[\<OUTPUT\_OPTIONS>\]\. Allowed values are e\[ncoding\]=\<ENCODING>, v\[erbosity\]=\<VERBOSITY> and a\[ppend\]\.
 
+**`[--paths] <PATH>`**
+
+Path to one or more files and/or directories that should be searched\.
+
 **`[--paths-from] <FILE_PATH>`**
 
 Read the list of paths to search from a file\. Paths should be separated by newlines\.
@@ -126,7 +126,7 @@ A filter for file properties\. Allowed values are c\[reation\-\]t\[ime\], m\[odi
 
 **`[-r|--replacement] <REPLACEMENT>`**
 
-Replacement pattern\. Syntax is \<REPLACEMENT> \[\<REPLACEMENT\_OPTIONS>\]\. Allowed values are f\[rom\-file\], l\[iteral\] and e\[scape\]\.
+Replacement pattern\. Syntax is \<REPLACEMENT> \[\<REPLACEMENT\_OPTIONS>\]\. Allowed values are f\[rom\-file\], l\[iteral\], e\[scape\], cs\[harp\] and from\-dll\.
 
 **`[-s|--sort] <SORT_OPTIONS>`**
 

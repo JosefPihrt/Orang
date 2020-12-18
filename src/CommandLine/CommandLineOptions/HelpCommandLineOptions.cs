@@ -9,17 +9,22 @@ namespace Orang.CommandLine
     [OptionValueProvider(nameof(Filter), OptionValueProviderNames.PatternOptionsWithoutPartAndNegative)]
     internal sealed class HelpCommandLineOptions : AbstractCommandLineOptions
     {
-        [Value(index: 0,
+        [Value(
+            index: 0,
             HelpText = "Command name.",
             MetaName = ArgumentMetaNames.Command)]
         public string Command { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Filter, longName: OptionNames.Filter,
+        [Option(
+            shortName: OptionShortNames.Filter,
+            longName: OptionNames.Filter,
             HelpText = "Regular expression for filtering help text. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Filter { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Manual, longName: OptionNames.Manual,
+        [Option(
+            shortName: OptionShortNames.Manual,
+            longName: OptionNames.Manual,
             HelpText = "Display full manual.")]
         public bool Manual { get; set; }
 

@@ -45,7 +45,7 @@ namespace Orang.CommandLine
             }
         }
 
-        private ValueWriter ReplacementValueWriter => _replacementValueWriter ?? (_replacementValueWriter = new ValueWriter(Writer, Options.Indent));
+        private ValueWriter ReplacementValueWriter => _replacementValueWriter ??= new ValueWriter(Writer, Options.Indent);
 
         protected override void WriteStartMatches()
         {
@@ -62,7 +62,10 @@ namespace Orang.CommandLine
             }
             else if (Options.IncludeLineNumber)
             {
-                ((LineNumberValueWriter)ValueWriter).LineNumber += TextHelpers.CountLines(Input, capture.Index, capture.Length);
+                ((LineNumberValueWriter)ValueWriter).LineNumber += TextHelpers.CountLines(
+                    Input,
+                    capture.Index,
+                    capture.Length);
             }
         }
 

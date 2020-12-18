@@ -106,7 +106,9 @@ namespace Orang
             throw new ArgumentException("", nameof(name));
         }
 
-        public static IEnumerable<OptionValueProvider> GetProviders(IEnumerable<CommandOption> options, IEnumerable<OptionValueProvider> providers)
+        public static IEnumerable<OptionValueProvider> GetProviders(
+            IEnumerable<CommandOption> options,
+            IEnumerable<OptionValueProvider> providers)
         {
             IEnumerable<string?> metaValues = options
                 .SelectMany(f => _metaValueRegex.Matches(f.Description).Cast<Match>().Select(m => m.Value))

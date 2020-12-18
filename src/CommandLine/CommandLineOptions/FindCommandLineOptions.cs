@@ -10,7 +10,8 @@ namespace Orang.CommandLine
     [Verb("find", HelpText = "Searches the file system for files and directories and optionally searches files' content.")]
     internal sealed class FindCommandLineOptions : CommonFindCommandLineOptions
     {
-        [Option(longName: OptionNames.Modify,
+        [Option(
+            longName: OptionNames.Modify,
             HelpText = "Functions to modify results.",
             MetaValue = MetaValues.ModifyOptions)]
         public IEnumerable<string> Modify { get; set; } = null!;
@@ -39,7 +40,9 @@ namespace Orang.CommandLine
 
             if (aggregateOnly)
             {
-                ConsoleOut.Verbosity = Orang.Verbosity.Minimal;
+                if (ConsoleOut.Verbosity > Orang.Verbosity.Minimal)
+                    ConsoleOut.Verbosity = Orang.Verbosity.Minimal;
+
                 pathDisplayStyle = PathDisplayStyle.Omit;
             }
 
@@ -54,6 +57,7 @@ namespace Orang.CommandLine
                 fileProperties: format.FileProperties,
                 indent: format.Indent,
                 separator: format.Separator,
+                alignColumns: format.AlignColumns,
                 includeBaseDirectory: format.IncludeBaseDirectory);
 
             return true;

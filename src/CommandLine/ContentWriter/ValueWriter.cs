@@ -22,12 +22,22 @@ namespace Orang.CommandLine
 
         public bool IncludeEndingIndent { get; }
 
-        public void Write(string value, OutputSymbols symbols, in ConsoleColors colors = default, in ConsoleColors boundaryColors = default)
+        public void Write(
+            string value,
+            OutputSymbols symbols,
+            in ConsoleColors colors = default,
+            in ConsoleColors boundaryColors = default)
         {
             Write(value, 0, value.Length, symbols, colors, boundaryColors);
         }
 
-        public void Write(string value, int startIndex, int length, OutputSymbols? symbols, in ConsoleColors colors = default, in ConsoleColors boundaryColors = default)
+        public void Write(
+            string value,
+            int startIndex,
+            int length,
+            OutputSymbols? symbols,
+            in ConsoleColors colors = default,
+            in ConsoleColors boundaryColors = default)
         {
             if (symbols == null)
                 symbols = OutputSymbols.Empty;
@@ -37,7 +47,12 @@ namespace Orang.CommandLine
             if (!ReferenceEquals(symbols, OutputSymbols.Empty)
                 || !string.IsNullOrEmpty(Indent))
             {
-                WriteImpl(value, startIndex, length, symbols, (string.IsNullOrEmpty(symbols.OpenBoundary)) ? colors : default);
+                WriteImpl(
+                    value,
+                    startIndex,
+                    length,
+                    symbols,
+                    (string.IsNullOrEmpty(symbols.OpenBoundary)) ? colors : default);
             }
             else
             {

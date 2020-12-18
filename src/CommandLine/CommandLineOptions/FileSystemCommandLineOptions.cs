@@ -17,55 +17,79 @@ namespace Orang.CommandLine
     {
         private FileSystemAttributes FileSystemAttributes { get; set; }
 
-        [Value(index: 0,
+        [Value(
+            index: 0,
             HelpText = "Path to one or more files and/or directories that should be searched.",
             MetaName = ArgumentMetaNames.Path)]
         public IEnumerable<string> Path { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Attributes, longName: OptionNames.Attributes,
-        HelpText = "File attributes that are required.",
-        MetaValue = MetaValues.Attributes)]
+        [Option(
+            shortName: OptionShortNames.Attributes,
+            longName: OptionNames.Attributes,
+            HelpText = "File attributes that are required.",
+            MetaValue = MetaValues.Attributes)]
         public IEnumerable<string> Attributes { get; set; } = null!;
 
-        [Option(longName: OptionNames.AttributesToSkip,
+        [Option(
+            shortName: OptionShortNames.AttributesToSkip,
+            longName: OptionNames.AttributesToSkip,
             HelpText = "File attributes that should be skipped.",
             MetaValue = MetaValues.Attributes)]
         public IEnumerable<string> AttributesToSkip { get; set; } = null!;
 
-        [Option(longName: OptionNames.Encoding,
+        [Option(
+            longName: OptionNames.Encoding,
             HelpText = "Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.",
             MetaValue = MetaValues.Encoding)]
         public string Encoding { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Extension, longName: OptionNames.Extension,
-            HelpText = "A filter for file extensions (case-insensitive by default). Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].",
+        [Option(
+            shortName: OptionShortNames.Extension,
+            longName: OptionNames.Extension,
+            HelpText = "A filter for file extensions (case-insensitive by default). " +
+                "Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].",
             MetaValue = MetaValues.ExtensionFilter)]
         public IEnumerable<string> Extension { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.Properties, longName: OptionNames.Properties,
+        [Option(
+            shortName: OptionShortNames.Properties,
+            longName: OptionNames.Properties,
             HelpText = "A filter for file properties.",
             MetaValue = MetaValues.FileProperties)]
         public IEnumerable<string> FileProperties { get; set; } = null!;
 
-        [Option(shortName: OptionShortNames.IncludeDirectory, longName: OptionNames.IncludeDirectory,
+        [Option(
+            shortName: OptionShortNames.IncludeDirectory,
+            longName: OptionNames.IncludeDirectory,
             HelpText = "Regular expression for a directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> IncludeDirectory { get; set; } = null!;
 
-        [Option(longName: OptionNames.NoRecurse,
+        [Option(
+            longName: OptionNames.NoRecurse,
             HelpText = "Do not search subdirectories.")]
         public bool NoRecurse { get; set; }
 
-        [Option(longName: OptionNames.PathsFrom,
+        [Option(
+            longName: OptionNames.Paths,
+            HelpText = "Path to one or more files and/or directories that should be searched.",
+            MetaValue = MetaValues.Path)]
+        public IEnumerable<string> Paths { get; set; } = null!;
+
+        [Option(
+            longName: OptionNames.PathsFrom,
             HelpText = "Read the list of paths to search from a file. Paths should be separated by newlines.",
             MetaValue = MetaValues.FilePath)]
         public string PathsFrom { get; set; } = null!;
 
-        [Option(longName: OptionNames.Progress,
+        [Option(
+            longName: OptionNames.Progress,
             HelpText = "Display dot (.) for every hundredth searched file or directory.")]
         public bool Progress { get; set; }
 
-        [Option(shortName: OptionShortNames.Sort, longName: OptionNames.Sort,
+        [Option(
+            shortName: OptionShortNames.Sort,
+            longName: OptionNames.Sort,
             HelpText = "Sort matched files and directories.",
             MetaValue = MetaValues.SortOptions)]
         public IEnumerable<string> Sort { get; set; } = null!;
@@ -82,11 +106,23 @@ namespace Orang.CommandLine
             if (!TryParsePaths(out ImmutableArray<PathInfo> paths))
                 return false;
 
-            if (!TryParseAsEnumFlags(Attributes, OptionNames.Attributes, out FileSystemAttributes attributes, provider: OptionValueProviders.FileSystemAttributesProvider))
+            if (!TryParseAsEnumFlags(
+                Attributes,
+                OptionNames.Attributes,
+                out FileSystemAttributes attributes,
+                provider: OptionValueProviders.FileSystemAttributesProvider))
+            {
                 return false;
+            }
 
-            if (!TryParseAsEnumFlags(AttributesToSkip, OptionNames.AttributesToSkip, out FileSystemAttributes attributesToSkip, provider: OptionValueProviders.FileSystemAttributesToSkipProvider))
+            if (!TryParseAsEnumFlags(
+                AttributesToSkip,
+                OptionNames.AttributesToSkip,
+                out FileSystemAttributes attributesToSkip,
+                provider: OptionValueProviders.FileSystemAttributesToSkipProvider))
+            {
                 return false;
+            }
 
             if (!TryParseEncoding(Encoding, out Encoding defaultEncoding, Text.EncodingHelpers.UTF8NoBom))
                 return false;
@@ -94,8 +130,17 @@ namespace Orang.CommandLine
             if (!TryParseSortOptions(Sort, OptionNames.Sort, out SortOptions? sortOptions))
                 return false;
 
-            if (!FilterParser.TryParse(IncludeDirectory, OptionNames.IncludeDirectory, OptionValueProviders.PatternOptionsProvider, out Filter? directoryFilter, out FileNamePart directoryNamePart, allowNull: true, namePartProvider: OptionValueProviders.NamePartKindProvider_WithoutExtension))
+            if (!FilterParser.TryParse(
+                IncludeDirectory,
+                OptionNames.IncludeDirectory,
+                OptionValueProviders.PatternOptionsProvider,
+                out Filter? directoryFilter,
+                out FileNamePart directoryNamePart,
+                allowNull: true,
+                namePartProvider: OptionValueProviders.NamePartKindProvider_WithoutExtension))
+            {
                 return false;
+            }
 
             if (!FilterParser.TryParse(
                 Extension,
@@ -123,7 +168,14 @@ namespace Orang.CommandLine
             {
                 if ((attributesToSkip & FileSystemAttributes.Empty) != 0)
                 {
-                    Logger.WriteError($"Value '{OptionValueProviders.FileSystemAttributesProvider.GetValue(nameof(FileSystemAttributes.Empty)).HelpValue}' cannot be specified both for '{OptionNames.GetHelpText(OptionNames.Attributes)}' and '{OptionNames.GetHelpText(OptionNames.AttributesToSkip)}'.");
+                    string helpValue = OptionValueProviders.FileSystemAttributesProvider
+                        .GetValue(nameof(FileSystemAttributes.Empty))
+                        .HelpValue;
+
+                    Logger.WriteError($"Value '{helpValue}' cannot be specified both for " +
+                        $"'{OptionNames.GetHelpText(OptionNames.Attributes)}' and " +
+                        $"'{OptionNames.GetHelpText(OptionNames.AttributesToSkip)}'.");
+
                     return false;
                 }
 
@@ -173,6 +225,14 @@ namespace Orang.CommandLine
                 return false;
             }
 
+            if (Paths.Any())
+            {
+                if (!TryEnsureFullPath(Paths, PathOrigin.Option, out ImmutableArray<PathInfo> paths2))
+                    return false;
+
+                paths = paths.AddRange(paths2);
+            }
+
             ImmutableArray<PathInfo> pathsFromFile = ImmutableArray<PathInfo>.Empty;
 
             if (PathsFrom != null)
@@ -191,9 +251,9 @@ namespace Orang.CommandLine
             if (Console.IsInputRedirected)
             {
                 ImmutableArray<PathInfo> pathsFromInput = ConsoleHelpers.ReadRedirectedInputAsLines()
-                   .Where(f => !string.IsNullOrEmpty(f))
-                   .Select(f => new PathInfo(f, PathOrigin.RedirectedInput))
-                   .ToImmutableArray();
+                    .Where(f => !string.IsNullOrEmpty(f))
+                    .Select(f => new PathInfo(f, PathOrigin.RedirectedInput))
+                    .ToImmutableArray();
 
                 paths = paths.AddRange(pathsFromInput);
             }
@@ -204,7 +264,10 @@ namespace Orang.CommandLine
             return true;
         }
 
-        private static bool TryEnsureFullPath(IEnumerable<string> paths, PathOrigin kind, out ImmutableArray<PathInfo> fullPaths)
+        private static bool TryEnsureFullPath(
+            IEnumerable<string> paths,
+            PathOrigin kind,
+            out ImmutableArray<PathInfo> fullPaths)
         {
             ImmutableArray<PathInfo>.Builder builder = ImmutableArray.CreateBuilder<PathInfo>();
 

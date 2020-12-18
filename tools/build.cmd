@@ -1,5 +1,17 @@
 @echo off
 
+set _version=0.1.2
+
+orang replace -e cmd -c "(?<=--version )\d+\.\d+\.\d+" -r "%_version%"
+
+orang replace "..\src" -e csproj -c "(?<=<PackageVersion>)\d+\.\d+\.\d+(?=</PackageVersion>)" -r "%_version%"
+
+echo.
+
+orang delete "..\src" -a d -n "bin|obj" e --content-only -t n -y su s
+
+echo.
+
 dotnet restore --force "..\src\Orang.sln"
 
 "%ProgramFiles%\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild" "..\src\Orang.sln" ^
@@ -36,5 +48,11 @@ if errorlevel 1 (
 )
 
 dotnet pack -c Release --no-build -v normal "..\src\CommandLine\CommandLine.csproj"
+
+set _outDir=..\out\Release
+
+md "%_outDir%"
+del /Q "%_outDir%\*"
+copy "..\src\CommandLine\bin\Release\Orang.DotNet.Cli.*.nupkg" "%_outDir%"
 
 pause

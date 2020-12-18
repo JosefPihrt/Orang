@@ -1,3 +1,23 @@
+## 0.1.2 (2020-12-12)
+
+* Enable 'except' for more than two files
+
+## 0.1.1 (2020-10-26)
+
+* Use C# code to compute replacements ([issue](https://github.com/JosefPihrt/Orang/issues/4))
+  * `--replace <CSHARP_EXPRESSION> cs[harp]`
+  * `--replace <CSHARP_CODE_FILE_PATH> cs[harp] f[rom-file]`
+* Deprecate option `--evaluator` and replace it with `--replace "DllPath,FullTypeName.MethodName" from-dll`
+* Add option `--display no-align` to disable alignment of columns
+* Add option `--paths`
+  * Use this option when you need to specify path(s) at a different than first position
+
+## 0.1.0 (2020-09-01)
+
+* Add shortcut 'b' for option '--attributes-to-skip'
+* Add shortcut 'tb' for option 'context-before'
+* Add shortcut 'ta' for option 'context-after'
+
 ## 0.1.0-rc2 (2020-06-09)
 
 * Change target framework to 'netcoreapp3.0'

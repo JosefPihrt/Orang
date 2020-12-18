@@ -9,7 +9,10 @@ namespace Orang.CommandLine
 {
     internal static class SortHelpers
     {
-        public static IEnumerable<SearchResult> SortResults(List<SearchResult> results, ImmutableArray<SortDescriptor> descriptors, PathDisplayStyle pathDisplayStyle)
+        public static IEnumerable<SearchResult> SortResults(
+            List<SearchResult> results,
+            ImmutableArray<SortDescriptor> descriptors,
+            PathDisplayStyle pathDisplayStyle)
         {
             if (!descriptors.Any())
                 return results;
@@ -52,7 +55,10 @@ namespace Orang.CommandLine
         {
             return property switch
             {
-                SortProperty.Name => (pathDisplayStyle == PathDisplayStyle.Match) ? SearchResultComparer.Match : SearchResultComparer.Name,
+                SortProperty.Name => (pathDisplayStyle == PathDisplayStyle.Match)
+                    ? SearchResultComparer.Match
+                    : SearchResultComparer.Name,
+
                 SortProperty.CreationTime => SearchResultComparer.CreationTime,
                 SortProperty.ModifiedTime => SearchResultComparer.ModifiedTime,
                 SortProperty.Size => SearchResultComparer.Size,

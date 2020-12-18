@@ -41,7 +41,9 @@ namespace Orang
         {
             IEnumerable<string> values = Enum.GetValues(typeof(TEnum))
                 .Cast<TEnum>()
-                .Select(f => _lowerLetterUpperLetterRegex.Replace(f.ToString(), e => e.Value.Insert(1, "-")).ToLowerInvariant())
+                .Select(f => _lowerLetterUpperLetterRegex
+                    .Replace(f.ToString(), e => e.Value.Insert(1, "-"))
+                    .ToLowerInvariant())
                 .OrderBy(f => f);
 
             if (multiline)

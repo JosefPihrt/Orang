@@ -81,11 +81,13 @@ The option `-d, --dry-run` gives you opportunity to see the results before you a
 
 The option `-t, --highlight` with values `m[atch] r[eplacement]` gives you opportunity to see the match and the replacement side-by-side in the output.
 
-### Evaluator
+### Use C# Code to Compute Replacements
 
-The option '--evaluator' gives you opportunity to precisely define how the replacement string is computed.
-Evaluator is a path to a library (dll file) which contains method that has signature compatible with [MatchEvaluator](https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.matchevaluator) i.e. `string M(Match match)`.
-Expected format is 'MyLib.dll,MyNamespace.MyClass.MyMethod'.
+Use `-r, --replacement <EXPRESSION> cs[harp]` syntax to specify C# inline expression.
+The expression is considered to be expression-body of a method with signature `string M(Match match)`
+
+Use `-r, --replacement <CODE_FILE_PATH> cs[harp] f[rom-file]` syntax to specify C# code file.
+This code file must contain public method with signature `string M(Match match)`.
 
 ### Load Pattern From a File
 
@@ -111,23 +113,6 @@ Note: Replacement string can be store in a file as well.
 
 Goal: Capitalize first character of a word at the beginning of the text or at the beginning of a sentence.
 
-Folder `C:/Lib` contains library `Evaluator.dll` which contains method `N.C.M`.
-
-```csharp
-using System.Text.RegularExpressions;
-
-namespace N
-{
-    public static class C
-    {
-        public static string M(Match match)
-        {
-            return char.ToUpper(match.Value[0]) + match.Value.Substring(1);
-        }
-    }
-}
-```
-
 File `pattern.txt` has following content:
 
 ```
@@ -145,14 +130,14 @@ File `pattern.txt` has following content:
 orang replace ^
  --extension txt ^
  --content "pattern.txt" from-file ^
- --evaluator "C:/Lib/Evaluator.dll,N.C.M" ^
+ --replacement "char.ToUpper(match.Value[0]) + match.Value.Substring(1)" csharp ^
  --highlight match replacement ^
  --display path=omit summary ^
  --dry-run
 ```
 or
 ```
-orang replace -e txt -c "pattern.txt" f --evaluator "C:/Lib/Evaluator.dll,N.C.M" -t m r -y p=o su -d
+orang replace -e txt -c "pattern.txt" f -r "char.ToUpper(match.Value[0]) + match.Value.Substring(1)" cs -t m r -y p=o su -d
 ```
 
 ![Capitalize first character in a sentence](/images/CapitalizeFirstCharInSentence.png)

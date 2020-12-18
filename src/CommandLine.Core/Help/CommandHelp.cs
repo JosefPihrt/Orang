@@ -37,7 +37,10 @@ namespace Orang.CommandLine.Help
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay => $"{Name}  {Description}";
 
-        public static CommandHelp Create(Command command, IEnumerable<OptionValueProvider>? providers = null, Filter? filter = null)
+        public static CommandHelp Create(
+            Command command,
+            IEnumerable<OptionValueProvider>? providers = null,
+            Filter? filter = null)
         {
             ImmutableArray<ArgumentItem> arguments = (command.Arguments.Any())
                 ? HelpProvider.GetArgumentItems(command.Arguments, filter)
@@ -45,7 +48,10 @@ namespace Orang.CommandLine.Help
 
             ImmutableArray<OptionItem> options = HelpProvider.GetOptionItems(command.Options, filter);
 
-            ImmutableArray<OptionValueList> values = HelpProvider.GetAllowedValues(command.Options, providers ?? ImmutableArray<OptionValueProvider>.Empty, filter);
+            ImmutableArray<OptionValueList> values = HelpProvider.GetAllowedValues(
+                command.Options,
+                providers ?? ImmutableArray<OptionValueProvider>.Empty,
+                filter);
 
             return new CommandHelp(command, arguments, options, values);
         }

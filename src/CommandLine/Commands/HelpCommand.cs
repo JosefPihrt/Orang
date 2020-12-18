@@ -65,7 +65,7 @@ namespace Orang.CommandLine
         {
             var writer = new ConsoleHelpWriter(new HelpWriterOptions(filter: filter));
 
-            command = command.WithOptions(command.Options.Sort(CompareOptions));
+            command = command.WithOptions(command.Options.Sort(CommandOptionComparer.Name));
 
             CommandHelp commandHelp = CommandHelp.Create(command, OptionValueProviders.Providers, filter: filter);
 
@@ -77,7 +77,10 @@ namespace Orang.CommandLine
             }
             else
             {
-                IEnumerable<string> metaValues = OptionValueProviders.GetProviders(commandHelp.Options.Select(f => f.Option), OptionValueProviders.Providers).Select(f => f.Name);
+                IEnumerable<string> metaValues = OptionValueProviders.GetProviders(
+                    commandHelp.Options.Select(f => f.Option),
+                    OptionValueProviders.Providers)
+                    .Select(f => f.Name);
 
                 if (metaValues.Any())
                 {
@@ -122,7 +125,10 @@ namespace Orang.CommandLine
 
             if (commandItems.Any())
             {
-                values = HelpProvider.GetAllowedValues(commandHelps.SelectMany(f => f.Command.Options), OptionValueProviders.Providers, filter);
+                values = HelpProvider.GetAllowedValues(
+                    commandHelps.SelectMany(f => f.Command.Options),
+                    OptionValueProviders.Providers,
+                    filter);
 
                 var commandsHelp = new CommandsHelp(commandItems, values);
 
@@ -155,7 +161,12 @@ namespace Orang.CommandLine
                 WriteLine("No command found");
 
                 if (includeValues)
-                    values = HelpProvider.GetAllowedValues(commands.Select(f => CommandHelp.Create(f)).SelectMany(f => f.Command.Options), OptionValueProviders.Providers, filter);
+                {
+                    values = HelpProvider.GetAllowedValues(
+                        commands.Select(f => CommandHelp.Create(f)).SelectMany(f => f.Command.Options),
+                        OptionValueProviders.Providers,
+                        filter);
+                }
             }
 
             if (includeValues)
@@ -170,12 +181,8 @@ namespace Orang.CommandLine
 
         private static IEnumerable<Command> LoadCommands()
         {
-            return CommandLoader.LoadCommands(typeof(HelpCommand).Assembly).OrderBy(f => f.Name, StringComparer.CurrentCulture);
-        }
-
-        private static int CompareOptions(CommandOption x, CommandOption y)
-        {
-            return StringComparer.InvariantCulture.Compare(x.Name, y.Name);
+            return CommandLoader.LoadCommands(typeof(HelpCommand).Assembly)
+                .OrderBy(f => f.Name, StringComparer.CurrentCulture);
         }
 
         internal static string GetHeadingText()

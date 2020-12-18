@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -43,13 +42,17 @@ namespace Orang.CommandLine
                     {
                         optionValue = OptionValues.FileProperty_CreationTime;
 
-                        creationTimePredicate = new FilterPredicate<DateTime>(expression, PredicateHelpers.GetDateTimePredicate(expression));
+                        creationTimePredicate = new FilterPredicate<DateTime>(
+                            expression,
+                            PredicateHelpers.GetDateTimePredicate(expression));
                     }
                     else if (OptionValues.FileProperty_ModifiedTime.IsKeyOrShortKey(expression.Identifier))
                     {
                         optionValue = OptionValues.FileProperty_ModifiedTime;
 
-                        modifiedTimePredicate = new FilterPredicate<DateTime>(expression, PredicateHelpers.GetDateTimePredicate(expression));
+                        modifiedTimePredicate = new FilterPredicate<DateTime>(
+                            expression,
+                            PredicateHelpers.GetDateTimePredicate(expression));
                     }
                     else if (OptionValues.FileProperty_Size.IsKeyOrShortKey(expression.Identifier))
                     {
@@ -74,7 +77,12 @@ namespace Orang.CommandLine
                     if (expression != null
                         && optionValue != null)
                     {
-                        WriteOptionValueError(expression.Value, optionValue, HelpProvider.GetExpressionsText("  ", includeDate: optionValue != OptionValues.FileProperty_Size));
+                        WriteOptionValueError(
+                            expression.Value,
+                            optionValue,
+                            HelpProvider.GetExpressionsText(
+                                "  ",
+                                includeDate: optionValue != OptionValues.FileProperty_Size));
                     }
                     else
                     {
@@ -123,12 +131,18 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    (options ?? (options = new List<string>())).Add(value);
+                    (options ??= new List<string>()).Add(value);
                 }
             }
 
-            if (!TryParseAsEnumValues(options, optionName, out ImmutableArray<SortFlags> flags, provider: OptionValueProviders.SortFlagsProvider))
+            if (!TryParseAsEnumValues(
+                options,
+                optionName,
+                out ImmutableArray<SortFlags> flags,
+                provider: OptionValueProviders.SortFlagsProvider))
+            {
                 return false;
+            }
 
             SortDirection direction = (flags.Contains(SortFlags.Descending))
                 ? SortDirection.Descending
@@ -179,14 +193,16 @@ namespace Orang.CommandLine
             }
             else
             {
-                sortOptions = new SortOptions(ImmutableArray.Create(new SortDescriptor(SortProperty.Name, SortDirection.Ascending)), maxCount: maxCount);
+                sortOptions = new SortOptions(
+                    ImmutableArray.Create(new SortDescriptor(SortProperty.Name, SortDirection.Ascending)),
+                    maxCount: maxCount);
             }
 
             return true;
 
             void AddDescriptor(SortProperty p, SortDirection d)
             {
-                (descriptors ?? (descriptors = new List<SortDescriptor>())).Add(new SortDescriptor(p, d));
+                (descriptors ??= new List<SortDescriptor>()).Add(new SortDescriptor(p, d));
             }
         }
 
@@ -213,8 +229,14 @@ namespace Orang.CommandLine
 
                     if (OptionValues.SortBy.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseAsEnum(value2, optionName, out sortProperty, provider: OptionValueProviders.ValueSortPropertyProvider))
+                        if (!TryParseAsEnum(
+                            value2,
+                            optionName,
+                            out sortProperty,
+                            provider: OptionValueProviders.ValueSortPropertyProvider))
+                        {
                             return false;
+                        }
                     }
                     else
                     {
@@ -224,21 +246,27 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    (options ?? (options = new List<string>())).Add(value);
+                    (options ??= new List<string>()).Add(value);
                 }
             }
 
             var modifyFlags = ModifyFlags.None;
 
             if (options != null
-                && !TryParseAsEnumFlags(options, optionName, out modifyFlags, provider: OptionValueProviders.ModifyFlagsProvider))
+                && !TryParseAsEnumFlags(
+                    options,
+                    optionName,
+                    out modifyFlags,
+                    provider: OptionValueProviders.ModifyFlagsProvider))
             {
                 return false;
             }
 
             if ((modifyFlags & ModifyFlags.ExceptIntersect) == ModifyFlags.ExceptIntersect)
             {
-                WriteError($"Values '{OptionValues.ModifyFlags_Except.HelpValue}' and '{OptionValues.ModifyFlags_Intersect.HelpValue}' cannot be use both at the same time.");
+                WriteError($"Values '{OptionValues.ModifyFlags_Except.HelpValue}' and " +
+                    $"'{OptionValues.ModifyFlags_Intersect.HelpValue}' cannot be use both at the same time.");
+
                 return false;
             }
 
@@ -307,7 +335,11 @@ namespace Orang.CommandLine
             var replaceFlags = ReplaceFlags.None;
 
             if (values != null
-                && !TryParseAsEnumFlags(values, optionName, out replaceFlags, provider: OptionValueProviders.ReplaceFlagsProvider))
+                && !TryParseAsEnumFlags(
+                    values,
+                    optionName,
+                    out replaceFlags,
+                    provider: OptionValueProviders.ReplaceFlagsProvider))
             {
                 return false;
             }
@@ -355,6 +387,7 @@ namespace Orang.CommandLine
             out ImmutableArray<FileProperty> fileProperties,
             out string? indent,
             out string? separator,
+            out bool noAlign,
             OptionValueProvider? contentDisplayStyleProvider = null,
             OptionValueProvider? pathDisplayStyleProvider = null)
         {
@@ -366,6 +399,7 @@ namespace Orang.CommandLine
             fileProperties = ImmutableArray<FileProperty>.Empty;
             indent = null;
             separator = null;
+            noAlign = false;
 
             ImmutableArray<FileProperty>.Builder? builder = null;
 
@@ -380,15 +414,27 @@ namespace Orang.CommandLine
 
                     if (OptionValues.Display_Content.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseAsEnum(value2, optionName, out ContentDisplayStyle contentDisplayStyle2, provider: contentDisplayStyleProvider))
+                        if (!TryParseAsEnum(
+                            value2,
+                            optionName,
+                            out ContentDisplayStyle contentDisplayStyle2,
+                            provider: contentDisplayStyleProvider))
+                        {
                             return false;
+                        }
 
                         contentDisplayStyle = contentDisplayStyle2;
                     }
                     else if (OptionValues.Display_Path.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseAsEnum(value2, optionName, out PathDisplayStyle pathDisplayStyle2, provider: pathDisplayStyleProvider))
+                        if (!TryParseAsEnum(
+                            value2,
+                            optionName,
+                            out PathDisplayStyle pathDisplayStyle2,
+                            provider: pathDisplayStyleProvider))
+                        {
                             return false;
+                        }
 
                         pathDisplayStyle = pathDisplayStyle2;
                     }
@@ -437,15 +483,15 @@ namespace Orang.CommandLine
                 }
                 else if (OptionValues.Display_CreationTime.IsValueOrShortValue(value))
                 {
-                    (builder ?? (builder = ImmutableArray.CreateBuilder<FileProperty>())).Add(FileProperty.CreationTime);
+                    (builder ??= ImmutableArray.CreateBuilder<FileProperty>()).Add(FileProperty.CreationTime);
                 }
                 else if (OptionValues.Display_ModifiedTime.IsValueOrShortValue(value))
                 {
-                    (builder ?? (builder = ImmutableArray.CreateBuilder<FileProperty>())).Add(FileProperty.ModifiedTime);
+                    (builder ??= ImmutableArray.CreateBuilder<FileProperty>()).Add(FileProperty.ModifiedTime);
                 }
                 else if (OptionValues.Display_Size.IsValueOrShortValue(value))
                 {
-                    (builder ?? (builder = ImmutableArray.CreateBuilder<FileProperty>())).Add(FileProperty.Size);
+                    (builder ??= ImmutableArray.CreateBuilder<FileProperty>()).Add(FileProperty.Size);
                 }
                 else if (OptionValues.Display_LineNumber.IsValueOrShortValue(value))
                 {
@@ -462,6 +508,10 @@ namespace Orang.CommandLine
                 else if (OptionValues.Display_TrimLine.IsValueOrShortValue(value))
                 {
                     lineDisplayOptions |= LineDisplayOptions.TrimLine;
+                }
+                else if (OptionValues.Display_NoAlign.IsValueOrShortValue(value))
+                {
+                    noAlign = true;
                 }
                 else
                 {
@@ -538,30 +588,58 @@ namespace Orang.CommandLine
 
         public static bool TryParseReplacement(
             IEnumerable<string> values,
-            out string? replacement)
+            out string? replacement,
+            out MatchEvaluator? matchEvaluator)
         {
+            replacement = null;
+            matchEvaluator = null;
+
             if (!values.Any())
-            {
-                replacement = null;
                 return true;
-            }
 
-            replacement = values.First();
+            string value = values.First();
 
-            if (!TryParseAsEnumFlags(values.Skip(1), OptionNames.Replacement, out ReplacementOptions options, ReplacementOptions.None, OptionValueProviders.ReplacementOptionsProvider))
+            if (!TryParseAsEnumFlags(
+                values.Skip(1),
+                OptionNames.Replacement,
+                out ReplacementOptions options,
+                ReplacementOptions.None,
+                OptionValueProviders.ReplacementOptionsProvider))
+            {
                 return false;
+            }
 
             if ((options & ReplacementOptions.FromFile) != 0
-                && !FileSystemHelpers.TryReadAllText(replacement, out replacement, ex => WriteError(ex)))
+                && !FileSystemHelpers.TryReadAllText(value, out value!, ex => WriteError(ex)))
             {
                 return false;
             }
 
-            if ((options & ReplacementOptions.Literal) != 0)
-                replacement = RegexEscape.EscapeSubstitution(replacement);
+            if ((options & ReplacementOptions.CSharp) != 0)
+            {
+                if ((options & ReplacementOptions.FromFile) != 0)
+                {
+                    return DelegateFactory.TryCreateFromSourceText(value, out matchEvaluator);
+                }
+                else
+                {
+                    return DelegateFactory.TryCreateFromExpression(value, out matchEvaluator);
+                }
+            }
+            else if ((options & ReplacementOptions.FromDll) != 0)
+            {
+                return DelegateFactory.TryCreateFromAssembly(value, out matchEvaluator);
+            }
+            else
+            {
+                replacement = value;
 
-            if ((options & ReplacementOptions.Escape) != 0)
-                replacement = RegexEscape.ConvertCharacterEscapes(replacement);
+                if ((options & ReplacementOptions.Literal) != 0)
+                    replacement = RegexEscape.EscapeSubstitution(replacement);
+
+                if ((options & ReplacementOptions.Escape) != 0)
+                    replacement = RegexEscape.ConvertCharacterEscapes(replacement);
+            }
 
             return true;
         }
@@ -575,8 +653,15 @@ namespace Orang.CommandLine
 
             input = values.First();
 
-            if (!TryParseAsEnumFlags(values.Skip(1), OptionNames.Input, out InputOptions options, InputOptions.None, OptionValueProviders.InputOptionsProvider))
+            if (!TryParseAsEnumFlags(
+                values.Skip(1),
+                OptionNames.Input,
+                out InputOptions options,
+                InputOptions.None,
+                OptionValueProviders.InputOptionsProvider))
+            {
                 return false;
+            }
 
             if ((options & InputOptions.Escape) != 0)
                 input = RegexEscape.ConvertCharacterEscapes(input);
@@ -656,7 +741,8 @@ namespace Orang.CommandLine
         {
             if (!TryParseAsEnum(value, out result, defaultValue, provider))
             {
-                string allowedValues = OptionValueProviders.GetHelpText(provider, multiline: true) ?? OptionValue.GetDefaultHelpText<TEnum>(multiline: true);
+                string allowedValues = OptionValueProviders.GetHelpText(provider, multiline: true)
+                    ?? OptionValue.GetDefaultHelpText<TEnum>(multiline: true);
 
                 WriteOptionError(value, optionName, allowedValues);
                 return false;
@@ -690,7 +776,11 @@ namespace Orang.CommandLine
 
         public static bool TryParseVerbosity(string value, out Verbosity verbosity)
         {
-            return TryParseAsEnum(value, OptionNames.Verbosity, out verbosity, provider: OptionValueProviders.VerbosityProvider);
+            return TryParseAsEnum(
+                value,
+                OptionNames.Verbosity,
+                out verbosity,
+                provider: OptionValueProviders.VerbosityProvider);
         }
 
         // https://docs.microsoft.com/en-us/dotnet/api/system.text.encoding#remarks
@@ -845,7 +935,10 @@ namespace Orang.CommandLine
             WriteParseError(value, OptionNames.GetHelpText(optionName), allowedValues);
         }
 
-        internal static void WriteOptionValueError(string value, OptionValue optionValue, OptionValueProvider? provider = null)
+        internal static void WriteOptionValueError(
+            string value,
+            OptionValue optionValue,
+            OptionValueProvider? provider = null)
         {
             WriteOptionValueError(value, optionValue, OptionValueProviders.GetHelpText(provider, multiline: true));
         }
@@ -867,18 +960,37 @@ namespace Orang.CommandLine
 
         internal static bool TryParseProperties(string ask, IEnumerable<string> name, CommonFindCommandOptions options)
         {
-            if (!TryParseAsEnum(ask, OptionNames.Ask, out AskMode askMode, defaultValue: AskMode.None, OptionValueProviders.AskModeProvider))
+            if (!TryParseAsEnum(
+                ask,
+                OptionNames.Ask,
+                out AskMode askMode,
+                defaultValue: AskMode.None,
+                OptionValueProviders.AskModeProvider))
+            {
                 return false;
+            }
 
             if (askMode == AskMode.Value
                 && ConsoleOut.Verbosity < Verbosity.Normal)
             {
-                WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Ask)}' cannot have value '{OptionValueProviders.AskModeProvider.GetValue(nameof(AskMode.Value)).HelpValue}' when '{OptionNames.GetHelpText(OptionNames.Verbosity)}' is set to '{OptionValueProviders.VerbosityProvider.GetValue(ConsoleOut.Verbosity.ToString()).HelpValue}'.");
+                WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Ask)}' cannot have value " +
+                    $"'{OptionValueProviders.AskModeProvider.GetValue(nameof(AskMode.Value)).HelpValue}' when " +
+                    $"'{OptionNames.GetHelpText(OptionNames.Verbosity)}' is set to " +
+                    $"'{OptionValueProviders.VerbosityProvider.GetValue(ConsoleOut.Verbosity.ToString()).HelpValue}'.");
+
                 return false;
             }
 
-            if (!FilterParser.TryParse(name, OptionNames.Name, OptionValueProviders.PatternOptionsProvider, out Filter? nameFilter, out FileNamePart namePart, allowNull: true))
+            if (!FilterParser.TryParse(
+                name,
+                OptionNames.Name,
+                OptionValueProviders.PatternOptionsProvider,
+                out Filter? nameFilter,
+                out FileNamePart namePart,
+                allowNull: true))
+            {
                 return false;
+            }
 
             options.AskMode = askMode;
             options.NameFilter = nameFilter;

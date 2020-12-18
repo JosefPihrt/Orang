@@ -16,8 +16,6 @@ namespace Orang.Operations
             FileMatch fileMatch,
             string directoryPath)
         {
-            bool deleted = false;
-
             try
             {
                 if (!DryRun)
@@ -28,8 +26,6 @@ namespace Orang.Operations
                         includingBom: DeleteOptions.IncludingBom,
                         filesOnly: DeleteOptions.FilesOnly,
                         directoriesOnly: DeleteOptions.DirectoriesOnly);
-
-                    deleted = true;
                 }
 
                 Report(fileMatch);
@@ -40,12 +36,6 @@ namespace Orang.Operations
                 || ex is UnauthorizedAccessException)
             {
                 Report(fileMatch, ex);
-            }
-
-            if (fileMatch.IsDirectory
-                && deleted)
-            {
-                OnDirectoryChanged(new DirectoryChangedEventArgs(fileMatch.Path, null));
             }
         }
     }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Orang.FileSystem;
 using static Orang.CommandLine.LogHelpers;
 using static Orang.Logger;
@@ -23,7 +24,7 @@ namespace Orang.CommandLine
         {
         }
 
-        private OutputSymbols Symbols => _symbols ?? (_symbols = OutputSymbols.Create(Options.HighlightOptions));
+        private OutputSymbols Symbols => _symbols ??= OutputSymbols.Create(Options.HighlightOptions);
 
         public override bool CanEndProgress
         {
@@ -52,7 +53,7 @@ namespace Orang.CommandLine
             base.ExecuteCore(context);
 
             if (aggregate)
-                WriteAggregatedValues();
+                WriteAggregatedValues(context.CancellationToken);
         }
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
@@ -88,7 +89,11 @@ namespace Orang.CommandLine
             AskToContinue(context, indent);
         }
 
-        protected override void ExecuteMatchCore(FileMatch fileMatch, SearchContext context, string? baseDirectoryPath = null, ColumnWidths? columnWidths = null)
+        protected override void ExecuteMatchCore(
+            FileMatch fileMatch,
+            SearchContext context,
+            string? baseDirectoryPath = null,
+            ColumnWidths? columnWidths = null)
         {
             string indent = GetPathIndent(baseDirectoryPath);
 
@@ -119,7 +124,13 @@ namespace Orang.CommandLine
             {
                 captures = ListCache<Capture>.GetInstance();
 
-                GetCaptures(fileMatch.ContentMatch!, writerOptions.GroupNumber, context, isPathWritten: !Options.OmitPath, predicate: ContentFilter!.Predicate, captures: captures);
+                GetCaptures(
+                    fileMatch.ContentMatch!,
+                    writerOptions.GroupNumber,
+                    context,
+                    isPathWritten: !Options.OmitPath,
+                    predicate: ContentFilter!.Predicate,
+                    captures: captures);
 
                 bool hasAnyFunction = Options.ModifyOptions.HasAnyFunction;
 
@@ -163,7 +174,10 @@ namespace Orang.CommandLine
                     ConsoleColors colors = (Options.HighlightMatch) ? Colors.Match : default;
                     ConsoleColors boundaryColors = (Options.HighlightBoundary) ? Colors.MatchBoundary : default;
 
-                    var valueWriter = new ValueWriter(ContentTextWriter.Default, writerOptions.Indent, includeEndingIndent: false);
+                    var valueWriter = new ValueWriter(
+                        ContentTextWriter.Default,
+                        writerOptions.Indent,
+                        includeEndingIndent: false);
 
                     foreach (string value in _fileValues!.Modify(Options.ModifyOptions))
                     {
@@ -213,7 +227,7 @@ namespace Orang.CommandLine
             }
         }
 
-        private void WriteAggregatedValues()
+        private void WriteAggregatedValues(CancellationToken cancellationToken)
         {
             int count = 0;
             ModifyOptions modifyOptions = Options.ModifyOptions;
@@ -221,23 +235,17 @@ namespace Orang.CommandLine
 
             if (_storageIndexes?.Count > 1)
             {
-                Debug.Assert((modifyOptions.Functions & ModifyFunctions.ExceptIntersect) != 0, modifyOptions.Functions.ToString());
+                Debug.Assert(
+                    (modifyOptions.Functions & ModifyFunctions.ExceptIntersect) != 0,
+                    modifyOptions.Functions.ToString());
 
                 if ((modifyOptions.Functions & ModifyFunctions.Except) != 0)
                 {
-                    if (_storageIndexes.Count > 2)
-                        throw new InvalidOperationException($"'Except' operation cannot be applied on more than two {((ContentFilter != null) ? "files" : "directories")}.");
-
-                    int index = _storageIndexes[0];
-
-                    allValues = allValues
-                        .Take(index)
-                        .Except(GetRange(index, allValues.Count))
-                        .ToList();
+                    allValues = ExceptOrIntersect((x, y, c) => x.Except(y, c));
                 }
                 else if ((modifyOptions.Functions & ModifyFunctions.Intersect) != 0)
                 {
-                    allValues = Intersect();
+                    allValues = ExceptOrIntersect((x, y, c) => x.Intersect(y, c));
                 }
             }
 
@@ -248,7 +256,11 @@ namespace Orang.CommandLine
                 if (en.MoveNext())
                 {
                     OutputSymbols symbols = OutputSymbols.Create(Options.HighlightOptions);
-                    ConsoleColors colors = ((Options.HighlightOptions & HighlightOptions.Match) != 0) ? Colors.Match : default;
+
+                    ConsoleColors colors = ((Options.HighlightOptions & HighlightOptions.Match) != 0)
+                        ? Colors.Match
+                        : default;
+
                     ConsoleColors boundaryColors = (Options.HighlightBoundary) ? Colors.MatchBoundary : default;
                     var valueWriter = new ValueWriter(new ContentTextWriter(Verbosity.Minimal), includeEndingIndent: false);
 
@@ -257,6 +269,8 @@ namespace Orang.CommandLine
 
                     do
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         valueWriter.Write(en.Current, symbols, colors, boundaryColors);
                         WriteLine(Verbosity.Minimal);
                         count++;
@@ -273,15 +287,19 @@ namespace Orang.CommandLine
                 }
             }
 
-            List<string> Intersect()
+            List<string> ExceptOrIntersect(
+                Func<IEnumerable<string>, IEnumerable<string>, IEqualityComparer<string>, IEnumerable<string>> operation)
             {
                 var list = new List<string>(GetRange(0, _storageIndexes[0]));
 
                 for (int i = 1; i < _storageIndexes.Count; i++)
                 {
+                    if (list.Count == 0)
+                        break;
+
                     IEnumerable<string> second = GetRange(_storageIndexes[i - 1], _storageIndexes[i]);
 
-                    list = list.Intersect(second, modifyOptions.StringComparer).ToList();
+                    list = operation(list, second, modifyOptions.StringComparer).ToList();
                 }
 
                 return list;

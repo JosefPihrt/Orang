@@ -33,16 +33,23 @@ namespace Orang.FileSystem
 
         public static bool IsCaseSensitive { get; } = GetIsCaseSensitive();
 
-        public static StringComparer Comparer { get; } = (IsCaseSensitive) ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase;
+        public static StringComparer Comparer { get; }
+            = (IsCaseSensitive) ? StringComparer.CurrentCulture : StringComparer.CurrentCultureIgnoreCase;
 
-        public static StringComparison Comparison { get; } = (IsCaseSensitive) ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
+        public static StringComparison Comparison { get; }
+            = (IsCaseSensitive) ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase;
 
         public static ImmutableHashSet<char> InvalidFileNameChars
         {
             get
             {
                 if (_invalidFileNameChars == null)
-                    Interlocked.CompareExchange(ref _invalidFileNameChars, Path.GetInvalidFileNameChars().ToImmutableHashSet(), null);
+                {
+                    Interlocked.CompareExchange(
+                        ref _invalidFileNameChars,
+                        Path.GetInvalidFileNameChars().ToImmutableHashSet(),
+                        null);
+                }
 
                 return _invalidFileNameChars;
             }
@@ -162,7 +169,11 @@ namespace Orang.FileSystem
         {
             if (fileMatch.IsDirectory)
             {
-                DeleteDirectory(fileMatch.Path, contentOnly: contentOnly, filesOnly: filesOnly, directoriesOnly: directoriesOnly);
+                DeleteDirectory(
+                    fileMatch.Path,
+                    contentOnly: contentOnly,
+                    filesOnly: filesOnly,
+                    directoriesOnly: directoriesOnly);
             }
             else
             {
@@ -409,7 +420,10 @@ namespace Orang.FileSystem
             return null;
         }
 
-        public static bool TryReadAllText(string path, [NotNullWhen(true)] out string? content, Action<Exception>? exceptionHandler = null)
+        public static bool TryReadAllText(
+            string path,
+            [NotNullWhen(true)] out string? content,
+            Action<Exception>? exceptionHandler = null)
         {
             try
             {

@@ -54,11 +54,12 @@ namespace Orang
         {
             get
             {
-                return _matchSpaces ?? (_matchSpaces = new string(' ',
-                        MatchWidth
+                return _matchSpaces ??= new string(
+                    ' ',
+                    MatchWidth
                         + 1
                         + PrefixSeparator.Length
-                        + ItemSeparator.Length));
+                        + ItemSeparator.Length);
             }
         }
 
@@ -66,11 +67,12 @@ namespace Orang
         {
             get
             {
-                return _groupSpaces ?? (_groupSpaces = new string(' ',
-                        GroupWidth
+                return _groupSpaces ??= new string(
+                    ' ',
+                    GroupWidth
                         + 1
                         + PrefixSeparator.Length
-                        + ItemSeparator.Length));
+                        + ItemSeparator.Length);
             }
         }
 
@@ -159,7 +161,15 @@ namespace Orang
             if (maxLength > 0)
                 lengthWidth = maxLength.GetDigitCount();
 
-            return new MatchOutputInfo(groupNumber, matchWidth, groupWidth, captureWidth, indexWidth, lengthWidth, captions, prefixSeparator);
+            return new MatchOutputInfo(
+                groupNumber,
+                matchWidth,
+                groupWidth,
+                captureWidth,
+                indexWidth,
+                lengthWidth,
+                captions,
+                prefixSeparator);
         }
 
         public string GetText(

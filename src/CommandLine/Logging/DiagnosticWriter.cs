@@ -16,7 +16,8 @@ namespace Orang.CommandLine
 
         private static ConsoleColors NullValueColors { get; } = new ConsoleColors(ConsoleColor.DarkGray);
 
-        private static ValueWriter ValueWriter { get; } = new ValueWriter(new ContentTextWriter(Verbosity.Diagnostic), includeEndingIndent: false);
+        private static ValueWriter ValueWriter { get; }
+            = new ValueWriter(new ContentTextWriter(Verbosity.Diagnostic), includeEndingIndent: false);
 
         private static OutputSymbols Symbols_Character { get; } = OutputSymbols.Create(HighlightOptions.Character);
 
@@ -46,7 +47,11 @@ namespace Orang.CommandLine
             WriteOption("dry run", options.DryRun);
             WriteOption("empty", options.EmptyOption);
             WriteFilter("extension filter", options.ExtensionFilter);
-            WriteFilePropertyFilter("file properties", options.SizePredicate, options.CreationTimePredicate, options.ModifiedTimePredicate);
+            WriteFilePropertyFilter(
+                "file properties",
+                options.SizePredicate,
+                options.CreationTimePredicate,
+                options.ModifiedTimePredicate);
             WriteOption("flat", options.Flat);
             WriteOption("highlight options", options.HighlightOptions);
             WriteOption("max matching files", options.MaxMatchingFiles);
@@ -74,7 +79,11 @@ namespace Orang.CommandLine
             WriteOption("dry run", options.DryRun);
             WriteOption("empty", options.EmptyOption);
             WriteFilter("extension filter", options.ExtensionFilter);
-            WriteFilePropertyFilter("file properties", options.SizePredicate, options.CreationTimePredicate, options.ModifiedTimePredicate);
+            WriteFilePropertyFilter(
+                "file properties",
+                options.SizePredicate,
+                options.CreationTimePredicate,
+                options.ModifiedTimePredicate);
             WriteOption("files only", options.FilesOnly);
             WriteOption("highlight options", options.HighlightOptions);
             WriteOption("including bom", options.IncludingBom);
@@ -105,7 +114,11 @@ namespace Orang.CommandLine
             WriteDisplayFormat("display", options.Format);
             WriteOption("empty", options.EmptyOption);
             WriteFilter("extension filter", options.ExtensionFilter);
-            WriteFilePropertyFilter("file properties", options.SizePredicate, options.CreationTimePredicate, options.ModifiedTimePredicate);
+            WriteFilePropertyFilter(
+                "file properties",
+                options.SizePredicate,
+                options.CreationTimePredicate,
+                options.ModifiedTimePredicate);
             WriteOption("highlight options", options.HighlightOptions);
             WriteOption("max matching files", options.MaxMatchingFiles);
             WriteOption("max matches in file", options.MaxMatchesInFile);
@@ -157,7 +170,11 @@ namespace Orang.CommandLine
             WriteOption("dry run", options.DryRun);
             WriteOption("empty", options.EmptyOption);
             WriteFilter("extension filter", options.ExtensionFilter);
-            WriteFilePropertyFilter("file properties", options.SizePredicate, options.CreationTimePredicate, options.ModifiedTimePredicate);
+            WriteFilePropertyFilter(
+                "file properties",
+                options.SizePredicate,
+                options.CreationTimePredicate,
+                options.ModifiedTimePredicate);
             WriteOption("flat", options.Flat);
             WriteOption("highlight options", options.HighlightOptions);
             WriteOption("max matching files", options.MaxMatchingFiles);
@@ -185,7 +202,11 @@ namespace Orang.CommandLine
             WriteOption("empty", options.EmptyOption);
             WriteEvaluator("evaluator", options.ReplaceOptions.MatchEvaluator);
             WriteFilter("extension filter", options.ExtensionFilter);
-            WriteFilePropertyFilter("file properties", options.SizePredicate, options.CreationTimePredicate, options.ModifiedTimePredicate);
+            WriteFilePropertyFilter(
+                "file properties",
+                options.SizePredicate,
+                options.CreationTimePredicate,
+                options.ModifiedTimePredicate);
             WriteOption("highlight options", options.HighlightOptions);
             WriteOption("max matching files", options.MaxMatchingFiles);
             WriteReplaceModify("modify", options.ReplaceOptions);
@@ -211,7 +232,11 @@ namespace Orang.CommandLine
             WriteOption("empty", options.EmptyOption);
             WriteEvaluator("evaluator", options.ReplaceOptions.MatchEvaluator);
             WriteFilter("extension filter", options.ExtensionFilter);
-            WriteFilePropertyFilter("file properties", options.SizePredicate, options.CreationTimePredicate, options.ModifiedTimePredicate);
+            WriteFilePropertyFilter(
+                "file properties",
+                options.SizePredicate,
+                options.CreationTimePredicate,
+                options.ModifiedTimePredicate);
             WriteOption("highlight options", options.HighlightOptions);
             WriteOption("input", options.Input);
             WriteOption("max matching files", options.MaxMatchingFiles);
@@ -433,6 +458,8 @@ namespace Orang.CommandLine
 
             if (format.Separator?.EndsWith("\n") != true)
                 WriteLine();
+
+            WriteOption("no align", !format.AlignColumns);
         }
 
         private static void WriteSortOptions(string name, SortOptions? options)

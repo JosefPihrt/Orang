@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using DotMarkdown;
 using DotMarkdown.Linq;
 using Orang.CommandLine;
@@ -16,10 +17,12 @@ namespace Orang.Documentation
 {
     internal static class Program
     {
+        private static readonly Regex _removeNewlineRegex = new Regex(@"\ *\r?\n\ *");
+
         private static void Main(params string[] args)
         {
             IEnumerable<Command> commands = CommandLoader.LoadCommands(typeof(CommandLoader).Assembly)
-                .Select(c => c.WithOptions(c.Options.OrderBy(f => f, CommandOptionComparer.Instance)))
+                .Select(c => c.WithOptions(c.Options.OrderBy(f => f, CommandOptionComparer.Name)))
                 .OrderBy(c => c.Name, StringComparer.InvariantCulture);
 
             var application = new CommandLineApplication(
@@ -73,15 +76,21 @@ namespace Orang.Documentation
 
             string valuesFilePath = Path.GetFullPath(Path.Combine(destinationDirectoryPath, "AllowedValues.md"));
 
-            ImmutableArray<OptionValueProvider> providers = OptionValueProvider.GetProviders(commands.SelectMany(f => f.Options), OptionValueProviders.ProvidersByName.Select(f => f.Value)).ToImmutableArray();
+            ImmutableArray<OptionValueProvider> providers = OptionValueProvider.GetProviders(
+                commands.SelectMany(f => f.Options),
+                OptionValueProviders.ProvidersByName.Select(f => f.Value))
+                .ToImmutableArray();
 
             MDocument document = Document(
                 Heading1("List of Allowed Values"),
-                BulletList(providers.Select(f => Link(f.Name, "#" + f.Name
-                    .ToLower()
-                    .Replace("<", "")
-                    .Replace(">", "")
-                    .Replace("_", "-")))),
+                BulletList(providers.Select(f => Link(
+                    f.Name,
+                    "#"
+                        + f.Name
+                            .ToLower()
+                            .Replace("<", "")
+                            .Replace(">", "")
+                            .Replace("_", "-")))),
                 providers.Select(provider =>
                 {
                     return new MObject[]
@@ -89,13 +98,15 @@ namespace Orang.Documentation
                         Heading2(provider.Name),
                         Table(
                             TableRow("Value", "Description"),
-                            provider.Values.Select(f => TableRow(f.HelpValue, f.Description)))
+                            provider.Values.Select(
+                                f => TableRow(f.HelpValue, _removeNewlineRegex.Replace(f.Description ?? "", " "))))
                     };
                 }));
 
             AddFootnote(document);
 
-            var markdownFormat = new MarkdownFormat(tableOptions: MarkdownFormat.Default.TableOptions | TableOptions.FormatContent);
+            var markdownFormat = new MarkdownFormat(
+                tableOptions: MarkdownFormat.Default.TableOptions | TableOptions.FormatContent);
 
             File.WriteAllText(valuesFilePath, document.ToString(markdownFormat));
 
