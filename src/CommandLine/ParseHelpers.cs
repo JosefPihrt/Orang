@@ -194,7 +194,7 @@ namespace Orang.CommandLine
             else
             {
                 sortOptions = new SortOptions(
-                    ImmutableArray.Create(new SortDescriptor(SortProperty.Name, SortDirection.Ascending)),
+                    ImmutableArray.Create(new SortDescriptor(SortProperty.Name, direction)),
                     maxCount: maxCount);
             }
 

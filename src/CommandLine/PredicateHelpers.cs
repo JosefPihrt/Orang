@@ -283,7 +283,7 @@ namespace Orang.CommandLine
             {
                 var decrementExpression = (DecrementExpression)expression;
 
-                if (!TimeSpan.TryParse(decrementExpression.Value, out TimeSpan result))
+                if (!TimeSpan.TryParse(decrementExpression.Value, CultureInfo.InvariantCulture, out TimeSpan result))
                     throw new ArgumentException("", nameof(expression));
 
                 DateTime dateTime = DateTime.Now - result;
