@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using CommandLine;
 using Orang.FileSystem;
 using static Orang.CommandLine.ParseHelpers;
@@ -50,7 +51,7 @@ namespace Orang.CommandLine
             TimeSpan allowedTimeDiff = TimeSpan.Zero;
 
             if (AllowedTimeDiff != null
-                && !TimeSpan.TryParse(AllowedTimeDiff, out allowedTimeDiff))
+                && !TimeSpan.TryParse(AllowedTimeDiff, CultureInfo.InvariantCulture, out allowedTimeDiff))
             {
                 Logger.WriteError($"Option '{OptionNames.GetHelpText(OptionNames.AllowedTimeDiff)}' "
                     + $"has invalid value '{AllowedTimeDiff}'.");
