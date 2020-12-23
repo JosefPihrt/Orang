@@ -64,7 +64,7 @@ namespace Orang.FileSystem
         public static List<ReplaceItem> GetReplaceItems(
             Match match,
             ReplaceOptions replaceOptions,
-            Func<Capture, bool>? predicate = null,
+            Func<string, bool>? predicate = null,
             CancellationToken cancellationToken = default)
         {
             List<Capture> captures = ListCache<Capture>.GetInstance();

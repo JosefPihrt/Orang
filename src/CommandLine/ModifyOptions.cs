@@ -69,6 +69,8 @@ namespace Orang
 
         public CultureInfo CultureInfo => (CultureInvariant) ? CultureInfo.InvariantCulture : CultureInfo.CurrentCulture;
 
+        public bool HasFunction(ModifyFunctions functions) => (Functions & functions) != 0;
+
         public IEnumerable<string> Modify(IEnumerable<string> values, ModifyFunctions? filter = null)
         {
             ModifyFunctions functions = Functions;

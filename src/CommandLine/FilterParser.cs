@@ -73,7 +73,7 @@ namespace Orang.CommandLine
             TimeSpan matchTimeout = Regex.InfiniteMatchTimeout;
             string? groupName = null;
             string? separator = null;
-            Func<Capture, bool>? predicate = null;
+            Func<string, bool>? predicate = null;
 
             List<string>? options = null;
 

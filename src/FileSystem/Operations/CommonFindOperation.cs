@@ -20,7 +20,7 @@ namespace Orang.Operations
         protected MaxReason GetCaptures(
             Match match,
             int groupNumber,
-            Func<Capture, bool>? predicate,
+            Func<string, bool>? predicate,
             List<Capture> captures)
         {
             int maxMatchesInFile = MaxMatchesInFile;

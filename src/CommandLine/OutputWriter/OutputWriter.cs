@@ -61,6 +61,7 @@ namespace Orang.CommandLine
                         .ThenBy(f => f.Number)
                         .SelectMany(f => f.CaptureItems)
                         .Select(f => f.Value)
+                        .Where(f => options.Filter.Predicate?.Invoke(f) != false)
                         .Modify(options.ModifyOptions)
                         .GetEnumerator())
                     {
@@ -75,7 +76,7 @@ namespace Orang.CommandLine
                                 valueWriter.WriteMatch(
                                     en.Current,
                                     symbols,
-                                    (HighlightOptions & HighlightOptions.Match) != 0);
+                                    highlightMatch: (HighlightOptions & HighlightOptions.Match) != 0);
 
                                 count++;
 
@@ -117,6 +118,9 @@ namespace Orang.CommandLine
                             {
                                 CaptureItem captureItem = groupItem.CaptureItems[j];
 
+                                if (options.Filter.Predicate?.Invoke(captureItem.Value) == false)
+                                    continue;
+
                                 if (addSeparator)
                                     Write((addDetails) ? Environment.NewLine : options.Separator);
 
@@ -130,7 +134,10 @@ namespace Orang.CommandLine
                                         omitGroupInfo));
                                 }
 
-                                valueWriter.WriteMatch(captureItem.Value, symbols);
+                                valueWriter.WriteMatch(
+                                    captureItem.Value,
+                                    symbols,
+                                    highlightMatch: (HighlightOptions & HighlightOptions.Match) != 0);
 
                                 omitMatchInfo = true;
                                 omitGroupInfo = true;
@@ -158,8 +165,15 @@ namespace Orang.CommandLine
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    valueWriter.Write(input, lastPos, matchItem.Match.Index - lastPos, symbols: null);
-                    valueWriter.WriteMatch(matchItem.Match.Value, symbols);
+                    if (options.Filter.Predicate?.Invoke(matchItem.Value) == false)
+                        continue;
+
+                    valueWriter.Write(input, lastPos, matchItem.Index - lastPos, symbols: null);
+
+                    valueWriter.WriteMatch(
+                        matchItem.Value,
+                        symbols,
+                        highlightMatch: (HighlightOptions & HighlightOptions.DefaultOrMatch) != 0);
 
                     captureCount += matchItem.GroupItems
                         .Where(f => (groupNumber >= 0) ? groupNumber == f.Number : true)
@@ -207,13 +221,19 @@ namespace Orang.CommandLine
                             {
                                 cancellationToken.ThrowIfCancellationRequested();
 
-                                valueWriter.WriteSplit(en.Current, symbols, splitColors, boundaryColors);
+                                bool success = options.Filter.Predicate?.Invoke(en.Current) != false;
 
-                                count++;
+                                if (success)
+                                {
+                                    valueWriter.WriteSplit(en.Current, symbols, splitColors, boundaryColors);
+
+                                    count++;
+                                }
 
                                 if (en.MoveNext())
                                 {
-                                    Write(options.Separator);
+                                    if (success)
+                                        Write(options.Separator);
                                 }
                                 else
                                 {
@@ -249,14 +269,20 @@ namespace Orang.CommandLine
 
                                 SplitItem item = en.Current;
 
-                                if (addDetails)
-                                    Write(outputInfo!.GetText(item));
+                                bool success = options.Filter.Predicate?.Invoke(item.Value) != false;
 
-                                valueWriter.WriteSplit(item.Value, symbols, splitColors, boundaryColors);
+                                if (success)
+                                {
+                                    if (addDetails)
+                                        Write(outputInfo!.GetText(item));
+
+                                    valueWriter.WriteSplit(item.Value, symbols, splitColors, boundaryColors);
+                                }
 
                                 if (en.MoveNext())
                                 {
-                                    Write((addDetails) ? Environment.NewLine : options.Separator);
+                                    if (success)
+                                        Write((addDetails) ? Environment.NewLine : options.Separator);
                                 }
                                 else
                                 {
@@ -278,6 +304,9 @@ namespace Orang.CommandLine
                 foreach (SplitItem item in splitData.Items)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+
+                    if (options.Filter.Predicate?.Invoke(item.Value) == false)
+                        continue;
 
                     valueWriter.Write(input, lastPos, item.Index - lastPos, symbols: null);
 

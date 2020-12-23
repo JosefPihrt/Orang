@@ -49,6 +49,7 @@ namespace Orang.CommandLine
 
         public static readonly SimpleOptionValue ModifyFlags_Except = SimpleOptionValue.Create(ModifyFlags.Except, shortValue: "", description: "Return values from first file except values from second file.");
         public static readonly SimpleOptionValue ModifyFlags_Intersect = SimpleOptionValue.Create(ModifyFlags.Intersect, shortValue: "", description: "Return values that were found in all files.");
+        public static readonly SimpleOptionValue ModifyFlags_GroupBy = SimpleOptionValue.Create(ModifyFlags.GroupBy, shortValue: "", description: "Group matching files by matched values.");
 
         public static readonly SimpleOptionValue NamePart_Extension = SimpleOptionValue.Create(FileNamePart.Extension, description: "Search in file extension.");
         public static readonly SimpleOptionValue NamePart_FullName = SimpleOptionValue.Create(FileNamePart.FullName, description: "Search in full path.");

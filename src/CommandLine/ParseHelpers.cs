@@ -262,10 +262,16 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            if ((modifyFlags & ModifyFlags.ExceptIntersect) == ModifyFlags.ExceptIntersect)
+            ModifyFlags except_Intersect_GroupBy = modifyFlags & ModifyFlags.Except_Intersect_GroupBy;
+
+            if (except_Intersect_GroupBy != ModifyFlags.None
+                && except_Intersect_GroupBy != ModifyFlags.Except
+                && except_Intersect_GroupBy != ModifyFlags.Intersect
+                && except_Intersect_GroupBy != ModifyFlags.GroupBy)
             {
-                WriteError($"Values '{OptionValues.ModifyFlags_Except.HelpValue}' and " +
-                    $"'{OptionValues.ModifyFlags_Intersect.HelpValue}' cannot be use both at the same time.");
+                WriteError($"Values '{OptionValues.ModifyFlags_Except.HelpValue}', "
+                    + $"'{OptionValues.ModifyFlags_Intersect.HelpValue}' and "
+                    + $"'{OptionValues.ModifyFlags_GroupBy.HelpValue}' cannot be used at the same time.");
 
                 return false;
             }
@@ -287,6 +293,9 @@ namespace Orang.CommandLine
             if ((modifyFlags & ModifyFlags.Intersect) != 0)
                 functions |= ModifyFunctions.Intersect;
 
+            if ((modifyFlags & ModifyFlags.GroupBy) != 0)
+                functions |= ModifyFunctions.GroupBy;
+
             if ((modifyFlags & ModifyFlags.RemoveEmpty) != 0)
                 functions |= ModifyFunctions.RemoveEmpty;
 
@@ -305,9 +314,17 @@ namespace Orang.CommandLine
             if ((modifyFlags & ModifyFlags.ToUpper) != 0)
                 functions |= ModifyFunctions.ToUpper;
 
+            if (sortProperty != ValueSortProperty.None
+                && (functions & ModifyFunctions.Sort) == 0
+                && (functions & ModifyFunctions.SortDescending) == 0)
+            {
+                functions |= ModifyFunctions.Sort;
+            }
+
             aggregateOnly = (modifyFlags & ModifyFlags.AggregateOnly) != 0;
 
-            if (modifyFlags != ModifyFlags.None)
+            if (modifyFlags != ModifyFlags.None
+                || functions != ModifyFunctions.None)
             {
                 modifyOptions = new ModifyOptions(
                     functions: functions,

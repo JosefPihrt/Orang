@@ -232,7 +232,7 @@ namespace Orang.CommandLine
             int groupNumber,
             SearchContext context,
             bool isPathWritten,
-            Func<Capture, bool>? predicate,
+            Func<string, bool>? predicate,
             List<Capture> captures)
         {
             int maxMatchesInFile = Options.MaxMatchesInFile;

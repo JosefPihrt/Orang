@@ -14,7 +14,7 @@ namespace Orang
             Match match,
             int groupNumber = 0,
             int count = 0,
-            Func<Capture, bool>? predicate = null,
+            Func<string, bool>? predicate = null,
             CancellationToken cancellationToken = default)
         {
             MaxReason maxReason;
@@ -40,7 +40,7 @@ namespace Orang
             ref List<Capture> matches,
             Match match,
             int count,
-            Func<Group, bool>? predicate,
+            Func<string, bool>? predicate,
             CancellationToken cancellationToken)
         {
             do
@@ -55,7 +55,7 @@ namespace Orang
 
                     while (m.Success)
                     {
-                        if (predicate(m))
+                        if (predicate(m.Value))
                         {
                             match = m;
                             break;
@@ -88,7 +88,7 @@ namespace Orang
             Match match,
             int groupNumber,
             int count,
-            Func<Capture, bool>? predicate,
+            Func<string, bool>? predicate,
             CancellationToken cancellationToken)
         {
             Group group = match.Groups[groupNumber];
@@ -136,7 +136,7 @@ namespace Orang
                     Group g = match.Groups[groupNumber];
 
                     if (g.Success
-                        && predicate?.Invoke(g) != false)
+                        && predicate?.Invoke(g.Value) != false)
                     {
                         return g;
                     }

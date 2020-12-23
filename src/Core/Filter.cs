@@ -27,7 +27,7 @@ namespace Orang
             Regex regex,
             bool isNegative = false,
             int groupNumber = -1,
-            Func<Capture, bool>? predicate = null)
+            Func<string, bool>? predicate = null)
         {
             Regex = regex ?? throw new ArgumentNullException(nameof(regex));
 
@@ -44,7 +44,7 @@ namespace Orang
 
         public int GroupNumber { get; }
 
-        public Func<Capture, bool>? Predicate { get; }
+        public Func<string, bool>? Predicate { get; }
 
         public string GroupName => Regex.GroupNameFromNumber(GroupNumber);
 
@@ -66,7 +66,7 @@ namespace Orang
                 {
                     while (match.Success)
                     {
-                        if (Predicate.Invoke(match))
+                        if (Predicate.Invoke(match.Value))
                             return (IsNegative) ? null : match;
 
                         match = match.NextMatch();
@@ -79,7 +79,7 @@ namespace Orang
                         Group group = match.Groups[GroupNumber];
 
                         if (group.Success
-                            && Predicate.Invoke(group))
+                            && Predicate.Invoke(group.Value))
                         {
                             return (IsNegative) ? null : match;
                         }
