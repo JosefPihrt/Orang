@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using CommandLine;
 using static Orang.CommandLine.ParseHelpers;
@@ -11,6 +12,12 @@ namespace Orang.CommandLine
     internal sealed class FindCommandLineOptions : CommonFindCommandLineOptions
     {
         [Option(
+            longName: OptionNames.Pipe,
+            HelpText = "Defines how to use redirected/piped input.",
+            MetaValue = MetaValues.PipeMode)]
+        public string Pipe { get; set; } = null!;
+
+        [Option(
             longName: OptionNames.Modify,
             HelpText = "Functions to modify results.",
             MetaValue = MetaValues.ModifyOptions)]
@@ -18,12 +25,54 @@ namespace Orang.CommandLine
 
         public bool TryParse(FindCommandOptions options)
         {
+            if (!TryParseAsEnum(
+                Pipe,
+                OptionNames.Pipe,
+                out PipeMode pipeMode,
+                PipeMode.None,
+                OptionValueProviders.PipeMode))
+            {
+                return false;
+            }
+
+            if (pipeMode == PipeMode.None)
+            {
+                if (Console.IsInputRedirected)
+                    PipeMode = PipeMode.Text;
+            }
+            else
+            {
+                if (!Console.IsInputRedirected)
+                {
+                    WriteError($"Redirected/piped input is required when option '{OptionNames.GetHelpText(OptionNames.Pipe)}' is specified.");
+                    return false;
+                }
+
+                PipeMode = pipeMode;
+            }
+
             var baseOptions = (CommonFindCommandOptions)options;
 
             if (!TryParse(baseOptions))
                 return false;
 
             options = (FindCommandOptions)baseOptions;
+
+            string? input = null;
+
+            if (pipeMode != PipeMode.Paths
+                && Console.IsInputRedirected)
+            {
+                if (options.ContentFilter == null)
+                {
+                    WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Content)}' is required " +
+                        "when redirected/piped input is used as a text to be searched.");
+
+                    return false;
+                }
+
+                input = ConsoleHelpers.ReadRedirectedInput();
+            }
 
             if (!TryParseModifyOptions(Modify, OptionNames.Modify, out ModifyOptions? modifyOptions, out bool aggregateOnly))
                 return false;
@@ -46,6 +95,7 @@ namespace Orang.CommandLine
                 pathDisplayStyle = PathDisplayStyle.Omit;
             }
 
+            options.Input = input;
             options.ModifyOptions = modifyOptions;
 
             options.Format = new OutputDisplayFormat(

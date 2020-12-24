@@ -28,6 +28,7 @@ namespace Orang.CommandLine
         public const string Path = "<PATH>";
         public const string PathDisplay = "<PATH_DISPLAY>";
         public const string PatternOptions = "<PATTERN_OPTIONS>";
+        public const string PipeMode = "<PIPE_MODE>";
         public const string Regex = "<REGEX>";
         public const string RegexOptions = "<REGEX_OPTIONS>";
         public const string Replacement = "<REPLACEMENT>";

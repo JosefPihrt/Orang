@@ -1,6 +1,6 @@
-﻿## Use Redirected Input
+﻿## Redirected/Piped Input
 
-Piped output from a previous command will be treated as a list of paths separated by newlines.
+Redirected/piped input will be used as a list of paths separated with newlines.
 
 ## Samples
 

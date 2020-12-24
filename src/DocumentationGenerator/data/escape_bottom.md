@@ -1,6 +1,6 @@
-﻿## Use Redirected Input
+﻿## Redirected/Piped Input
 
-Piped output from a previous command will be treated as input.
+Redirected/piped input will be used as a text to be escaped.
 
 ## Samples
 

@@ -110,7 +110,9 @@ namespace Orang.CommandLine
             if (context.TerminationReason == TerminationReason.Canceled)
                 return CommandResult.Canceled;
 
-            return (context.Telemetry.MatchingFileCount > 0) ? CommandResult.Success : CommandResult.NoMatch;
+            return (context.Telemetry.MatchingFileCount > 0 || context.Telemetry.MatchCount > 0)
+                ? CommandResult.Success
+                : CommandResult.NoMatch;
         }
 
         private ProgressReporter? CreateProgressReporter()
@@ -208,7 +210,7 @@ namespace Orang.CommandLine
             }
         }
 
-        private bool ShouldWriteSummary()
+        protected bool ShouldWriteSummary()
         {
             if (CanDisplaySummary)
             {

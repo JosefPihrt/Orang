@@ -1,6 +1,6 @@
-﻿## Use Redirected Input
+﻿## Redirected/Piped Input
 
-Piped output from a previous command will be treated as a list of paths separated by newlines.
+Redirected/piped input will be used either as a text to be searched (default) or as a list of paths separated with newlines (when `--pipe p[aths]` is specified.
 
 ## Samples
 

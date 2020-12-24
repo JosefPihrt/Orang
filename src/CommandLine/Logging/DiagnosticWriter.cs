@@ -99,7 +99,7 @@ namespace Orang.CommandLine
         internal static void WriteEscapeCommand(EscapeCommandOptions options)
         {
             WriteOption("char group", options.InCharGroup);
-            WriteOption("input", options.Input);
+            WriteInput(options.Input);
             WriteOption("replacement", options.Replacement);
         }
 
@@ -120,6 +120,7 @@ namespace Orang.CommandLine
                 options.CreationTimePredicate,
                 options.ModifiedTimePredicate);
             WriteOption("highlight options", options.HighlightOptions);
+            WriteInput(options.Input);
             WriteOption("max matching files", options.MaxMatchingFiles);
             WriteOption("max matches in file", options.MaxMatchesInFile);
             WriteModify("modify", options.ModifyOptions);
@@ -143,7 +144,7 @@ namespace Orang.CommandLine
             WriteDisplayFormat("display", options.Format);
             WriteFilter("filter", options.Filter);
             WriteOption("highlight options", options.HighlightOptions);
-            WriteOption("input", options.Input);
+            WriteInput(options.Input);
             WriteOption("max count", options.MaxCount);
         }
 
@@ -238,7 +239,7 @@ namespace Orang.CommandLine
                 options.CreationTimePredicate,
                 options.ModifiedTimePredicate);
             WriteOption("highlight options", options.HighlightOptions);
-            WriteOption("input", options.Input);
+            WriteInput(options.Input);
             WriteOption("max matching files", options.MaxMatchingFiles);
             WriteOption("max matches in file", options.MaxMatchesInFile);
             WriteReplaceModify("modify", options.ReplaceOptions);
@@ -256,9 +257,30 @@ namespace Orang.CommandLine
             WriteDisplayFormat("display", options.Format);
             WriteFilter("filter", options.Filter);
             WriteOption("highlight options", options.HighlightOptions);
-            WriteOption("input", options.Input);
+            WriteInput(options.Input);
             WriteOption("max count", options.MaxCount);
             WriteOption("omit groups", options.OmitGroups);
+        }
+
+        private static void WriteInput(string? value)
+        {
+            WriteName("input");
+
+            const int maxLength = 10000;
+            int remainingLength = 0;
+
+            if (value?.Length > maxLength)
+            {
+                remainingLength = value.Length - maxLength;
+                value = value.Remove(maxLength);
+            }
+
+            WriteValue(value);
+
+            if (remainingLength > 0)
+                Logger.Write($"<truncated> {remainingLength:n0} remaining characters", NullValueColors);
+
+            WriteLine();
         }
 
         private static void WriteOption(string name, int value)

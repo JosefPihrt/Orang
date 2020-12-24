@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Orang.Aggregation;
 using Orang.FileSystem;
@@ -28,11 +29,52 @@ namespace Orang.CommandLine
 
         protected override void ExecuteCore(SearchContext context)
         {
-            _aggregate = AggregateManager.TryCreate(Options);
+            if (Options.Input != null)
+            {
+                ExecuteInput(context, Options.Input);
+            }
+            else
+            {
+                _aggregate = AggregateManager.TryCreate(Options);
 
-            base.ExecuteCore(context);
+                base.ExecuteCore(context);
 
-            _aggregate?.WriteAggregatedValues(context.CancellationToken);
+                _aggregate?.WriteAggregatedValues(context.CancellationToken);
+            }
+        }
+
+        private void ExecuteInput(SearchContext context, string input)
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            Match? match = ContentFilter!.Match(input);
+
+            ContentWriterOptions writerOptions = CreateContentWriterOptions("");
+
+            if (match != null)
+            {
+                WriteContent(
+                    context,
+                    match,
+                    input,
+                    writerOptions,
+                    fileMatch: null,
+                    baseDirectoryPath: null,
+                    isPathWritten: false);
+            }
+
+            stopwatch.Stop();
+
+            if (ShouldWriteSummary())
+            {
+                context.Telemetry.Elapsed = stopwatch.Elapsed;
+
+                Verbosity verbosity = (Options.IncludeSummary) ? Verbosity.Quiet : Verbosity.Detailed;
+
+                WriteLine(verbosity);
+                WriteContentSummary(context.Telemetry, verbosity);
+                WriteLine(verbosity);
+            }
         }
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
@@ -62,7 +104,14 @@ namespace Orang.CommandLine
             }
             else
             {
-                WriteContent(fileMatch, writerOptions, baseDirectoryPath, context);
+                WriteContent(
+                    context,
+                    fileMatch.ContentMatch!,
+                    fileMatch.ContentText,
+                    writerOptions,
+                    fileMatch,
+                    baseDirectoryPath,
+                    isPathWritten: !Options.OmitPath);
             }
 
             AskToContinue(context, indent);
@@ -90,10 +139,13 @@ namespace Orang.CommandLine
         }
 
         private void WriteContent(
-            FileMatch fileMatch,
+            SearchContext context,
+            Match contentMatch,
+            string contentText,
             ContentWriterOptions writerOptions,
+            FileMatch? fileMatch,
             string? baseDirectoryPath,
-            SearchContext context)
+            bool isPathWritten)
         {
             SearchTelemetry telemetry = context.Telemetry;
 
@@ -105,10 +157,10 @@ namespace Orang.CommandLine
                 captures = ListCache<Capture>.GetInstance();
 
                 GetCaptures(
-                    fileMatch.ContentMatch!,
+                    contentMatch!,
                     writerOptions.GroupNumber,
                     context,
-                    isPathWritten: !Options.OmitPath,
+                    isPathWritten: isPathWritten,
                     predicate: ContentFilter!.Predicate,
                     captures: captures);
 
@@ -123,10 +175,10 @@ namespace Orang.CommandLine
 
                     contentWriter = ContentWriter.CreateFind(
                         contentDisplayStyle: Options.ContentDisplayStyle,
-                        input: fileMatch.ContentText,
+                        input: contentText,
                         options: writerOptions,
                         storage: (hasAnyFunction) ? _modify?.FileStorage : _aggregate?.Storage,
-                        outputInfo: Options.CreateOutputInfo(fileMatch.ContentText, fileMatch.ContentMatch!, ContentFilter),
+                        outputInfo: Options.CreateOutputInfo(contentText, contentMatch!, ContentFilter),
                         writer: (hasAnyFunction) ? null : ContentTextWriter.Default,
                         ask: AskMode == AskMode.Value);
                 }
@@ -141,7 +193,7 @@ namespace Orang.CommandLine
                 {
                     _modify!.WriteValues(writerOptions.Indent, telemetry, _aggregate);
 
-                    _aggregate?.Sections?.Add(new StorageSection(fileMatch, baseDirectoryPath, _aggregate.Storage.Count));
+                    _aggregate?.Sections?.Add(new StorageSection(fileMatch!, baseDirectoryPath, _aggregate.Storage.Count));
                 }
                 else
                 {

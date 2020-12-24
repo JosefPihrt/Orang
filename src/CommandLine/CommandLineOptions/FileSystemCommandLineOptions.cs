@@ -17,6 +17,8 @@ namespace Orang.CommandLine
     {
         private FileSystemAttributes FileSystemAttributes { get; set; }
 
+        protected PipeMode PipeMode { get; set; } = PipeMode.Paths;
+
         [Value(
             index: 0,
             HelpText = "Path to one or more files and/or directories that should be searched.",
@@ -248,12 +250,16 @@ namespace Orang.CommandLine
                 paths = paths.AddRange(pathsFromFile);
             }
 
-            if (Console.IsInputRedirected)
+            if (Console.IsInputRedirected
+                && PipeMode == PipeMode.Paths)
             {
-                ImmutableArray<PathInfo> pathsFromInput = ConsoleHelpers.ReadRedirectedInputAsLines()
-                    .Where(f => !string.IsNullOrEmpty(f))
-                    .Select(f => new PathInfo(f, PathOrigin.RedirectedInput))
-                    .ToImmutableArray();
+                if (!TryEnsureFullPath(
+                    ConsoleHelpers.ReadRedirectedInputAsLines().Where(f => !string.IsNullOrEmpty(f)),
+                    PathOrigin.RedirectedInput,
+                    out ImmutableArray<PathInfo> pathsFromInput))
+                {
+                    return false;
+                }
 
                 paths = paths.AddRange(pathsFromInput);
             }

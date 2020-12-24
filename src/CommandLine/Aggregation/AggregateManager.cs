@@ -76,8 +76,6 @@ namespace Orang.Aggregation
                 {
                     values = ExceptOrIntersect(Storage.Values, (x, y, c) => x.Intersect(y, c));
                 }
-
-                values = values.Modify(ModifyOptions, filter: ModifyFunctions.Enumerable);
             }
 
             Dictionary<string, IEnumerable<StorageSection>>? valuesMap = null;
@@ -90,6 +88,10 @@ namespace Orang.Aggregation
                 values = valuesMap
                     .Select(f => f.Key)
                     .Modify(ModifyOptions, filter: ModifyFunctions.Enumerable & ~ModifyFunctions.Distinct);
+            }
+            else
+            {
+                values = values.Modify(ModifyOptions, filter: ModifyFunctions.Enumerable);
             }
 
             using (IEnumerator<string> en = values.GetEnumerator())

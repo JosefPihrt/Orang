@@ -43,6 +43,7 @@ namespace Orang.CommandLine
         public const string Output = "output";
         public const string Paths = "paths";
         public const string PathsFrom = "paths-from";
+        public const string Pipe = "pipe";
         public const string Progress = "progress";
         public const string Properties = "properties";
         public const string Replacement = "replacement";
