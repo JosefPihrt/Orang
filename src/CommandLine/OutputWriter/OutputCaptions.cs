@@ -16,7 +16,7 @@ namespace Orang
             shortCapture: "C",
             shortIndex: "I",
             shortLength: "L",
-            splitChar: "S");
+            shortSplit: "S");
 
         public OutputCaptions(
             string? match = null,
@@ -30,7 +30,7 @@ namespace Orang
             string? shortCapture = null,
             string? shortIndex = null,
             string? shortLength = null,
-            string? splitChar = null)
+            string? shortSplit = null)
         {
             Match = match ?? Default.Match;
             Group = group ?? Default.Group;
@@ -43,7 +43,36 @@ namespace Orang
             ShortCapture = shortCapture ?? Default.ShortCapture;
             ShortIndex = shortIndex ?? Default.ShortIndex;
             ShortLength = shortLength ?? Default.ShortLength;
-            ShortSplit = splitChar ?? Default.ShortSplit;
+            ShortSplit = shortSplit ?? Default.ShortSplit;
+        }
+
+        public OutputCaptions Update(
+            string? match = null,
+            string? group = null,
+            string? capture = null,
+            string? index = null,
+            string? length = null,
+            string? split = null,
+            string? shortMatch = null,
+            string? shortGroup = null,
+            string? shortCapture = null,
+            string? shortIndex = null,
+            string? shortLength = null,
+            string? shortSplit = null)
+        {
+            return new OutputCaptions(
+                match ?? Match,
+                group ?? Group,
+                capture ?? Capture,
+                index ?? Index,
+                length ?? Length,
+                split ?? Split,
+                shortMatch ?? ShortMatch,
+                shortGroup ?? ShortGroup,
+                shortCapture ?? ShortCapture,
+                shortIndex ?? ShortIndex,
+                shortLength ?? ShortLength,
+                shortSplit ?? ShortSplit);
         }
 
         public string Match { get; }

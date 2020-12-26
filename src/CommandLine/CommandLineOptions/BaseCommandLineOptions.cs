@@ -10,8 +10,8 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Output,
             longName: OptionNames.Output,
-            HelpText = "Path to a file that should store output. Syntax is <PATH> [<OUTPUT_OPTIONS>].",
-            MetaValue = MetaValues.OutputOptions)]
+            HelpText = "Path to a file that should store output.",
+            MetaValue = MetaValues.Output)]
         public IEnumerable<string> Output { get; set; } = null!;
 
         [Option(

@@ -41,15 +41,14 @@ namespace Orang.CommandLine
 
         [Option(
             longName: OptionNames.Encoding,
-            HelpText = "Encoding to use when a file does not contain byte order mark. Default encoding is UTF-8.",
+            HelpText = "Encoding to use when a file does not contain BOM. Default encoding is UTF-8.",
             MetaValue = MetaValues.Encoding)]
         public string Encoding { get; set; } = null!;
 
         [Option(
             shortName: OptionShortNames.Extension,
             longName: OptionNames.Extension,
-            HelpText = "A filter for file extensions (case-insensitive by default). " +
-                "Syntax is EXT1[,EXT2,...] [<EXTENSION_OPTIONS>].",
+            HelpText = "A filter for file extensions (case-insensitive by default).",
             MetaValue = MetaValues.ExtensionFilter)]
         public IEnumerable<string> Extension { get; set; } = null!;
 
@@ -63,7 +62,7 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.IncludeDirectory,
             longName: OptionNames.IncludeDirectory,
-            HelpText = "Regular expression for a directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for a directory name.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> IncludeDirectory { get; set; } = null!;
 

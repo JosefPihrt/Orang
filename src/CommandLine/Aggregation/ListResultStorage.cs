@@ -30,5 +30,10 @@ namespace Orang.Aggregation
         {
             Values.Add(value.Substring(start, length));
         }
+
+        public void AddRange(IEnumerable<string> values)
+        {
+            Values.AddRange(values);
+        }
     }
 }

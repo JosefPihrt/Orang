@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using Orang.Text.RegularExpressions;
@@ -172,6 +173,31 @@ namespace Orang
                 prefixSeparator);
         }
 
+        public static MatchOutputInfo Create(
+            List<CaptureInfo> splits,
+            OutputCaptions? captions = null,
+            string? prefixSeparator = null)
+        {
+            int maxIndex = 0;
+            int maxLength = 0;
+
+            foreach (CaptureInfo capture in splits)
+            {
+                maxIndex = Math.Max(maxIndex, capture.Index);
+                maxLength = Math.Max(maxLength, capture.Length);
+            }
+
+            return new MatchOutputInfo(
+                groupNumber: -1,
+                matchWidth: Math.Max(splits.Count, 0).GetDigitCount(),
+                groupWidth: 0,
+                captureWidth: 0,
+                maxIndex.GetDigitCount(),
+                maxLength.GetDigitCount(),
+                captions,
+                prefixSeparator);
+        }
+
         public string GetText(
             CaptureItem item,
             int matchNumber,
@@ -184,6 +210,40 @@ namespace Orang
 
         public string GetText(
             Capture capture,
+            int matchNumber,
+            string? groupName,
+            int captureNumber,
+            bool omitMatchInfo = false,
+            bool omitGroupInfo = false)
+        {
+            return GetText(
+                index: capture.Index,
+                length: capture.Length,
+                matchNumber: matchNumber,
+                groupName: groupName,
+                captureNumber: captureNumber,
+                omitMatchInfo: omitMatchInfo,
+                omitGroupInfo: omitGroupInfo);
+        }
+
+        public string GetText(
+            CaptureInfo capture,
+            int matchNumber,
+            string? groupName)
+        {
+            return GetText(
+                index: capture.Index,
+                length: capture.Length,
+                matchNumber: matchNumber,
+                groupName: groupName,
+                captureNumber: -1,
+                omitMatchInfo: false,
+                omitGroupInfo: false);
+        }
+
+        public string GetText(
+            int index,
+            int length,
             int matchNumber,
             string? groupName,
             int captureNumber,
@@ -219,8 +279,8 @@ namespace Orang
                 AppendNumber(Captions.ShortCapture, captureNumber, CaptureWidth);
             }
 
-            AppendNumber(Captions.ShortIndex, capture.Index, IndexWidth);
-            AppendNumber(Captions.ShortLength, capture.Length, LengthWidth);
+            AppendNumber(Captions.ShortIndex, index, IndexWidth);
+            AppendNumber(Captions.ShortLength, length, LengthWidth);
 
             return StringBuilderCache.GetStringAndFree(sb);
 

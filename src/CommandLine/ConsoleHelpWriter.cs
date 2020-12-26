@@ -42,7 +42,45 @@ namespace Orang.CommandLine
             WriteLine("Usage: orang [command] [arguments]");
             WriteLine();
 
-            base.WriteCommands(commands);
+            if (commands.Commands.Any())
+            {
+                using (IEnumerator<IGrouping<string, CommandItem>>? en = commands.Commands
+                    .OrderBy(f => f.Command.Group.Ordinal)
+                    .GroupBy(f => f.Command.Group.Name)
+                    .GetEnumerator())
+                {
+                    if (en.MoveNext())
+                    {
+                        while (true)
+                        {
+                            WriteHeading(en.Current.Key + " commands");
+
+                            int width = commands.Commands.Max(f => f.Command.Name.Length) + 1;
+
+                            foreach (CommandItem command in en.Current)
+                            {
+                                Write(Options.Indent);
+                                WriteTextLine(command.Text);
+                            }
+
+                            if (en.MoveNext())
+                            {
+                                WriteLine();
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                WriteEndCommands(commands);
+            }
+            else if (Options.Filter != null)
+            {
+                WriteLine("No command found");
+            }
         }
 
         public override void WriteStartCommand(CommandHelp commandHelp)

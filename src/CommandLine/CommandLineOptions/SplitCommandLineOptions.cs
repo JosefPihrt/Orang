@@ -11,13 +11,14 @@ namespace Orang.CommandLine
         HelpText = "Splits the input string into an list of substrings at the positions defined by a regular expression.")]
     [OptionValueProvider(nameof(Content), OptionValueProviderNames.PatternOptionsWithoutGroupAndPartAndNegative)]
     [OptionValueProvider(nameof(Highlight), OptionValueProviderNames.SplitHighlightOptions)]
+    [CommandGroup("Regex", 2)]
     internal sealed class SplitCommandLineOptions : RegexCommandLineOptions
     {
         [Option(
             shortName: OptionShortNames.Content,
             longName: OptionNames.Content,
             Required = true,
-            HelpText = "Regular expression for the input string. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for the input string.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Content { get; set; } = null!;
 

@@ -24,6 +24,8 @@ namespace Orang.CommandLine
 
         public bool Flat { get; internal set; }
 
+        public bool StructureOnly { get; internal set; }
+
         public string Target
         {
             get { return _target; }

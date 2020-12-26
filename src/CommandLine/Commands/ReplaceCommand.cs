@@ -60,7 +60,7 @@ namespace Orang.CommandLine
                         match,
                         FileWriterOptions.GroupNumber,
                         context,
-                        isPathWritten: false,
+                        isPathDisplayed: false,
                         predicate: contentFilter.Predicate,
                         captures: groups);
 
@@ -139,7 +139,7 @@ namespace Orang.CommandLine
                     fileMatch.ContentMatch!,
                     writerOptions.GroupNumber,
                     context,
-                    isPathWritten: !Options.OmitPath,
+                    isPathDisplayed: !Options.OmitPath,
                     predicate: Options.ContentFilter!.Predicate,
                     captures: groups);
 

@@ -50,7 +50,7 @@ namespace Orang.CommandLine
         {
         }
 
-        protected override void WriteStartMatch(Capture capture)
+        protected override void WriteStartMatch(CaptureInfo capture)
         {
             ResultStorage?.Add(capture.Value);
 
@@ -61,10 +61,10 @@ namespace Orang.CommandLine
             }
 
             if (OutputInfo != null)
-                Write(OutputInfo.GetText(capture, MatchCount + 1, groupName: Options.GroupName, captureNumber: -1));
+                Write(OutputInfo.GetText(capture, MatchCount + 1, groupName: Options.GroupName));
         }
 
-        protected override void WriteEndMatch(Capture capture)
+        protected override void WriteEndMatch(CaptureInfo capture)
         {
         }
 

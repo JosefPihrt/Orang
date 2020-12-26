@@ -59,14 +59,14 @@ namespace Orang.CommandLine
             ResultStorage?.Add(Input);
         }
 
-        protected override void WriteStartMatch(Capture capture)
+        protected override void WriteStartMatch(CaptureInfo capture)
         {
             int index = capture.Index;
 
             ValueWriter.Write(Input, _lastPos, index - _lastPos, symbols: null);
         }
 
-        protected override void WriteEndMatch(Capture capture)
+        protected override void WriteEndMatch(CaptureInfo capture)
         {
             _lastPos = capture.Index + capture.Length;
         }

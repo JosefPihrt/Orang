@@ -5,6 +5,7 @@ using CommandLine;
 namespace Orang.CommandLine
 {
     [Verb("escape", HelpText = "Escapes special characters by replacing them with their escape codes.")]
+    [CommandGroup("Regex", 2)]
     internal sealed class EscapeCommandLineOptions : BaseCommandLineOptions
     {
         [Option(

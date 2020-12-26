@@ -9,6 +9,7 @@ using static Orang.Logger;
 namespace Orang.CommandLine
 {
     [Verb("find", HelpText = "Searches the file system for files and directories and optionally searches files' content.")]
+    [CommandGroup("Main", 0)]
     internal sealed class FindCommandLineOptions : CommonFindCommandLineOptions
     {
         [Option(
@@ -22,6 +23,11 @@ namespace Orang.CommandLine
             HelpText = "Functions to modify results.",
             MetaValue = MetaValues.ModifyOptions)]
         public IEnumerable<string> Modify { get; set; } = null!;
+
+        [Option(
+            longName: "split",
+            HelpText = "Execute regex in a split mode.")]
+        public bool Split { get; set; }
 
         public bool TryParse(FindCommandOptions options)
         {
@@ -87,16 +93,10 @@ namespace Orang.CommandLine
                 contentDisplayStyle = ContentDisplayStyle.Value;
             }
 
-            if (aggregateOnly)
-            {
-                if (ConsoleOut.Verbosity > Orang.Verbosity.Minimal)
-                    ConsoleOut.Verbosity = Orang.Verbosity.Minimal;
-
-                pathDisplayStyle = PathDisplayStyle.Omit;
-            }
-
             options.Input = input;
             options.ModifyOptions = modifyOptions;
+            options.AggregateOnly = aggregateOnly;
+            options.Split = Split;
 
             options.Format = new OutputDisplayFormat(
                 contentDisplayStyle: contentDisplayStyle,

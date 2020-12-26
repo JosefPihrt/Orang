@@ -49,7 +49,7 @@ namespace Orang.CommandLine
             _lineNumber = 1;
         }
 
-        protected override void WriteStartMatch(Capture capture)
+        protected override void WriteStartMatch(CaptureInfo capture)
         {
             int index = capture.Index;
 
@@ -244,7 +244,7 @@ namespace Orang.CommandLine
             Write(" ");
         }
 
-        protected override void WriteEndMatch(Capture capture)
+        protected override void WriteEndMatch(CaptureInfo capture)
         {
             _lastEndIndex = capture.Index + capture.Length;
         }

@@ -13,11 +13,13 @@ namespace Orang
         public Command(
             string name,
             string description,
+            CommandGroup group,
             IEnumerable<CommandArgument>? arguments = null,
             IEnumerable<CommandOption>? options = null)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Description = description;
+            Group = group;
             Arguments = arguments?.ToImmutableArray() ?? ImmutableArray<CommandArgument>.Empty;
             Options = options?.ToImmutableArray() ?? ImmutableArray<CommandOption>.Empty;
         }
@@ -25,6 +27,8 @@ namespace Orang
         public string Name { get; }
 
         public string Description { get; }
+
+        public CommandGroup Group { get; }
 
         public ImmutableArray<CommandArgument> Arguments { get; }
 
@@ -35,12 +39,12 @@ namespace Orang
 
         public Command WithArguments(IEnumerable<CommandArgument> arguments)
         {
-            return new Command(Name, Description, arguments, Options);
+            return new Command(Name, Description, Group, arguments, Options);
         }
 
         public Command WithOptions(IEnumerable<CommandOption> options)
         {
-            return new Command(Name, Description, Arguments, options);
+            return new Command(Name, Description, Group, Arguments, options);
         }
     }
 }

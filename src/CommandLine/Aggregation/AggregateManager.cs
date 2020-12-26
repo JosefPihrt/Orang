@@ -50,7 +50,7 @@ namespace Orang.Aggregation
             {
                 sections = new List<StorageSection>();
             }
-            else if (Options.ContentFilter != null
+            else if ((Options.ContentFilter != null || Options.NameFilter != null)
                 && modifyOptions.HasFunction(ModifyFunctions.GroupBy))
             {
                 sections = new List<StorageSection>();
@@ -78,12 +78,22 @@ namespace Orang.Aggregation
                 }
             }
 
-            Dictionary<string, IEnumerable<StorageSection>>? valuesMap = null;
+            Dictionary<string, List<StorageSection>>? valuesMap = null;
 
             if (Sections?.Count > 0
                 && ModifyOptions.HasFunction(ModifyFunctions.GroupBy))
             {
-                valuesMap = GroupByValues(Storage.Values);
+                if (Options.ContentFilter != null)
+                {
+                    valuesMap = GroupByValues(Storage.Values);
+                }
+                else
+                {
+                    valuesMap = Storage.Values
+                        .Zip(Sections)
+                        .GroupBy(f => f.First)
+                        .ToDictionary(f => f.Key, f => f.Select(f => f.Second).ToList());
+                }
 
                 values = valuesMap
                     .Select(f => f.Key)
@@ -107,14 +117,27 @@ namespace Orang.Aggregation
                     ConsoleColors boundaryColors = (Options.HighlightBoundary) ? Colors.MatchBoundary : default;
                     var valueWriter = new ValueWriter(new ContentTextWriter(Verbosity.Minimal), includeEndingIndent: false);
 
-                    ConsoleOut.WriteLineIf(ShouldWriteLine(ConsoleOut.Verbosity));
-                    Out?.WriteLineIf(ShouldWriteLine(Out.Verbosity));
+                    if (!Options.AggregateOnly)
+                    {
+                        ConsoleOut.WriteLineIf(ShouldWriteLine(ConsoleOut.Verbosity));
+                        Out?.WriteLineIf(ShouldWriteLine(Out.Verbosity));
+                    }
 
                     do
                     {
                         cancellationToken.ThrowIfCancellationRequested();
 
                         valueWriter.Write(en.Current, symbols, colors, boundaryColors);
+
+                        if (valuesMap != null
+                            && ShouldLog(Verbosity.Detailed))
+                        {
+                            int groupCount = valuesMap[en.Current].Count;
+
+                            Write("  ", Colors.Message_OK, Verbosity.Detailed);
+                            Write(groupCount.ToString("n0"), Colors.Message_OK, Verbosity.Detailed);
+                        }
+
                         WriteLine(Verbosity.Minimal);
 
                         if (valuesMap != null)
@@ -124,12 +147,26 @@ namespace Orang.Aggregation
 
                     } while (en.MoveNext());
 
-                    if (ShouldLog(Verbosity.Detailed)
-                        || Options.IncludeSummary)
+                    if (Options.IncludeSummary
+                        || ShouldLog(Verbosity.Detailed))
                     {
-                        WriteLine(Verbosity.Minimal);
-                        WriteCount("Values", count, verbosity: Verbosity.Minimal);
-                        WriteLine(Verbosity.Minimal);
+                        Verbosity verbosity = (Options.IncludeSummary)
+                            ? Verbosity.Minimal
+                            : Verbosity.Detailed;
+
+                        if (valuesMap != null)
+                            count = valuesMap.Sum(f => f.Value.Count);
+
+                        WriteLine(verbosity);
+
+                        if (valuesMap != null)
+                        {
+                            WriteCount("Groups", valuesMap.Count, verbosity: verbosity);
+                            Write("  ", verbosity);
+                        }
+
+                        WriteCount("Values", count, verbosity: verbosity);
+                        WriteLine(verbosity);
                     }
                 }
             }
@@ -166,7 +203,7 @@ namespace Orang.Aggregation
             return list;
         }
 
-        private Dictionary<string, IEnumerable<StorageSection>> GroupByValues(List<string> values)
+        private Dictionary<string, List<StorageSection>> GroupByValues(List<string> values)
         {
             var sectionsValues = new List<(StorageSection section, IEnumerable<string> values)>();
 
@@ -185,7 +222,7 @@ namespace Orang.Aggregation
             return sectionsValues
                 .SelectMany(f => f.values.Select(value => (f.section, value)))
                 .GroupBy(f => f.value, ModifyOptions.StringComparer)
-                .ToDictionary(f => f.Key, f => f.Select(g => g.section), ModifyOptions.StringComparer);
+                .ToDictionary(f => f.Key, f => f.Select(g => g.section).ToList(), ModifyOptions.StringComparer);
         }
 
         private IEnumerable<string> GetRange(List<string> values, int start, int end)

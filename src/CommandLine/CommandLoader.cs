@@ -102,9 +102,12 @@ namespace Orang.CommandLine
                 }
             }
 
+            CommandGroupAttribute commandGroupAttribute = type.GetCustomAttribute<CommandGroupAttribute>()!;
+
             return new Command(
                 verbAttribute.Name,
                 verbAttribute.HelpText,
+                new CommandGroup(commandGroupAttribute.Name, commandGroupAttribute.Ordinal),
                 arguments.OrderBy(f => f.Index),
                 options.OrderBy(f => f, CommandOptionComparer.Name));
         }

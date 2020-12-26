@@ -26,6 +26,19 @@ namespace Orang.CommandLine
 
         protected HashSet<string>? IgnoredPaths { get; set; }
 
+        protected override FileSystemSearch CreateSearch()
+        {
+            FileSystemSearch search = base.CreateSearch();
+
+            if (Options.SearchTarget != SearchTarget.Files
+                && !Options.StructureOnly)
+            {
+                search.CanRecurseMatch = false;
+            }
+
+            return search;
+        }
+
         protected abstract void ExecuteOperation(string sourcePath, string destinationPath);
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
@@ -103,7 +116,7 @@ namespace Orang.CommandLine
             }
         }
 
-        protected virtual void ExecuteOperation(
+        protected virtual DialogResult? ExecuteOperation(
             SearchContext context,
             string sourcePath,
             string destinationPath,
@@ -122,8 +135,11 @@ namespace Orang.CommandLine
                 }
                 else if (directoryExists)
                 {
-                    if (FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.IgnoredAttributes))
-                        return;
+                    if (Options.StructureOnly
+                        && FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.IgnoredAttributes))
+                    {
+                        return null;
+                    }
 
                     ask = true;
                 }
@@ -138,7 +154,7 @@ namespace Orang.CommandLine
                         Options.IgnoredAttributes,
                         Options.AllowedTimeDiff))
                 {
-                    return;
+                    return null;
                 }
 
                 ask = true;
@@ -151,12 +167,12 @@ namespace Orang.CommandLine
             if (ask
                 && ConflictResolution == ConflictResolution.Skip)
             {
-                return;
+                return null;
             }
 
-            if (!isDirectory
-                && fileExists
-                && ConflictResolution == ConflictResolution.Suffix)
+            if (ConflictResolution == ConflictResolution.Suffix
+                && ((isDirectory && directoryExists)
+                    || (!isDirectory && fileExists)))
             {
                 destinationPath = FileSystemHelpers.CreateNewFilePath(destinationPath);
             }
@@ -180,7 +196,7 @@ namespace Orang.CommandLine
                 string question;
                 if (directoryExists)
                 {
-                    question = (isDirectory) ? "Update directory attributes?" : "Overwrite directory?";
+                    question = (isDirectory && Options.StructureOnly) ? "Update directory attributes?" : "Overwrite directory?";
                 }
                 else
                 {
@@ -202,17 +218,17 @@ namespace Orang.CommandLine
                     case DialogResult.No:
                     case DialogResult.None:
                         {
-                            return;
+                            return null;
                         }
                     case DialogResult.NoToAll:
                         {
                             ConflictResolution = ConflictResolution.Skip;
-                            return;
+                            return DialogResult.NoToAll;
                         }
                     case DialogResult.Cancel:
                         {
                             context.TerminationReason = TerminationReason.Canceled;
-                            return;
+                            return DialogResult.Cancel;
                         }
                     default:
                         {
@@ -226,7 +242,16 @@ namespace Orang.CommandLine
                 if (directoryExists)
                 {
                     if (!Options.DryRun)
-                        FileSystemHelpers.UpdateAttributes(sourcePath, destinationPath);
+                    {
+                        if (Options.StructureOnly)
+                        {
+                            FileSystemHelpers.UpdateAttributes(sourcePath, destinationPath);
+                        }
+                        else
+                        {
+                            CopyDirectory(sourcePath, destinationPath, indent, context);
+                        }
+                    }
                 }
                 else
                 {
@@ -237,32 +262,118 @@ namespace Orang.CommandLine
                     }
 
                     if (!Options.DryRun)
-                        Directory.CreateDirectory(destinationPath);
+                    {
+                        if (Options.StructureOnly)
+                        {
+                            Directory.CreateDirectory(destinationPath);
+                        }
+                        else
+                        {
+                            CopyDirectory(sourcePath, destinationPath, indent, context);
+                        }
+                    }
                 }
 
                 context.Telemetry.ProcessedDirectoryCount++;
             }
             else
             {
-                if (fileExists)
-                {
-                    if (!Options.DryRun)
-                        File.Delete(destinationPath);
-                }
-                else if (directoryExists)
-                {
-                    if (!Options.DryRun)
-                        Directory.Delete(destinationPath, recursive: true);
-                }
-                else if (!Options.DryRun)
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
-                }
-
                 if (!Options.DryRun)
+                {
+                    if (fileExists)
+                    {
+                        File.Delete(destinationPath);
+                    }
+                    else if (directoryExists)
+                    {
+                        Directory.Delete(destinationPath, recursive: true);
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                    }
+
                     ExecuteOperation(sourcePath, destinationPath);
+                }
 
                 context.Telemetry.ProcessedFileCount++;
+            }
+
+            return null;
+        }
+
+        private void CopyDirectory(
+            string sourcePath,
+            string destinationPath,
+            string indent,
+            SearchContext context)
+        {
+            var directories = new Stack<(string, string)>();
+
+            directories.Push((sourcePath, destinationPath));
+
+            CopyDirectory(directories, indent, context);
+        }
+
+        private void CopyDirectory(
+            Stack<(string, string)> directories,
+            string indent,
+            SearchContext context)
+        {
+            while (directories.Count > 0)
+            {
+                (string sourcePath, string destinationPath) = directories.Pop();
+
+                var isEmpty = true;
+
+                using (IEnumerator<string> en = Directory.EnumerateFiles(sourcePath).GetEnumerator())
+                {
+                    if (en.MoveNext())
+                    {
+                        isEmpty = false;
+
+                        do
+                        {
+                            string newFilePath = Path.Combine(destinationPath, Path.GetFileName(en.Current));
+
+                            DialogResult? result = ExecuteOperation(
+                                context,
+                                en.Current,
+                                newFilePath,
+                                isDirectory: false,
+                                indent);
+
+                            if (result == DialogResult.NoToAll
+                                || result == DialogResult.Cancel)
+                            {
+                                return;
+                            }
+
+                        } while (en.MoveNext());
+                    }
+                }
+
+                using (IEnumerator<string> en = Directory.EnumerateDirectories(sourcePath).GetEnumerator())
+                {
+                    if (en.MoveNext())
+                    {
+                        isEmpty = false;
+
+                        do
+                        {
+                            string newDirectoryPath = Path.Combine(destinationPath, Path.GetFileName(en.Current));
+
+                            directories.Push((en.Current, newDirectoryPath));
+
+                        } while (en.MoveNext());
+                    }
+                }
+
+                if (isEmpty
+                    && !Options.DryRun)
+                {
+                    Directory.CreateDirectory(destinationPath);
+                }
             }
         }
 

@@ -85,12 +85,7 @@ namespace Orang.Documentation
                 Heading1("List of Allowed Values"),
                 BulletList(providers.Select(f => Link(
                     f.Name,
-                    "#"
-                        + f.Name
-                            .ToLower()
-                            .Replace("<", "")
-                            .Replace(">", "")
-                            .Replace("_", "-")))),
+                    MarkdownHelpers.CreateGitHubHeadingLink(f.Name)))),
                 providers.Select(provider =>
                 {
                     return new MObject[]

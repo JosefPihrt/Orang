@@ -15,6 +15,7 @@ namespace Orang.CommandLine
     [Verb("replace", HelpText = "Searches the file system for files and replaces its content.")]
     [OptionValueProvider(nameof(Content), OptionValueProviderNames.PatternOptionsWithoutGroupAndPartAndNegative)]
     [OptionValueProvider(nameof(Highlight), OptionValueProviderNames.ReplaceHighlightOptions)]
+    [CommandGroup("Main", 0)]
     internal sealed class ReplaceCommandLineOptions : FileSystemCommandLineOptions
     {
         [Option(
@@ -27,7 +28,7 @@ namespace Orang.CommandLine
             shortName: OptionShortNames.Content,
             longName: OptionNames.Content,
             Required = true,
-            HelpText = "Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for files' content.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Content { get; set; } = null!;
 
@@ -52,7 +53,7 @@ namespace Orang.CommandLine
 
         [Option(
             longName: OptionNames.Input,
-            HelpText = "The input string to be searched. Syntax is <INPUT> [<INPUT_OPTIONS>].",
+            HelpText = "The input string to be searched.",
             MetaValue = MetaValues.Input)]
         public IEnumerable<string> Input { get; set; } = null!;
 
@@ -72,14 +73,14 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Name,
             longName: OptionNames.Name,
-            HelpText = "Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for file or directory name.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Name { get; set; } = null!;
 
         [Option(
             shortName: OptionShortNames.Replacement,
             longName: OptionNames.Replacement,
-            HelpText = "Replacement pattern. Syntax is <REPLACEMENT> [<REPLACEMENT_OPTIONS>].",
+            HelpText = "Replacement pattern.",
             MetaValue = MetaValues.Replacement)]
         public IEnumerable<string> Replacement { get; set; } = null!;
 

@@ -12,6 +12,10 @@ namespace Orang.CommandLine
 
         public ModifyOptions ModifyOptions { get; internal set; } = null!;
 
+        public bool Split { get; internal set; }
+
+        public bool AggregateOnly { get; internal set; }
+
         protected override void WriteDiagnosticCore()
         {
             DiagnosticWriter.WriteFindCommand(this);

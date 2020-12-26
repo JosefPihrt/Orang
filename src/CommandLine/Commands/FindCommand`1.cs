@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -11,12 +12,16 @@ namespace Orang.CommandLine
 {
     internal sealed class FindCommand<TOptions> : CommonFindCommand<TOptions> where TOptions : FindCommandOptions
     {
+        private static OutputCaptions? _splitCaptions;
+
         private AggregateManager? _aggregate;
         private ModifyManager? _modify;
 
         public FindCommand(TOptions options) : base(options)
         {
         }
+
+        private static OutputCaptions SplitCaptions => _splitCaptions ??= OutputCaptions.Default.Update(shortMatch: OutputCaptions.Default.ShortSplit);
 
         public override bool CanEndProgress
         {
@@ -26,6 +31,10 @@ namespace Orang.CommandLine
                     || (ContentFilter != null && ConsoleOut.Verbosity > Verbosity.Minimal);
             }
         }
+
+        public bool AggregateOnly => Options.AggregateOnly;
+
+        protected override bool CanDisplaySummary => !AggregateOnly && base.CanDisplaySummary;
 
         protected override void ExecuteCore(SearchContext context)
         {
@@ -60,7 +69,7 @@ namespace Orang.CommandLine
                     writerOptions,
                     fileMatch: null,
                     baseDirectoryPath: null,
-                    isPathWritten: false);
+                    isPathDisplayed: false);
             }
 
             stopwatch.Stop();
@@ -94,13 +103,15 @@ namespace Orang.CommandLine
         {
             string indent = GetPathIndent(baseDirectoryPath);
 
-            if (!Options.OmitPath)
+            bool isPathDisplayed = !Options.OmitPath && !AggregateOnly;
+
+            if (isPathDisplayed)
                 WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
 
             if (ContentFilter!.IsNegative
                 || fileMatch.IsDirectory)
             {
-                WriteLineIf(!Options.OmitPath, Verbosity.Minimal);
+                WriteLineIf(isPathDisplayed, Verbosity.Minimal);
             }
             else
             {
@@ -111,7 +122,7 @@ namespace Orang.CommandLine
                     writerOptions,
                     fileMatch,
                     baseDirectoryPath,
-                    isPathWritten: !Options.OmitPath);
+                    isPathDisplayed: isPathDisplayed);
             }
 
             AskToContinue(context, indent);
@@ -125,14 +136,18 @@ namespace Orang.CommandLine
         {
             string indent = GetPathIndent(baseDirectoryPath);
 
-            if (!Options.OmitPath)
+            if (!Options.OmitPath
+                && !AggregateOnly)
+            {
                 WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
+            }
 
             if (_aggregate?.Storage != null
                 && fileMatch.NameMatch != null
                 && !object.ReferenceEquals(fileMatch.NameMatch, Match.Empty))
             {
                 _aggregate.Storage.Add(fileMatch.NameMatch.Value);
+                _aggregate.Sections?.Add(new StorageSection(fileMatch, baseDirectoryPath, 0));
             }
 
             AskToContinue(context, indent);
@@ -140,58 +155,41 @@ namespace Orang.CommandLine
 
         private void WriteContent(
             SearchContext context,
-            Match contentMatch,
-            string contentText,
+            Match match,
+            string content,
             ContentWriterOptions writerOptions,
             FileMatch? fileMatch,
             string? baseDirectoryPath,
-            bool isPathWritten)
+            bool isPathDisplayed)
         {
             SearchTelemetry telemetry = context.Telemetry;
-
             ContentWriter? contentWriter = null;
-            List<Capture>? captures = null;
 
             try
             {
-                captures = ListCache<Capture>.GetInstance();
-
-                GetCaptures(
-                    contentMatch!,
-                    writerOptions.GroupNumber,
-                    context,
-                    isPathWritten: isPathWritten,
-                    predicate: ContentFilter!.Predicate,
-                    captures: captures);
-
-                bool hasAnyFunction = Options.ModifyOptions.HasAnyFunction;
-
-                if (hasAnyFunction
-                    || Options.AskMode == AskMode.Value
-                    || ShouldLog(Verbosity.Normal))
+                if (Options.Split)
                 {
-                    if (hasAnyFunction)
-                        (_modify ??= new ModifyManager(Options)).Reset();
-
-                    contentWriter = ContentWriter.CreateFind(
-                        contentDisplayStyle: Options.ContentDisplayStyle,
-                        input: contentText,
-                        options: writerOptions,
-                        storage: (hasAnyFunction) ? _modify?.FileStorage : _aggregate?.Storage,
-                        outputInfo: Options.CreateOutputInfo(contentText, contentMatch!, ContentFilter),
-                        writer: (hasAnyFunction) ? null : ContentTextWriter.Default,
-                        ask: AskMode == AskMode.Value);
+                    contentWriter = WriteSplits(match, content, writerOptions, isPathDisplayed, context);
                 }
                 else
                 {
-                    contentWriter = new EmptyContentWriter(writerOptions);
+                    contentWriter = WriteMatches(match, content, writerOptions, isPathDisplayed, context);
                 }
 
-                WriteMatches(contentWriter, captures, context);
-
-                if (hasAnyFunction)
+                if (Options.ModifyOptions.HasAnyFunction)
                 {
-                    _modify!.WriteValues(writerOptions.Indent, telemetry, _aggregate);
+                    if (AggregateOnly)
+                    {
+                        IEnumerable<string> values = _modify!.FileValues!.Modify(
+                            Options.ModifyOptions,
+                            filter: Options.ModifyOptions.Functions & ~(ModifyFunctions.Enumerable | ModifyFunctions.Except_Intersect_GroupBy));
+
+                        _aggregate?.Storage.AddRange(values);
+                    }
+                    else
+                    {
+                        _modify!.WriteValues(writerOptions.Indent, telemetry, _aggregate);
+                    }
 
                     _aggregate?.Sections?.Add(new StorageSection(fileMatch!, baseDirectoryPath, _aggregate.Storage.Count));
                 }
@@ -225,10 +223,141 @@ namespace Orang.CommandLine
             finally
             {
                 contentWriter?.Dispose();
+            }
+        }
 
+        private ContentWriter WriteMatches(
+            Match match,
+            string content,
+            ContentWriterOptions writerOptions,
+            bool isPathDisplayed,
+            SearchContext context)
+        {
+            ContentWriter? contentWriter;
+
+            bool hasAnyFunction = Options.ModifyOptions.HasAnyFunction;
+
+            if (hasAnyFunction
+                || Options.AskMode == AskMode.Value
+                || ShouldLog(Verbosity.Normal))
+            {
+                if (hasAnyFunction)
+                    (_modify ??= new ModifyManager(Options)).Reset();
+
+                contentWriter = ContentWriter.CreateFind(
+                    contentDisplayStyle: Options.ContentDisplayStyle,
+                    input: content,
+                    options: writerOptions,
+                    storage: (hasAnyFunction) ? _modify?.FileStorage : _aggregate?.Storage,
+                    outputInfo: Options.CreateOutputInfo(content, match, ContentFilter!),
+                    writer: (hasAnyFunction) ? null : ContentTextWriter.Default,
+                    ask: AskMode == AskMode.Value);
+            }
+            else
+            {
+                contentWriter = new EmptyContentWriter(writerOptions);
+            }
+
+            List<Capture>? captures = null;
+
+            try
+            {
+                captures = ListCache<Capture>.GetInstance();
+
+                GetCaptures(
+                    match,
+                    writerOptions.GroupNumber,
+                    context,
+                    isPathDisplayed: isPathDisplayed,
+                    predicate: ContentFilter!.Predicate,
+                    captures: captures);
+
+                WriteMatches(contentWriter, captures, context);
+            }
+            finally
+            {
                 if (captures != null)
                     ListCache<Capture>.Free(captures);
             }
+
+            return contentWriter;
+        }
+
+        private ContentWriter WriteSplits(
+            Match match,
+            string content,
+            ContentWriterOptions writerOptions,
+            bool isPathDisplayed,
+            SearchContext context)
+        {
+            ContentWriter? contentWriter = null;
+            List<CaptureInfo>? splits = null;
+
+            try
+            {
+                splits = ListCache<CaptureInfo>.GetInstance();
+
+                (int maxMatchesInFile, int maxTotalMatches, int count) = CalculateMaxCount(context);
+
+                MaxReason maxReason = CaptureFactory.GetSplits(
+                    match,
+                    Options.ContentFilter!.Regex,
+                    content,
+                    count,
+                    Options.ContentFilter.Predicate,
+                    ref splits,
+                    context.CancellationToken);
+
+                if ((maxReason == MaxReason.CountEqualsMax || maxReason == MaxReason.CountExceedsMax)
+                    && maxTotalMatches > 0
+                    && (maxMatchesInFile == 0 || maxTotalMatches <= maxMatchesInFile))
+                {
+                    context.TerminationReason = TerminationReason.MaxReached;
+                }
+
+                if (isPathDisplayed)
+                    LogHelpers.WriteFilePathEnd(splits.Count, maxReason, Options.IncludeCount);
+
+                bool hasAnyFunction = Options.ModifyOptions.HasAnyFunction;
+
+                if (hasAnyFunction
+                    || Options.AskMode == AskMode.Value
+                    || ShouldLog(Verbosity.Normal))
+                {
+                    if (hasAnyFunction)
+                        (_modify ??= new ModifyManager(Options)).Reset();
+
+                    MatchOutputInfo? outputInfo = (Options.ContentDisplayStyle == ContentDisplayStyle.ValueDetail)
+                        ? MatchOutputInfo.Create(splits, SplitCaptions)
+                        : null;
+
+                    contentWriter = ContentWriter.CreateFind(
+                        contentDisplayStyle: Options.ContentDisplayStyle,
+                        input: content,
+                        options: writerOptions,
+                        storage: (hasAnyFunction) ? _modify?.FileStorage : _aggregate?.Storage,
+                        outputInfo: outputInfo,
+                        writer: (hasAnyFunction) ? null : ContentTextWriter.Default,
+                        ask: AskMode == AskMode.Value);
+                }
+                else
+                {
+                    contentWriter = new EmptyContentWriter(writerOptions);
+                }
+
+                contentWriter.WriteMatches(splits, context.CancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                context.TerminationReason = TerminationReason.Canceled;
+            }
+            finally
+            {
+                if (splits != null)
+                    ListCache<CaptureInfo>.Free(splits);
+            }
+
+            return contentWriter!;
         }
     }
 }

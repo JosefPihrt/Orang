@@ -21,7 +21,7 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Content,
             longName: OptionNames.Content,
-            HelpText = "Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for files' content.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Content { get; set; } = null!;
 
@@ -35,7 +35,7 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Name,
             longName: OptionNames.Name,
-            HelpText = "Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for file or directory name.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Name { get; set; } = null!;
 

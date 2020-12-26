@@ -10,6 +10,7 @@ using static Orang.CommandLine.ParseHelpers;
 namespace Orang.CommandLine
 {
     [Verb("list-patterns", HelpText = "Lists regular expression patterns.")]
+    [CommandGroup("Regex", 2)]
     internal sealed class ListPatternsCommandLineOptions : CommonListCommandLineOptions
     {
         [Value(

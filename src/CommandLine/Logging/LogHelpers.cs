@@ -13,6 +13,40 @@ namespace Orang.CommandLine
 {
     internal static class LogHelpers
     {
+        public static void WriteFilePathEnd(int count, MaxReason maxReason, bool includeCount)
+        {
+            Verbosity verbosity = ConsoleOut.Verbosity;
+
+            if (verbosity >= Verbosity.Detailed
+                || includeCount)
+            {
+                verbosity = (includeCount) ? Verbosity.Minimal : Verbosity.Detailed;
+
+                ConsoleOut.Write("  ", Colors.Message_OK, verbosity);
+                ConsoleOut.Write(count.ToString("n0"), Colors.Message_OK, verbosity);
+                ConsoleOut.WriteIf(maxReason == MaxReason.CountExceedsMax, "+", Colors.Message_OK, verbosity);
+            }
+
+            ConsoleOut.WriteLine(Verbosity.Minimal);
+
+            if (Out != null)
+            {
+                verbosity = Out.Verbosity;
+
+                if (verbosity >= Verbosity.Detailed
+                    || includeCount)
+                {
+                    verbosity = (includeCount) ? Verbosity.Minimal : Verbosity.Detailed;
+
+                    Out.Write("  ", verbosity);
+                    Out.Write(count.ToString("n0"), verbosity);
+                    Out.WriteIf(maxReason == MaxReason.CountExceedsMax, "+", verbosity);
+                }
+
+                Out.WriteLine(Verbosity.Minimal);
+            }
+        }
+
         public static void WriteFileError(
             Exception ex,
             string? path = null,

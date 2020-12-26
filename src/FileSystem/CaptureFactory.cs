@@ -145,5 +145,131 @@ namespace Orang
                 return Match.Empty;
             }
         }
+
+        public static MaxReason GetSplits(
+            Match match,
+            Regex regex,
+            string input,
+            int count,
+            Func<string, bool>? predicate,
+            ref List<CaptureInfo> splits,
+            CancellationToken cancellationToken)
+        {
+            var maxReason = MaxReason.None;
+
+            using (IEnumerator<CaptureInfo>? en = ((regex.RightToLeft)
+                ? GetSplitsRightToLeft(match, input)
+                : GetSplits(match, input))
+                .GetEnumerator())
+            {
+                while (en.MoveNext())
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (predicate?.Invoke(en.Current.Value) == false)
+                        continue;
+
+                    splits.Add(en.Current);
+
+                    count--;
+
+                    if (count == 0)
+                    {
+                        maxReason = (en.MoveNext()) ? MaxReason.CountExceedsMax : MaxReason.CountEqualsMax;
+                        break;
+                    }
+                }
+            }
+
+            if (regex.RightToLeft)
+                splits.Reverse();
+
+            return maxReason;
+        }
+
+        private static IEnumerable<CaptureInfo> GetSplits(
+            Match match,
+            string input)
+        {
+            int prevIndex = 0;
+
+            List<Group>? groups = null;
+
+            do
+            {
+                yield return new CaptureInfo(input[prevIndex..match.Index], prevIndex);
+
+                if (match.Groups.Count > 1)
+                {
+                    groups = AddGroups(match, ref groups, (x, y) => x.Index.CompareTo(y.Index));
+
+                    foreach (Group group in groups)
+                        yield return CaptureInfo.FromCapture(group);
+                }
+
+                prevIndex = match.Index + match.Length;
+
+                match = match.NextMatch();
+
+            } while (match.Success);
+
+            yield return new CaptureInfo(input[prevIndex..], prevIndex);
+        }
+
+        private static IEnumerable<CaptureInfo> GetSplitsRightToLeft(
+            Match match,
+            string input)
+        {
+            int prevIndex = input.Length;
+
+            List<Group>? groups = null;
+
+            do
+            {
+                int endIndex = match.Index + match.Length;
+
+                yield return new CaptureInfo(input[endIndex..prevIndex], endIndex);
+
+                if (match.Groups.Count > 1)
+                {
+                    groups = AddGroups(match, ref groups, (x, y) => -x.Index.CompareTo(y.Index));
+
+                    foreach (Group group in groups)
+                        yield return CaptureInfo.FromCapture(group);
+                }
+
+                prevIndex = match.Index;
+
+                match = match.NextMatch();
+
+            } while (match.Success);
+
+            yield return new CaptureInfo(input.Substring(0, prevIndex), 0);
+        }
+
+        private static List<Group> AddGroups(Match match, ref List<Group>? groups, Comparison<Group> comparison)
+        {
+            if (groups == null)
+            {
+                groups = new List<Group>();
+            }
+            else
+            {
+                groups.Clear();
+            }
+
+            foreach (Group group in match.Groups)
+            {
+                if (group.Success
+                    && group.Name != "0")
+                {
+                    groups.Add(group);
+                }
+            }
+
+            groups.Sort(comparison);
+
+            return groups;
+        }
     }
 }

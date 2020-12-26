@@ -16,7 +16,6 @@ namespace Orang.CommandLine
 {
     internal static class OptionValueProviders
     {
-        private static readonly Regex _metaValueRegex = new Regex(@"\<\w+\>");
         private static ImmutableDictionary<string, OptionValueProvider>? _providersByName;
 
         public static OptionValueProvider PatternOptionsProvider { get; } = new OptionValueProvider(
@@ -201,9 +200,10 @@ namespace Orang.CommandLine
             OptionValues.NamePart_NameWithoutExtension
         );
 
-        public static OptionValueProvider NamePartKindProvider_WithoutFullName { get; } = NamePartKindProvider.WithoutValues(
-            OptionValueProviderNames.NamePart_WithoutFullName,
-            OptionValues.NamePart_FullName
+        public static OptionValueProvider NamePartKindProvider_WithoutFullName { get; }
+            = NamePartKindProvider.WithoutValues(
+                OptionValueProviderNames.NamePart_WithoutFullName,
+                OptionValues.NamePart_FullName
         );
 
         public static OptionValueProvider NamePartKindProvider_WithoutExtension { get; }
@@ -288,46 +288,52 @@ namespace Orang.CommandLine
 
         public static OptionValueProvider DeleteHighlightOptionsProvider { get; } = new OptionValueProvider(
             OptionValueProviderNames.DeleteHighlightOptions,
+            HighlightOptionsProvider,
             OptionValues.HighlightOptions_None,
             OptionValues.HighlightOptions_Match,
             OptionValues.HighlightOptions_Empty
         );
 
-        public static OptionValueProvider FindHighlightOptionsProvider { get; } = HighlightOptionsProvider.WithoutValues(
-            OptionValueProviderNames.FindHighlightOptions,
-            OptionValues.HighlightOptions_Replacement,
-            OptionValues.HighlightOptions_EmptyReplacement,
-            OptionValues.HighlightOptions_Split,
-            OptionValues.HighlightOptions_EmptySplit
+        public static OptionValueProvider FindHighlightOptionsProvider { get; }
+            = HighlightOptionsProvider .WithoutValues(
+                OptionValueProviderNames.FindHighlightOptions,
+                OptionValues.HighlightOptions_Replacement,
+                OptionValues.HighlightOptions_EmptyReplacement,
+                OptionValues.HighlightOptions_Split,
+                OptionValues.HighlightOptions_EmptySplit
         );
 
-        public static OptionValueProvider MatchHighlightOptionsProvider { get; } = HighlightOptionsProvider.WithoutValues(
-            OptionValueProviderNames.MatchHighlightOptions,
-            OptionValues.HighlightOptions_Replacement,
-            OptionValues.HighlightOptions_EmptyReplacement,
-            OptionValues.HighlightOptions_Split,
-            OptionValues.HighlightOptions_EmptySplit
+        public static OptionValueProvider MatchHighlightOptionsProvider { get; }
+            = HighlightOptionsProvider.WithoutValues(
+                OptionValueProviderNames.MatchHighlightOptions,
+                OptionValues.HighlightOptions_Replacement,
+                OptionValues.HighlightOptions_EmptyReplacement,
+                OptionValues.HighlightOptions_Split,
+                OptionValues.HighlightOptions_EmptySplit
         );
 
         public static OptionValueProvider RenameHighlightOptionsProvider { get; } = new OptionValueProvider(
             OptionValueProviderNames.RenameHighlightOptions,
+            HighlightOptionsProvider,
             OptionValues.HighlightOptions_None,
             OptionValues.HighlightOptions_Match,
             OptionValues.HighlightOptions_Replacement,
             OptionValues.HighlightOptions_Empty
         );
 
-        public static OptionValueProvider ReplaceHighlightOptionsProvider { get; } = HighlightOptionsProvider.WithoutValues(
-            OptionValueProviderNames.ReplaceHighlightOptions,
-            OptionValues.HighlightOptions_Split,
-            OptionValues.HighlightOptions_EmptySplit);
+        public static OptionValueProvider ReplaceHighlightOptionsProvider { get; }
+            = HighlightOptionsProvider.WithoutValues(
+                OptionValueProviderNames.ReplaceHighlightOptions,
+                OptionValues.HighlightOptions_Split,
+                OptionValues.HighlightOptions_EmptySplit);
 
-        public static OptionValueProvider SplitHighlightOptionsProvider { get; } = HighlightOptionsProvider.WithoutValues(
-            OptionValueProviderNames.SplitHighlightOptions,
-            OptionValues.HighlightOptions_Match,
-            OptionValues.HighlightOptions_Replacement,
-            OptionValues.HighlightOptions_EmptyMatch,
-            OptionValues.HighlightOptions_EmptyReplacement
+        public static OptionValueProvider SplitHighlightOptionsProvider { get; }
+            = HighlightOptionsProvider.WithoutValues(
+                OptionValueProviderNames.SplitHighlightOptions,
+                OptionValues.HighlightOptions_Match,
+                OptionValues.HighlightOptions_Replacement,
+                OptionValues.HighlightOptions_EmptyMatch,
+                OptionValues.HighlightOptions_EmptyReplacement
         );
 
         public static OptionValueProvider OutputFlagsProvider { get; } = new OptionValueProvider(
@@ -385,6 +391,7 @@ namespace Orang.CommandLine
 
         public static OptionValueProvider PathDisplayStyleProvider_Rename { get; } = new OptionValueProvider(
             OptionValueProviderNames.PathDisplayStyle_Rename,
+            PathDisplayStyleProvider,
             OptionValues.PathDisplayStyle_Full,
             OptionValues.PathDisplayStyle_Relative,
             OptionValues.PathDisplayStyle_Omit
@@ -411,6 +418,7 @@ namespace Orang.CommandLine
 
         public static OptionValueProvider DisplayProvider_MatchAndSplit { get; } = new OptionValueProvider(
             OptionValueProviderNames.Display_MatchAndSplit,
+            DisplayProvider,
             OptionValues.Display_Content,
             OptionValues.Display_Indent,
             OptionValues.Display_Separator,
@@ -419,6 +427,7 @@ namespace Orang.CommandLine
 
         public static OptionValueProvider DisplayProvider_NonContent { get; } = new OptionValueProvider(
             OptionValueProviderNames.Display_NonContent,
+            DisplayProvider,
             OptionValues.Display_CreationTime,
             OptionValues.Display_Indent,
             OptionValues.Display_ModifiedTime,
@@ -546,7 +555,7 @@ namespace Orang.CommandLine
             IEnumerable<OptionValueProvider>? allProviders = null)
         {
             IEnumerable<string> metaValues = options
-                .SelectMany(f => _metaValueRegex.Matches(f.Description).Select(m => m.Value))
+                .SelectMany(f => OptionValueProvider.MetaValueRegex.Matches(f.Description).Select(m => m.Value))
                 .Concat(options.Where(f => f.MetaValue != null).Select(f => f.MetaValue).Cast<string>())
                 .Distinct();
 

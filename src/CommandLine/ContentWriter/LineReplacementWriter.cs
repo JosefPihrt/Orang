@@ -55,7 +55,7 @@ namespace Orang.CommandLine
             base.WriteStartMatches();
         }
 
-        protected override void WriteNonEmptyMatchValue(Capture capture)
+        protected override void WriteNonEmptyMatchValue(CaptureInfo capture)
         {
             if (Options.HighlightMatch)
                 base.WriteNonEmptyMatchValue(capture);
@@ -66,9 +66,9 @@ namespace Orang.CommandLine
             ReplacementValueWriter.Write(result, Symbols, ReplacementColors, ReplacementBoundaryColors);
         }
 
-        protected override void WriteEndMatch(Capture capture)
+        protected override void WriteEndMatch(CaptureInfo capture)
         {
-            var match = (Match)capture;
+            var match = (Match)capture.Capture!;
 
             string result = ReplaceOptions.Replace(match);
 

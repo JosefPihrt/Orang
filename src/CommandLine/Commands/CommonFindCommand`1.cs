@@ -231,13 +231,38 @@ namespace Orang.CommandLine
             Match match,
             int groupNumber,
             SearchContext context,
-            bool isPathWritten,
+            bool isPathDisplayed,
             Func<string, bool>? predicate,
             List<Capture> captures)
         {
+            (int maxMatchesInFile, int maxTotalMatches, int count) = CalculateMaxCount(context);
+
+            MaxReason maxReason = CaptureFactory.GetCaptures(
+                ref captures,
+                match,
+                groupNumber,
+                count,
+                predicate,
+                context.CancellationToken);
+
+            if ((maxReason == MaxReason.CountEqualsMax || maxReason == MaxReason.CountExceedsMax)
+                && maxTotalMatches > 0
+                && (maxMatchesInFile == 0 || maxTotalMatches <= maxMatchesInFile))
+            {
+                context.TerminationReason = TerminationReason.MaxReached;
+            }
+
+            if (isPathDisplayed)
+                WriteFilePathEnd(captures.Count, maxReason, Options.IncludeCount);
+
+            return maxReason;
+        }
+
+        protected (int maxMatchesInFile, int maxTotalMatches, int count) CalculateMaxCount(
+            SearchContext context)
+        {
             int maxMatchesInFile = Options.MaxMatchesInFile;
             int maxTotalMatches = Options.MaxTotalMatches;
-
             int count = 0;
 
             if (maxMatchesInFile > 0)
@@ -260,56 +285,7 @@ namespace Orang.CommandLine
 
             Debug.Assert(count >= 0, count.ToString());
 
-            MaxReason maxReason = CaptureFactory.GetCaptures(
-                ref captures,
-                match,
-                groupNumber,
-                count,
-                predicate,
-                context.CancellationToken);
-
-            if ((maxReason == MaxReason.CountEqualsMax || maxReason == MaxReason.CountExceedsMax)
-                && maxTotalMatches > 0
-                && (maxMatchesInFile == 0 || maxTotalMatches <= maxMatchesInFile))
-            {
-                context.TerminationReason = TerminationReason.MaxReached;
-            }
-
-            if (isPathWritten)
-            {
-                Verbosity verbosity = ConsoleOut.Verbosity;
-
-                if (verbosity >= Verbosity.Detailed
-                    || Options.IncludeCount)
-                {
-                    verbosity = (Options.IncludeCount) ? Verbosity.Minimal : Verbosity.Detailed;
-
-                    ConsoleOut.Write("  ", Colors.Message_OK, verbosity);
-                    ConsoleOut.Write(captures.Count.ToString("n0"), Colors.Message_OK, verbosity);
-                    ConsoleOut.WriteIf(maxReason == MaxReason.CountExceedsMax, "+", Colors.Message_OK, verbosity);
-                }
-
-                ConsoleOut.WriteLine(Verbosity.Minimal);
-
-                if (Out != null)
-                {
-                    verbosity = Out.Verbosity;
-
-                    if (verbosity >= Verbosity.Detailed
-                        || Options.IncludeCount)
-                    {
-                        verbosity = (Options.IncludeCount) ? Verbosity.Minimal : Verbosity.Detailed;
-
-                        Out.Write("  ", verbosity);
-                        Out.Write(captures.Count.ToString("n0"), verbosity);
-                        Out.WriteIf(maxReason == MaxReason.CountExceedsMax, "+", verbosity);
-                    }
-
-                    Out.WriteLine(Verbosity.Minimal);
-                }
-            }
-
-            return maxReason;
+            return (maxMatchesInFile, maxTotalMatches, count);
         }
 
         protected override void WritePath(

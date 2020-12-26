@@ -15,6 +15,7 @@ namespace Orang.CommandLine
     [OptionValueProvider(nameof(Display), OptionValueProviderNames.Display_NonContent)]
     [OptionValueProvider(nameof(Highlight), OptionValueProviderNames.RenameHighlightOptions)]
     [OptionValueProvider(nameof(Name), OptionValueProviderNames.PatternOptionsWithoutGroupAndNegative)]
+    [CommandGroup("File System", 1)]
     internal sealed class RenameCommandLineOptions : DeleteOrRenameCommandLineOptions
     {
         [Option(
@@ -31,15 +32,15 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Content,
             longName: OptionNames.Content,
-            HelpText = "Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for files' content.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Content { get; set; } = null!;
 
         [Option(
             shortName: OptionShortNames.DryRun,
             longName: OptionNames.DryRun,
-            HelpText = "Display which files or directories should be renamed " +
-                "but do not actually rename any file or directory.")]
+            HelpText = "Display which files/directories should be renamed " +
+                "but do not actually rename any file/directory.")]
         public bool DryRun { get; set; }
 
         [Hidden]
@@ -66,14 +67,14 @@ namespace Orang.CommandLine
             shortName: OptionShortNames.Name,
             longName: OptionNames.Name,
             Required = true,
-            HelpText = "Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for file or directory name.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Name { get; set; } = null!;
 
         [Option(
             shortName: OptionShortNames.Replacement,
             longName: OptionNames.Replacement,
-            HelpText = "Replacement pattern. Syntax is <REPLACEMENT> [<REPLACEMENT_OPTIONS>].",
+            HelpText = "Replacement pattern.",
             MetaValue = MetaValues.Replacement)]
         public IEnumerable<string> Replacement { get; set; } = null!;
 

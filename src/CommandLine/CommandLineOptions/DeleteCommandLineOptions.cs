@@ -12,6 +12,7 @@ namespace Orang.CommandLine
     [OptionValueProvider(nameof(Content), OptionValueProviderNames.PatternOptionsWithoutPart)]
     [OptionValueProvider(nameof(Display), OptionValueProviderNames.Display_NonContent)]
     [OptionValueProvider(nameof(Highlight), OptionValueProviderNames.DeleteHighlightOptions)]
+    [CommandGroup("File System", 1)]
     internal sealed class DeleteCommandLineOptions : DeleteOrRenameCommandLineOptions
     {
         [Option(
@@ -22,7 +23,7 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Content,
             longName: OptionNames.Content,
-            HelpText = "Regular expression for files' content. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for files' content.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Content { get; set; } = null!;
 
@@ -34,8 +35,8 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.DryRun,
             longName: OptionNames.DryRun,
-            HelpText = "Display which files or directories should be deleted " +
-                "but do not actually delete any file or directory.")]
+            HelpText = "Display which files/directories should be deleted " +
+                "but do not actually delete any file/directory.")]
         public bool DryRun { get; set; }
 
         [Option(
@@ -53,7 +54,7 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Name,
             longName: OptionNames.Name,
-            HelpText = "Regular expression for file or directory name. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for file or directory name.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Name { get; set; } = null!;
 

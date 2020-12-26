@@ -94,7 +94,7 @@ namespace Orang.CommandLine
 
         public static void WriteCommandsHelp(bool includeValues = false, Filter? filter = null)
         {
-            IEnumerable<Command> commands = LoadCommands();
+            IEnumerable<Command> commands = LoadCommands().Where(f => f.Name != "help");
 
             CommandsHelp commandsHelp = CommandsHelp.Create(commands, OptionValueProviders.Providers, filter: filter);
 

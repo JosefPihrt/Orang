@@ -195,7 +195,7 @@ namespace Orang
 
         public virtual void WriteOption(CommandOption option)
         {
-            _writer.WriteStartBold();
+            _writer.WriteStartHeading(5);
 
             var sb = new StringBuilder();
 
@@ -225,10 +225,7 @@ namespace Orang
             }
 
             _writer.WriteInlineCode(sb.ToString());
-            _writer.WriteEndBold();
-
-            _writer.WriteLine();
-            _writer.WriteLine();
+            _writer.WriteEndHeading();
 
             WriteOptionDescription(option);
         }

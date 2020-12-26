@@ -23,7 +23,7 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Input,
             longName: OptionNames.Input,
-            HelpText = "The input string to be searched. Syntax is <INPUT> [<INPUT_OPTIONS>].",
+            HelpText = "The input string to be searched.",
             MetaValue = MetaValues.Input)]
         public IEnumerable<string> Input { get; set; } = null!;
 

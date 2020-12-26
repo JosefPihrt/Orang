@@ -31,9 +31,9 @@ namespace Orang.CommandLine
 
         protected override ValueWriter ValueWriter => throw new NotSupportedException();
 
-        protected override void WriteStartMatch(Capture capture) => throw new NotSupportedException();
+        protected override void WriteStartMatch(CaptureInfo capture) => throw new NotSupportedException();
 
-        protected override void WriteEndMatch(Capture capture) => throw new NotSupportedException();
+        protected override void WriteEndMatch(CaptureInfo capture) => throw new NotSupportedException();
 
         protected override void WriteStartMatches()
         {
@@ -41,7 +41,7 @@ namespace Orang.CommandLine
             _lineNumber = 1;
         }
 
-        protected override void WriteMatch(Capture capture)
+        protected override void WriteMatch(CaptureInfo capture)
         {
             int index = capture.Index;
 

@@ -12,21 +12,35 @@ namespace Orang
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class OptionValueProvider
     {
-        private static readonly Regex _metaValueRegex = new Regex(@"\<\w+\>");
+        public static readonly Regex MetaValueRegex = new Regex(@"\<\p{Lu}+(_\p{Lu}+)*\>");
 
         public OptionValueProvider(string name, params OptionValue[] values)
+            : this(name, null, values)
         {
-            Name = name;
-            Values = values.ToImmutableArray();
         }
 
         public OptionValueProvider(string name, IEnumerable<OptionValue> values)
+            : this(name, null, values)
+        {
+        }
+
+        public OptionValueProvider(string name, OptionValueProvider? parent, params OptionValue[] values)
         {
             Name = name;
+            Parent = parent;
+            Values = values.ToImmutableArray();
+        }
+
+        public OptionValueProvider(string name, OptionValueProvider? parent, IEnumerable<OptionValue> values)
+        {
+            Name = name;
+            Parent = parent;
             Values = values.ToImmutableArray();
         }
 
         public string Name { get; }
+
+        public OptionValueProvider? Parent { get; }
 
         public ImmutableArray<OptionValue> Values { get; }
 
@@ -40,7 +54,7 @@ namespace Orang
 
         public OptionValueProvider WithValues(string name, params OptionValue[] values)
         {
-            return new OptionValueProvider(name, Values.AddRange(values));
+            return new OptionValueProvider(name, this, Values.AddRange(values));
         }
 
         public OptionValueProvider WithoutValues(params OptionValue[] values)
@@ -58,7 +72,7 @@ namespace Orang
                     builder.Add(value);
             }
 
-            return new OptionValueProvider(name, builder);
+            return new OptionValueProvider(name, this, builder);
         }
 
         public bool ContainsKeyOrShortKey(string value)
@@ -111,7 +125,7 @@ namespace Orang
             IEnumerable<OptionValueProvider> providers)
         {
             IEnumerable<string?> metaValues = options
-                .SelectMany(f => _metaValueRegex.Matches(f.Description).Cast<Match>().Select(m => m.Value))
+                .SelectMany(f => MetaValueRegex.Matches(f.MetaValue).Cast<Match>().Select(m => m.Value))
                 .Concat(options.Select(f => f.MetaValue))
                 .Distinct();
 

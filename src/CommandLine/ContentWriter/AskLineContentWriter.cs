@@ -16,7 +16,7 @@ namespace Orang.CommandLine
 
         public bool Ask { get; set; }
 
-        protected override void WriteStartMatch(Capture capture)
+        protected override void WriteStartMatch(CaptureInfo capture)
         {
             ResultStorage?.Add(capture.Value);
 
@@ -57,7 +57,7 @@ namespace Orang.CommandLine
             WriteStartLine(_solIndex, capture.Index);
         }
 
-        protected override void WriteEndMatch(Capture capture)
+        protected override void WriteEndMatch(CaptureInfo capture)
         {
             int endIndex = capture.Index + capture.Length;
 

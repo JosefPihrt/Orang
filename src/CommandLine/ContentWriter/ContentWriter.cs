@@ -139,9 +139,9 @@ namespace Orang.CommandLine
 
         protected abstract void WriteEndMatches();
 
-        protected abstract void WriteStartMatch(Capture capture);
+        protected abstract void WriteStartMatch(CaptureInfo capture);
 
-        protected abstract void WriteEndMatch(Capture capture);
+        protected abstract void WriteEndMatch(CaptureInfo capture);
 
         protected abstract void WriteStartReplacement(Match match, string result);
 
@@ -182,7 +182,7 @@ namespace Orang.CommandLine
             Write(" ");
         }
 
-        protected virtual void WriteMatchValue(Capture capture)
+        protected virtual void WriteMatchValue(CaptureInfo capture)
         {
             if (capture.Length > 0)
             {
@@ -194,7 +194,7 @@ namespace Orang.CommandLine
             }
         }
 
-        protected virtual void WriteNonEmptyMatchValue(Capture capture)
+        protected virtual void WriteNonEmptyMatchValue(CaptureInfo capture)
         {
             ValueWriter.Write(
                 Input,
@@ -236,6 +236,47 @@ namespace Orang.CommandLine
                     {
                         while (true)
                         {
+                            WriteMatch(CaptureInfo.FromCapture(en.Current));
+                            MatchCount++;
+
+                            if (en.MoveNext())
+                            {
+                                WriteMatchSeparator();
+                            }
+                            else
+                            {
+                                break;
+                            }
+
+                            cancellationToken.ThrowIfCancellationRequested();
+                        }
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            finally
+            {
+                WriteEndMatches();
+            }
+        }
+
+        public virtual void WriteMatches(IEnumerable<CaptureInfo> matches, in CancellationToken cancellationToken = default)
+        {
+            MatchCount = 0;
+
+            WriteStartMatches();
+
+            try
+            {
+                using (IEnumerator<CaptureInfo> en = matches.GetEnumerator())
+                {
+                    if (en.MoveNext())
+                    {
+                        while (true)
+                        {
                             WriteMatch(en.Current);
                             MatchCount++;
 
@@ -263,7 +304,7 @@ namespace Orang.CommandLine
             }
         }
 
-        protected virtual void WriteMatch(Capture capture)
+        protected virtual void WriteMatch(CaptureInfo capture)
         {
             WriteStartMatch(capture);
 
@@ -330,7 +371,7 @@ namespace Orang.CommandLine
             WriteLine();
         }
 
-        protected int FindStartOfLine(Capture capture)
+        protected int FindStartOfLine(CaptureInfo capture)
         {
             return FindStartOfLine(capture.Index);
         }
@@ -346,7 +387,7 @@ namespace Orang.CommandLine
             return index;
         }
 
-        protected int FindEndOfLine(Capture capture)
+        protected int FindEndOfLine(CaptureInfo capture)
         {
             int index = capture.Index + capture.Length;
 

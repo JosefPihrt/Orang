@@ -1,5 +1,8 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text.RegularExpressions;
 using DotMarkdown;
 using Orang.CommandLine;
@@ -8,8 +11,6 @@ namespace Orang.Documentation
 {
     internal class DocumentationWriter : MarkdownDocumentationWriter
     {
-        private static readonly Regex _metaValueRegex = new Regex(@"\<\w+_OPTIONS\>");
-
         public DocumentationWriter(MarkdownWriter writer) : base(writer)
         {
         }
@@ -18,16 +19,50 @@ namespace Orang.Documentation
         {
             _writer.WriteString(option.Description);
 
-            OptionValueProvider provider = null!;
-
-            if (TryGetProvider())
+            if (TryGetProvider(option, out OptionValueProvider? provider))
             {
                 if (!string.IsNullOrEmpty(option.Description))
-                    _writer.WriteString(" ");
+                {
+                    _writer.WriteLine();
+                    _writer.WriteLine();
+                }
 
-                _writer.WriteString((provider.Values.Length == 1) ? "Allowed value is " : "Allowed values are ");
-                _writer.WriteString(OptionValueProviders.GetHelpText(provider, f => !f.Hidden));
-                _writer.WriteString(".");
+                OptionValueProvider? provider2 = provider;
+
+                if (provider.Parent != null)
+                    provider2 = provider.Parent;
+
+                string metaValueUrl = provider2.Name;
+
+                _writer.WriteLink(provider2.Name, "AllowedValues.md" + MarkdownHelpers.CreateGitHubHeadingLink(metaValueUrl));
+
+                _writer.WriteString(": ");
+
+                using (IEnumerator<string> en = provider
+                    .Values
+                    .Where(f => !f.Hidden)
+                    .Select(f => f.HelpValue)
+                    .GetEnumerator())
+                {
+                    if (en.MoveNext())
+                    {
+                        while (true)
+                        {
+                            _writer.WriteInlineCode(en.Current);
+
+                            if (en.MoveNext())
+                            {
+                                _writer.WriteString(", ");
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        _writer.WriteString(".");
+                    }
+                }
             }
 
             if (!string.IsNullOrEmpty(option.Description)
@@ -36,23 +71,26 @@ namespace Orang.Documentation
                 _writer.WriteLine();
                 _writer.WriteLine();
             }
+        }
 
-            bool TryGetProvider()
+        private static bool TryGetProvider(CommandOption option, [NotNullWhen(true)] out OptionValueProvider? provider)
+        {
+            if (option.ValueProviderName != null)
+                return OptionValueProviders.ProvidersByName.TryGetValue(option.ValueProviderName, out provider);
+
+            if (option.MetaValue != null
+                && OptionValueProviders.ProvidersByName.TryGetValue(option.MetaValue, out provider))
             {
-                if (option.ValueProviderName != null)
-                    return OptionValueProviders.ProvidersByName.TryGetValue(option.ValueProviderName, out provider);
-
-                if (option.MetaValue != null
-                    && OptionValueProviders.ProvidersByName.TryGetValue(option.MetaValue, out provider))
-                {
-                    return true;
-                }
-
-                Match match = _metaValueRegex.Match(option.Description);
-
-                return match.Success
-                    && OptionValueProviders.ProvidersByName.TryGetValue(match.Value, out provider);
+                return true;
             }
+
+            Match match = OptionValueProvider.MetaValueRegex.Match(option.MetaValue);
+
+            if (match.Success)
+                return OptionValueProviders.ProvidersByName.TryGetValue(match.Value, out provider);
+
+            provider = null;
+            return false;
         }
     }
 }

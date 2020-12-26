@@ -30,22 +30,22 @@ namespace Orang.CommandLine
             _writerIndex = 0;
         }
 
-        protected override void WriteStartMatch(Capture capture)
+        protected override void WriteStartMatch(CaptureInfo capture)
         {
         }
 
-        protected override void WriteMatch(Capture capture)
+        protected override void WriteMatch(CaptureInfo capture)
         {
             _textWriter.Write(Input.AsSpan(_writerIndex, capture.Index - _writerIndex));
 
-            string result = ReplaceOptions.Replace((Match)capture);
+            string result = ReplaceOptions.Replace((Match)capture.Capture!);
 
             _textWriter.Write(result);
 
             _writerIndex = capture.Index + capture.Length;
         }
 
-        protected override void WriteEndMatch(Capture capture)
+        protected override void WriteEndMatch(CaptureInfo capture)
         {
         }
 

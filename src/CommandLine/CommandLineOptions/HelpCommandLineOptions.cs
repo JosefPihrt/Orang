@@ -7,6 +7,7 @@ namespace Orang.CommandLine
 {
     [Verb("help", HelpText = "Displays help.")]
     [OptionValueProvider(nameof(Filter), OptionValueProviderNames.PatternOptionsWithoutPartAndNegative)]
+    [CommandGroup("Main", 0)]
     internal sealed class HelpCommandLineOptions : AbstractCommandLineOptions
     {
         [Value(
@@ -18,7 +19,7 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Filter,
             longName: OptionNames.Filter,
-            HelpText = "Regular expression for filtering help text. Syntax is <PATTERN> [<PATTERN_OPTIONS>].",
+            HelpText = "Regular expression for filtering help text.",
             MetaValue = MetaValues.Regex)]
         public IEnumerable<string> Filter { get; set; } = null!;
 
