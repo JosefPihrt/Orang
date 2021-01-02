@@ -45,6 +45,27 @@ namespace Orang.CommandLine
             OptionValues.PatternOptions_WholeWord
         );
 
+        public static OptionValueProvider PatternOptions_List_Provider { get; } = new OptionValueProvider(
+            OptionValueProviderNames.PatternOptions_List,
+            OptionValues.PatternOptions_CaseSensitive,
+            OptionValues.PatternOptions_Compiled,
+            OptionValues.PatternOptions_CultureInvariant,
+            OptionValues.PatternOptions_ECMAScript,
+            OptionValues.PatternOptions_ExplicitCapture,
+            OptionValues.PatternOptions_FromFile,
+            OptionValues.Group,
+            OptionValues.PatternOptions_IgnorePatternWhitespace,
+            OptionValues.PatternOptions_List,
+            OptionValues.ListSeparator,
+            OptionValues.PatternOptions_Literal,
+            OptionValues.PatternOptions_Multiline,
+            OptionValues.PatternOptions_Negative,
+            OptionValues.PatternOptions_RightToLeft,
+            OptionValues.PatternOptions_Singleline,
+            OptionValues.Timeout,
+            OptionValues.PatternOptions_WholeLine
+        );
+
         public static OptionValueProvider PatternOptionsWithoutPartProvider { get; }
             = PatternOptionsProvider.WithoutValues(
                 OptionValueProviderNames.PatternOptionsWithoutPart,
@@ -56,9 +77,9 @@ namespace Orang.CommandLine
                 OptionValues.Group,
                 OptionValues.PatternOptions_Negative);
 
-        public static OptionValueProvider PatternOptionsWithoutPartAndNegativeProvider { get; }
+        public static OptionValueProvider PatternOptions_Match_Provider { get; }
             = PatternOptionsProvider.WithoutValues(
-                OptionValueProviderNames.PatternOptionsWithoutPartAndNegative,
+                OptionValueProviderNames.PatternOptions_Match,
                 OptionValues.Part,
                 OptionValues.PatternOptions_Negative);
 
@@ -105,8 +126,8 @@ namespace Orang.CommandLine
                 description: "Exclude unescaped white-space from the pattern and enable comments after a number sign (#)."),
             SimpleOptionValue.Create(
                 RegexOptions.Multiline,
-                description: "^ and $ match the beginning and end of each line " +
-                    "(instead of the beginning and end of the input string)."),
+                description: "^ and $ match the beginning and end of each line "
+                    + "(instead of the beginning and end of the input string)."),
             SimpleOptionValue.Create(
                 RegexOptions.RightToLeft,
                 description: "Specifies that the search will be from right to left."),
@@ -115,11 +136,22 @@ namespace Orang.CommandLine
                 description: "The period (.) matches every character (instead of every character except \\n).")
         );
 
+        public static OptionValueProvider ModifierOptionsProvider { get; } = new OptionValueProvider(
+            MetaValues.ModifierOptions,
+            SimpleOptionValue.Create(
+                ModifierOptions.FromDll,
+                shortValue: "",
+                description: "<MODIFIER> is a path to a method in DLL file. "
+                    + "The format is 'DllPath,FullTypeName.MethodName'."),
+            SimpleOptionValue.Create(
+                ModifierOptions.FromFile,
+                description: "Load text from a file whose path is specified in <MODIFIER> value."));
+
         public static OptionValueProvider ReplacementOptionsProvider { get; } = new OptionValueProvider(
             MetaValues.ReplacementOptions,
             SimpleOptionValue.Create(
                 ReplacementOptions.FromFile,
-                description: $"Load text from a file whose path is specified in {MetaValues.Replacement} value."),
+                description: $"Load text from a file whose path is specified in <REPLACEMENT> value."),
             SimpleOptionValue.Create(
                 ReplacementOptions.Literal,
                 description: "Replacement should be treated as a literal expression and not as a replacement expression."),
@@ -130,22 +162,22 @@ namespace Orang.CommandLine
                 ReplacementOptions.CSharp,
                 shortValue: "cs",
                 description:
-                    $"{MetaValues.Replacement} is either expression-body of a method with signature " +
-                        "'string M(Match match)'" +
-                        Environment.NewLine +
-                        "or a path to a code file that contains public method with signature 'string M(Match match)'." +
-                        Environment.NewLine +
-                        "Imported namespaces (when inline expression is specified):" +
-                        Environment.NewLine +
-                        "  System" +
-                        Environment.NewLine +
-                        "  System.Collections.Generic" +
-                        Environment.NewLine +
-                        "  System.Linq" +
-                        Environment.NewLine +
-                        "  System.Text" +
-                        Environment.NewLine +
-                        "  System.Text.RegularExpressions"),
+                    $"<REPLACEMENT> is either expression-body of a method with signature "
+                        + "'string M(Match match)'"
+                        + Environment.NewLine
+                        + "or a path to a code file that contains public method with signature 'string M(Match match)'."
+                        + Environment.NewLine
+                        + "Imported namespaces (when inline expression is specified):"
+                        + Environment.NewLine
+                        + "  System"
+                        + Environment.NewLine
+                        + "  System.Collections.Generic"
+                        + Environment.NewLine
+                        + "  System.Linq"
+                        + Environment.NewLine
+                        + "  System.Text"
+                        + Environment.NewLine
+                        + "  System.Text.RegularExpressions"),
             OptionValues.ReplacementOptions_FromDll
         );
 
@@ -250,7 +282,7 @@ namespace Orang.CommandLine
             SimpleOptionValue.Create(ModifyFlags.Distinct, shortValue: "di", description: "Return distinct values."),
             OptionValues.ModifyFlags_Except,
             OptionValues.ModifyFlags_Intersect,
-            OptionValues.ModifyFlags_GroupBy,
+            OptionValues.ModifyFlags_Group,
             SimpleOptionValue.Create(ModifyFlags.IgnoreCase, description: "Use case-insensitive matching."),
             SimpleOptionValue.Create(
                 ModifyFlags.RemoveEmpty,
@@ -295,7 +327,7 @@ namespace Orang.CommandLine
         );
 
         public static OptionValueProvider FindHighlightOptionsProvider { get; }
-            = HighlightOptionsProvider .WithoutValues(
+            = HighlightOptionsProvider.WithoutValues(
                 OptionValueProviderNames.FindHighlightOptions,
                 OptionValues.HighlightOptions_Replacement,
                 OptionValues.HighlightOptions_EmptyReplacement,
@@ -349,7 +381,8 @@ namespace Orang.CommandLine
             OptionValues.ContentDisplayStyle_Line,
             OptionValues.ContentDisplayStyle_UnmatchedLines,
             OptionValues.ContentDisplayStyle_Value,
-            OptionValues.ContentDisplayStyle_ValueDetail
+            OptionValues.ContentDisplayStyle_ValueDetail,
+            OptionValues.ContentDisplayStyle_Omit
         );
 
         public static OptionValueProvider ContentDisplayStyleProvider_WithoutUnmatchedLines { get; }
@@ -362,7 +395,8 @@ namespace Orang.CommandLine
             = ContentDisplayStyleProvider.WithoutValues(
                 OptionValueProviderNames.ContentDisplayStyle_WithoutLineAndUnmatchedLines,
                 OptionValues.ContentDisplayStyle_Line,
-                OptionValues.ContentDisplayStyle_UnmatchedLines
+                OptionValues.ContentDisplayStyle_UnmatchedLines,
+                OptionValues.ContentDisplayStyle_Omit
         );
 
         public static OptionValueProvider AskModeProvider { get; } = new OptionValueProvider(

@@ -23,7 +23,7 @@ Command | Pipe Mode
 
 ## Links
 
-* [List of Allowed Values](AllowedValues.md)
+* [List of Option Values](OptionValues.md)
 * [How To](HowTo.md)
 
 ## External Links

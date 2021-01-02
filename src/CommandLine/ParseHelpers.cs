@@ -209,6 +209,7 @@ namespace Orang.CommandLine
         public static bool TryParseModifyOptions(
             IEnumerable<string> values,
             string optionName,
+            EnumerableModifier<string>? modifier,
             [NotNullWhen(true)] out ModifyOptions? modifyOptions,
             out bool aggregateOnly)
         {
@@ -262,16 +263,16 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            ModifyFlags except_Intersect_GroupBy = modifyFlags & ModifyFlags.Except_Intersect_GroupBy;
+            ModifyFlags except_Intersect_Group = modifyFlags & ModifyFlags.Except_Intersect_Group;
 
-            if (except_Intersect_GroupBy != ModifyFlags.None
-                && except_Intersect_GroupBy != ModifyFlags.Except
-                && except_Intersect_GroupBy != ModifyFlags.Intersect
-                && except_Intersect_GroupBy != ModifyFlags.GroupBy)
+            if (except_Intersect_Group != ModifyFlags.None
+                && except_Intersect_Group != ModifyFlags.Except
+                && except_Intersect_Group != ModifyFlags.Intersect
+                && except_Intersect_Group != ModifyFlags.Group)
             {
                 WriteError($"Values '{OptionValues.ModifyFlags_Except.HelpValue}', "
                     + $"'{OptionValues.ModifyFlags_Intersect.HelpValue}' and "
-                    + $"'{OptionValues.ModifyFlags_GroupBy.HelpValue}' cannot be used at the same time.");
+                    + $"'{OptionValues.ModifyFlags_Group.HelpValue}' cannot be used at the same time.");
 
                 return false;
             }
@@ -293,8 +294,8 @@ namespace Orang.CommandLine
             if ((modifyFlags & ModifyFlags.Intersect) != 0)
                 functions |= ModifyFunctions.Intersect;
 
-            if ((modifyFlags & ModifyFlags.GroupBy) != 0)
-                functions |= ModifyFunctions.GroupBy;
+            if ((modifyFlags & ModifyFlags.Group) != 0)
+                functions |= ModifyFunctions.Group;
 
             if ((modifyFlags & ModifyFlags.RemoveEmpty) != 0)
                 functions |= ModifyFunctions.RemoveEmpty;
@@ -324,14 +325,16 @@ namespace Orang.CommandLine
             aggregateOnly = (modifyFlags & ModifyFlags.AggregateOnly) != 0;
 
             if (modifyFlags != ModifyFlags.None
-                || functions != ModifyFunctions.None)
+                || functions != ModifyFunctions.None
+                || modifier != null)
             {
                 modifyOptions = new ModifyOptions(
                     functions: functions,
                     aggregate: (modifyFlags & ModifyFlags.Aggregate) != 0 || aggregateOnly,
                     ignoreCase: (modifyFlags & ModifyFlags.IgnoreCase) != 0,
                     cultureInvariant: (modifyFlags & ModifyFlags.CultureInvariant) != 0,
-                    sortProperty: sortProperty);
+                    sortProperty: sortProperty,
+                    modifier: modifier);
             }
             else
             {
@@ -339,6 +342,65 @@ namespace Orang.CommandLine
             }
 
             return true;
+        }
+
+        public static bool TryParseModifier(
+            IEnumerable<string> values,
+            string optionName,
+            [NotNullWhen(true)] out EnumerableModifier<string>? modifier)
+        {
+            modifier = null;
+
+            if (!values.Any())
+                return false;
+
+            string value = values.First();
+
+            if (!TryParseAsEnumFlags(
+                values.Skip(1),
+                optionName,
+                out ModifierOptions options,
+                ModifierOptions.None,
+                OptionValueProviders.ModifierOptionsProvider))
+            {
+                return false;
+            }
+
+            if ((options & ModifierOptions.FromFile) != 0
+                && !FileSystemHelpers.TryReadAllText(value, out value!, ex => WriteError(ex)))
+            {
+                return false;
+            }
+
+            if ((options & ModifierOptions.FromDll) != 0)
+            {
+                return DelegateFactory.TryCreateFromAssembly(
+                    value,
+                    typeof(IEnumerable<string>),
+                    typeof(IEnumerable<string>),
+                    out modifier);
+            }
+            else if ((options & ModifierOptions.FromFile) != 0)
+            {
+                return DelegateFactory.TryCreateFromSourceText(
+                    value,
+                    typeof(IEnumerable<string>),
+                    typeof(IEnumerable<string>),
+                    out modifier);
+            }
+            else
+            {
+                return DelegateFactory.TryCreateFromExpression(
+                    value,
+                    "ModifierClass",
+                    "ModifierMethod",
+                    "IEnumerable<string>",
+                    typeof(IEnumerable<string>),
+                    "IEnumerable<string>",
+                    typeof(IEnumerable<string>),
+                    "items",
+                    out modifier);
+            }
         }
 
         public static bool TryParseReplaceOptions(
@@ -636,16 +698,25 @@ namespace Orang.CommandLine
             {
                 if ((options & ReplacementOptions.FromFile) != 0)
                 {
-                    return DelegateFactory.TryCreateFromSourceText(value, out matchEvaluator);
+                    return DelegateFactory.TryCreateFromSourceText(value, typeof(string), typeof(Match), out matchEvaluator);
                 }
                 else
                 {
-                    return DelegateFactory.TryCreateFromExpression(value, out matchEvaluator);
+                    return DelegateFactory.TryCreateFromExpression(
+                        value,
+                        "EvaluatorClass",
+                        "EvaluatorMethod",
+                        "string",
+                        typeof(string),
+                        "Match",
+                        typeof(Match),
+                        "match",
+                        out matchEvaluator);
                 }
             }
             else if ((options & ReplacementOptions.FromDll) != 0)
             {
-                return DelegateFactory.TryCreateFromAssembly(value, out matchEvaluator);
+                return DelegateFactory.TryCreateFromAssembly(value, typeof(string), typeof(Match), out matchEvaluator);
             }
             else
             {
@@ -758,10 +829,10 @@ namespace Orang.CommandLine
         {
             if (!TryParseAsEnum(value, out result, defaultValue, provider))
             {
-                string allowedValues = OptionValueProviders.GetHelpText(provider, multiline: true)
+                string optionValues = OptionValueProviders.GetHelpText(provider, multiline: true)
                     ?? OptionValue.GetDefaultHelpText<TEnum>(multiline: true);
 
-                WriteOptionError(value, optionName, allowedValues);
+                WriteOptionError(value, optionName, optionValues);
                 return false;
             }
 
@@ -990,10 +1061,10 @@ namespace Orang.CommandLine
             if (askMode == AskMode.Value
                 && ConsoleOut.Verbosity < Verbosity.Normal)
             {
-                WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Ask)}' cannot have value " +
-                    $"'{OptionValueProviders.AskModeProvider.GetValue(nameof(AskMode.Value)).HelpValue}' when " +
-                    $"'{OptionNames.GetHelpText(OptionNames.Verbosity)}' is set to " +
-                    $"'{OptionValueProviders.VerbosityProvider.GetValue(ConsoleOut.Verbosity.ToString()).HelpValue}'.");
+                WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Ask)}' cannot have value "
+                    + $"'{OptionValueProviders.AskModeProvider.GetValue(nameof(AskMode.Value)).HelpValue}' when "
+                    + $"'{OptionNames.GetHelpText(OptionNames.Verbosity)}' is set to "
+                    + $"'{OptionValueProviders.VerbosityProvider.GetValue(ConsoleOut.Verbosity.ToString()).HelpValue}'.");
 
                 return false;
             }

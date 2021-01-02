@@ -67,7 +67,7 @@ namespace Orang.CommandLine
 
         internal static void WriteDeleteCommand(DeleteCommandOptions options)
         {
-            WriteOption("ask", options.Ask);
+            WriteOption("ask", options.AskMode == AskMode.File);
             WriteOption("attributes", options.Attributes);
             WriteOption("attributes to skip", options.AttributesToSkip);
             WriteFilter("content filter", options.ContentFilter);
@@ -129,6 +129,7 @@ namespace Orang.CommandLine
             WriteOption("progress", options.Progress);
             WriteOption("recurse subdirectories", options.RecurseSubdirectories);
             WriteOption("search target", options.SearchTarget);
+            WriteOption("split", options.Split);
             WriteSortOptions("sort", options.SortOptions);
         }
 
@@ -152,7 +153,7 @@ namespace Orang.CommandLine
         {
             WriteOption("char", options.Value);
             WriteOption("char group", options.InCharGroup);
-            WriteOption("filter", options.Filter);
+            WriteFilter("filter", options.Filter);
             WriteOption("regex options", options.RegexOptions);
             WriteOption("sections", options.Sections);
         }
@@ -191,7 +192,7 @@ namespace Orang.CommandLine
 
         internal static void WriteRenameCommand(RenameCommandOptions options)
         {
-            WriteOption("ask", options.Ask);
+            WriteOption("ask", options.AskMode == AskMode.File);
             WriteOption("attributes", options.Attributes);
             WriteOption("attributes to skip", options.AttributesToSkip);
             WriteOption("conflict resolution", options.ConflictResolution);

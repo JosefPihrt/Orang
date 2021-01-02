@@ -4,11 +4,11 @@ namespace Orang.CommandLine
 {
     internal enum ContentDisplayStyle
     {
-        None = 0,
+        Omit = 0,
         Value = 1,
         ValueDetail = 2,
         Line = 3,
         UnmatchedLines = 4,
-        AllLines = 5
+        AllLines = 5,
     }
 }

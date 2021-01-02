@@ -123,7 +123,7 @@ namespace Orang.CommandLine
             string indent = GetPathIndent(baseDirectoryPath);
 
             if (!Options.OmitPath)
-                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
+                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, includeNewline: false);
 
             SearchTelemetry telemetry = context.Telemetry;
 
@@ -159,7 +159,8 @@ namespace Orang.CommandLine
                 }
 
                 if (Options.AskMode == AskMode.Value
-                    || ShouldLog(Verbosity.Normal))
+                    || (Options.ContentDisplayStyle != ContentDisplayStyle.Omit
+                        && ShouldLog(Verbosity.Normal)))
                 {
                     MatchOutputInfo? outputInfo = Options.CreateOutputInfo(
                         fileMatch.ContentText,

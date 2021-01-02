@@ -35,14 +35,14 @@ namespace Orang.CommandLine
         {
             IEnumerable<SyntaxItem> items = SyntaxItems.Load();
 
-            string? filter = Options.Filter;
+            Filter? filter = Options.Filter;
 
             ImmutableArray<SyntaxSection> sections = Options.Sections;
 
-            if (!string.IsNullOrEmpty(filter))
+            if (filter != null)
             {
-                items = items.Where(f => f.Text.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
-                    || f.Description.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+                items = items.Where(f => filter.IsMatch(f.Text)
+                    || filter.IsMatch(f.Description));
             }
 
             if (sections.Any())
@@ -114,7 +114,6 @@ namespace Orang.CommandLine
             }
             else
             {
-                WriteLine("No syntax found");
                 return CommandResult.NoMatch;
             }
         }
@@ -178,12 +177,12 @@ namespace Orang.CommandLine
                 inCharGroup: Options.InCharGroup,
                 options: Options.RegexOptions);
 
-            string? filter = Options.Filter;
+            Filter? filter = Options.Filter;
 
-            if (!string.IsNullOrEmpty(filter))
+            if (filter != null)
             {
-                patterns = patterns.Where(f => f.Pattern.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
-                    || f.Description?.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+                patterns = patterns.Where(f => filter.IsMatch(f.Pattern)
+                    || (!string.IsNullOrEmpty(f.Description) && filter.IsMatch(f.Description)));
             }
 
             ImmutableArray<SyntaxSection> sections = Options.Sections;

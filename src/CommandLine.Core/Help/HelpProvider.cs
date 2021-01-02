@@ -10,12 +10,14 @@ namespace Orang.CommandLine.Help
 {
     internal static class HelpProvider
     {
+        private const int SeparatorWidth = 2;
+
         public static ImmutableArray<CommandItem> GetCommandItems(IEnumerable<Command> commands, Filter? filter = null)
         {
             if (!commands.Any())
                 return ImmutableArray<CommandItem>.Empty;
 
-            int width = commands.Max(f => f.Name.Length) + 1;
+            int width = commands.Max(f => f.Name.Length) + SeparatorWidth;
 
             ImmutableArray<CommandItem>.Builder builder = ImmutableArray.CreateBuilder<CommandItem>();
 
@@ -66,7 +68,7 @@ namespace Orang.CommandLine.Help
 
                 if (!string.IsNullOrEmpty(argument.Description))
                 {
-                    sb.AppendSpaces(width - argument.Name.Length);
+                    sb.AppendSpaces(width - argument.Name.Length - ((argument.IsRequired) ? 0 : 2));
                     sb.Append(argument.Description);
                 }
 
@@ -134,7 +136,6 @@ namespace Orang.CommandLine.Help
                     sb.AppendSpaces(width2);
                 }
 
-                sb.Append(" ");
                 sb.Append(option.Description);
 
                 builder.Add(new OptionItem(option, StringBuilderCache.GetStringAndFree(sb)));
@@ -145,7 +146,7 @@ namespace Orang.CommandLine.Help
                 : builder.ToImmutableArray();
         }
 
-        public static ImmutableArray<OptionValueList> GetAllowedValues(
+        public static ImmutableArray<OptionValueList> GetOptionValues(
             IEnumerable<CommandOption> options,
             IEnumerable<OptionValueProvider> providers,
             Filter? filter = null)
@@ -167,7 +168,7 @@ namespace Orang.CommandLine.Help
             }
 
             return (filter != null)
-                ? FilterAllowedValues(builder, filter)
+                ? FilterOptionValues(builder, filter)
                 : builder.ToImmutableArray();
         }
 
@@ -229,7 +230,7 @@ namespace Orang.CommandLine.Help
             }
         }
 
-        private static ImmutableArray<OptionValueList> FilterAllowedValues(
+        private static ImmutableArray<OptionValueList> FilterOptionValues(
             IEnumerable<OptionValueList> values,
             Filter filter)
         {
@@ -290,7 +291,7 @@ namespace Orang.CommandLine.Help
         public static int CalculateArgumentsWidths(IEnumerable<CommandArgument> arguments)
         {
             return (arguments.Any())
-                ? arguments.Max(f => f.Name.Length + ((f.IsRequired) ? 0 : 2)) + 1
+                ? arguments.Max(f => f.Name.Length + ((f.IsRequired) ? 0 : 2)) + SeparatorWidth
                 : default;
         }
 
@@ -299,14 +300,21 @@ namespace Orang.CommandLine.Help
             if (!options.Any())
                 return default;
 
-            int width1 = options.Max(f => f.Name.Length + ((f.IsRequired) ? 0 : 2)) + 3;
+            int width1 = options.Max(f => f.Name.Length + ((f.IsRequired) ? 0 : 2)) + 2 + SeparatorWidth;
 
             if (options.Any(f => !string.IsNullOrEmpty(f.ShortName)))
                 width1 += 4;
 
-            int width2 = options.Select(f => f.MetaValue?.Length ?? 0).DefaultIfEmpty().Max();
+            if (options.Any(f => !string.IsNullOrEmpty(f.MetaValue)))
+            {
+                int width2 = options.Max(f => f.MetaValue?.Length ?? 0);
 
-            return (width1, width2);
+                return (width1, width2 + SeparatorWidth);
+            }
+            else
+            {
+                return (width1, 0);
+            }
         }
 
         public static (int width1, int width2) CalculateOptionValuesWidths(IEnumerable<OptionValue> optionValues)
@@ -323,7 +331,7 @@ namespace Orang.CommandLine.Help
                     _ => throw new InvalidOperationException(),
                 };
             })
-                + 1;
+                + SeparatorWidth;
             int width2 = optionValues.DefaultIfEmpty().Max(f =>
             {
                 return f switch
@@ -333,7 +341,7 @@ namespace Orang.CommandLine.Help
                     _ => throw new InvalidOperationException(),
                 };
             })
-                + 1;
+                + SeparatorWidth;
 
             return (width1, width2);
         }

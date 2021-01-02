@@ -11,6 +11,11 @@ namespace Orang.CommandLine
     internal sealed class MoveCommandLineOptions : CommonCopyCommandLineOptions
     {
         [Option(
+            longName: OptionNames.Ask,
+            HelpText = "Ask for a permission to move file or directory.")]
+        public bool Ask { get; set; }
+
+        [Option(
             longName: OptionNames.Conflict,
             HelpText = "Defines how to resolve conflict when a file/directory already exists.",
             MetaValue = MetaValues.ConflictResolution)]
@@ -19,8 +24,8 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.DryRun,
             longName: OptionNames.DryRun,
-            HelpText = "Display which files/directories should be moved " +
-                "but do not actually move any file/directory.")]
+            HelpText = "Display which files/directories should be moved "
+                + "but do not actually move any file/directory.")]
         public bool DryRun { get; set; }
 
         [Option(
@@ -72,6 +77,7 @@ namespace Orang.CommandLine
             options.Flat = Flat;
             options.ConflictResolution = conflictResolution;
             options.Target = target;
+            options.AskMode = (Ask) ? AskMode.File : AskMode.None;
 
             return true;
         }

@@ -201,6 +201,12 @@ namespace Orang.CommandLine
 
             pattern = BuildPattern(pattern, patternOptions, separator);
 
+            if (pattern.Length == 0)
+            {
+                throw new InvalidOperationException(
+                    $"Option '{OptionNames.GetHelpText(optionName)}' is invalid: pattern cannot be empty.");
+            }
+
             Regex? regex = null;
 
             try
@@ -226,8 +232,8 @@ namespace Orang.CommandLine
 
                     if (groupNames.Length > 1)
                     {
-                        message += " Existing group names: " +
-                            $"{TextHelpers.Join(", ", " and ", groupNames.Where(f => f != "0"))}.";
+                        message += " Existing group names: "
+                            + $"{TextHelpers.Join(", ", " and ", groupNames.Where(f => f != "0"))}.";
                     }
 
                     WriteError(message);

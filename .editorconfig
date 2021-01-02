@@ -1,0 +1,8 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Code files
+[*.{cs,csx}]
+roslynator.max_line_length = 140

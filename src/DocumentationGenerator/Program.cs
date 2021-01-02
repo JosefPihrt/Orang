@@ -74,7 +74,7 @@ namespace Orang.Documentation
                 Console.WriteLine(readmeFilePath);
             }
 
-            string valuesFilePath = Path.GetFullPath(Path.Combine(destinationDirectoryPath, "AllowedValues.md"));
+            string valuesFilePath = Path.GetFullPath(Path.Combine(destinationDirectoryPath, "OptionValues.md"));
 
             ImmutableArray<OptionValueProvider> providers = OptionValueProvider.GetProviders(
                 commands.SelectMany(f => f.Options),
@@ -82,7 +82,7 @@ namespace Orang.Documentation
                 .ToImmutableArray();
 
             MDocument document = Document(
-                Heading1("List of Allowed Values"),
+                Heading1("List of Option Values"),
                 BulletList(providers.Select(f => Link(
                     f.Name,
                     MarkdownHelpers.CreateGitHubHeadingLink(f.Name)))),
@@ -93,8 +93,27 @@ namespace Orang.Documentation
                         Heading2(provider.Name),
                         Table(
                             TableRow("Value", "Description"),
-                            provider.Values.Select(
-                                f => TableRow(f.HelpValue, _removeNewlineRegex.Replace(f.Description ?? "", " "))))
+                            provider.Values.Select(f =>
+                            {
+                                string value = f.HelpValue;
+                                MInline mvalue = Inline(value);
+
+                                Match metaValueMatch = Regex.Match(value, @"(?<==)\<[\p{Lu}_]+>\z");
+
+                                if (metaValueMatch.Success)
+                                {
+                                    string metaValue = metaValueMatch.Value;
+
+                                    if (providers.Any(f => f.Name == metaValue))
+                                    {
+                                        mvalue = Inline(
+                                            value.Remove(metaValueMatch.Index),
+                                            Link(metaValue, MarkdownHelpers.CreateGitHubHeadingLink(metaValue)));
+                                    }
+                                }
+
+                                return TableRow(mvalue, _removeNewlineRegex.Replace(f.Description ?? "", " "));
+                            }))
                     };
                 }));
 

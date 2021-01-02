@@ -18,6 +18,7 @@ namespace Orang.CommandLine
         public const char Manual = 'm';
         public const char MaxCount = 'm';
         public const char Name = 'n';
+        public const char Online = 'o';
         public const char Options = 'o';
         public const char Output = 'o';
         public const char Properties = 'p';

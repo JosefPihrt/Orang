@@ -128,7 +128,8 @@ namespace Orang.CommandLine
                 {
                     int endIndex = _eolIndex;
 
-                    if (endIndex > 0
+                    if (length > 0
+                        && endIndex > 0
                         && Input[endIndex - 1] == '\n')
                     {
                         endIndex--;

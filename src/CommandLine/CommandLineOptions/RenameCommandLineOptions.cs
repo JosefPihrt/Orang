@@ -39,8 +39,8 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.DryRun,
             longName: OptionNames.DryRun,
-            HelpText = "Display which files/directories should be renamed " +
-                "but do not actually rename any file/directory.")]
+            HelpText = "Display which files/directories should be renamed "
+                + "but do not actually rename any file/directory.")]
         public bool DryRun { get; set; }
 
         [Hidden]
@@ -124,10 +124,10 @@ namespace Orang.CommandLine
             if (matchEvaluator == null
                 && Evaluator != null)
             {
-                WriteWarning($"Option '{OptionNames.GetHelpText(OptionNames.Evaluator)}' is obsolete. " +
-                    $"Use option '{OptionNames.GetHelpText(OptionNames.Replacement)}' instead.");
+                WriteWarning($"Option '{OptionNames.GetHelpText(OptionNames.Evaluator)}' is obsolete. "
+                    + $"Use option '{OptionNames.GetHelpText(OptionNames.Replacement)}' instead.");
 
-                if (!DelegateFactory.TryCreateFromAssembly(Evaluator, out matchEvaluator))
+                if (!DelegateFactory.TryCreateFromAssembly(Evaluator, typeof(string), typeof(Match), out matchEvaluator))
                     return false;
             }
 
@@ -154,7 +154,7 @@ namespace Orang.CommandLine
             if (!TryParseDisplay(
                 values: Display,
                 optionName: OptionNames.Display,
-                contentDisplayStyle: out ContentDisplayStyle? _,
+                contentDisplayStyle: out ContentDisplayStyle? contentDisplayStyle,
                 pathDisplayStyle: out PathDisplayStyle? pathDisplayStyle,
                 lineDisplayOptions: out LineDisplayOptions lineDisplayOptions,
                 lineContext: out LineContext lineContext,
@@ -177,7 +177,7 @@ namespace Orang.CommandLine
             }
 
             options.Format = new OutputDisplayFormat(
-                contentDisplayStyle: ContentDisplayStyle.None,
+                contentDisplayStyle: contentDisplayStyle ?? ContentDisplayStyle.Omit,
                 pathDisplayStyle: pathDisplayStyle ?? PathDisplayStyle.Full,
                 lineOptions: lineDisplayOptions,
                 lineContext: lineContext,
@@ -190,7 +190,7 @@ namespace Orang.CommandLine
             options.HighlightOptions = highlightOptions;
             options.SearchTarget = GetSearchTarget();
             options.ReplaceOptions = replaceOptions;
-            options.Ask = Ask;
+            options.AskMode = (Ask) ? AskMode.File : AskMode.None;
             options.DryRun = DryRun;
             options.NameFilter = nameFilter;
             options.NamePart = namePart;

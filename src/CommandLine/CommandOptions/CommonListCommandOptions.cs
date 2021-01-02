@@ -8,6 +8,6 @@ namespace Orang.CommandLine
         {
         }
 
-        public string? Filter { get; internal set; }
+        public Filter? Filter { get; internal set; }
     }
 }

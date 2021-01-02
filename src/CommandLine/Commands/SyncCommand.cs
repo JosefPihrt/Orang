@@ -42,6 +42,11 @@ namespace Orang.CommandLine
             DirectoryChanged?.Invoke(this, e);
         }
 
+        protected override string GetQuestionText(bool isDirectory)
+        {
+            return (isDirectory) ? "Sync directory?" : "Sync file?";
+        }
+
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
         {
             _destinationPaths = new HashSet<string>(FileSystemHelpers.Comparer);
@@ -79,16 +84,23 @@ namespace Orang.CommandLine
             _ignoredPaths = null;
         }
 
-        protected override void ExecuteOperation(SearchContext context, string sourcePath, string destinationPath, bool isDirectory, string indent)
+        protected override DialogResult? ExecuteOperation(
+            SearchContext context,
+            string sourcePath,
+            string destinationPath,
+            bool isDirectory,
+            string indent)
         {
             if (_ignoredPaths?.Contains(sourcePath) == true)
-                return;
+                return null;
 
             string? renamePath = null;
 
             ExecuteOperation();
 
             _destinationPaths?.Add(renamePath ?? destinationPath);
+
+            return null;
 
             void ExecuteOperation()
             {
@@ -246,6 +258,11 @@ namespace Orang.CommandLine
                         throw new InvalidOperationException($"Unknown enum value '{ConflictResolution}'.");
                     }
                 }
+                else if (Options.AskMode == AskMode.File
+                    && !AskToExecute(context, GetQuestionText(isDirectory), indent))
+                {
+                    return;
+                }
 
                 preferLeft ??= !_isRightToLeft;
 
@@ -259,7 +276,15 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    ExecuteFileOperations(context, sourcePath, destinationPath, fileExists, directoryExists, preferLeft.Value, diffProperty, indent);
+                    ExecuteFileOperations(
+                        context,
+                        sourcePath,
+                        destinationPath,
+                        fileExists,
+                        directoryExists,
+                        preferLeft.Value,
+                        diffProperty,
+                        indent);
                 }
 
                 string GetPrefix(bool invert)

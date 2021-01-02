@@ -35,8 +35,8 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.DryRun,
             longName: OptionNames.DryRun,
-            HelpText = "Display which files/directories should be deleted " +
-                "but do not actually delete any file/directory.")]
+            HelpText = "Display which files/directories should be deleted "
+                + "but do not actually delete any file/directory.")]
         public bool DryRun { get; set; }
 
         [Option(
@@ -92,8 +92,8 @@ namespace Orang.CommandLine
                 && options.Paths.Length == 1
                 && options.Paths[0].Origin == PathOrigin.CurrentDirectory)
             {
-                Logger.WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Name)}' " +
-                    "is required when no path is specified (i.e. current directory is used).");
+                Logger.WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Name)}' "
+                    + "is required when no path is specified (i.e. current directory is used).");
                 return false;
             }
 
@@ -110,7 +110,7 @@ namespace Orang.CommandLine
             if (!TryParseDisplay(
                 values: Display,
                 optionName: OptionNames.Display,
-                contentDisplayStyle: out ContentDisplayStyle? _,
+                contentDisplayStyle: out ContentDisplayStyle? contentDisplayStyle,
                 pathDisplayStyle: out PathDisplayStyle? pathDisplayStyle,
                 lineDisplayOptions: out LineDisplayOptions lineDisplayOptions,
                 lineContext: out LineContext lineContext,
@@ -133,7 +133,7 @@ namespace Orang.CommandLine
             }
 
             options.Format = new OutputDisplayFormat(
-                contentDisplayStyle: ContentDisplayStyle.None,
+                contentDisplayStyle: contentDisplayStyle ?? ContentDisplayStyle.Omit,
                 pathDisplayStyle: pathDisplayStyle ?? PathDisplayStyle.Full,
                 lineOptions: lineDisplayOptions,
                 lineContext: lineContext,
@@ -143,7 +143,7 @@ namespace Orang.CommandLine
                 separator: separator,
                 alignColumns: !noAlign);
 
-            options.Ask = Ask;
+            options.AskMode = (Ask) ? AskMode.File : AskMode.None;
             options.DryRun = DryRun;
             options.HighlightOptions = highlightOptions;
             options.SearchTarget = GetSearchTarget();

@@ -34,7 +34,7 @@ namespace Orang.Documentation
 
                 string metaValueUrl = provider2.Name;
 
-                _writer.WriteLink(provider2.Name, "AllowedValues.md" + MarkdownHelpers.CreateGitHubHeadingLink(metaValueUrl));
+                _writer.WriteLink(provider2.Name, "OptionValues.md" + MarkdownHelpers.CreateGitHubHeadingLink(metaValueUrl));
 
                 _writer.WriteString(": ");
 
@@ -48,7 +48,23 @@ namespace Orang.Documentation
                     {
                         while (true)
                         {
-                            _writer.WriteInlineCode(en.Current);
+                            string value = en.Current;
+
+                            Match metaValueMatch = Regex.Match(value, @"(?<==)\<[\p{Lu}_]+>\z");
+
+                            if (metaValueMatch.Success
+                                && OptionValueProviders.ProvidersByName.ContainsKey(metaValueMatch.Value))
+                            {
+                                _writer.WriteInlineCode(value.Remove(metaValueMatch.Index));
+                                _writer.WriteLink(
+                                    metaValueMatch.Value,
+                                    "OptionValues.md" + MarkdownHelpers.CreateGitHubHeadingLink(metaValueMatch.Value));
+                            }
+                            else
+                            {
+                                _writer.WriteInlineCode(en.Current);
+                            }
+
 
                             if (en.MoveNext())
                             {

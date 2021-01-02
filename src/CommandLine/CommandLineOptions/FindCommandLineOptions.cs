@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CommandLine;
 using static Orang.CommandLine.ParseHelpers;
 using static Orang.Logger;
@@ -12,12 +13,26 @@ namespace Orang.CommandLine
     [CommandGroup("Main", 0)]
     internal sealed class FindCommandLineOptions : CommonFindCommandLineOptions
     {
+        public override ContentDisplayStyle DefaultContentDisplayStyle => ContentDisplayStyle.Line;
+
+        [Option(
+            longName: OptionNames.Ask,
+            HelpText = "Ask for permission after each file or value.",
+            MetaValue = MetaValues.AskMode)]
+        public string Ask { get; set; } = null!;
+
         [Option(
             longName: OptionNames.Pipe,
             HelpText = "Defines how to use redirected/piped input.",
             MetaValue = MetaValues.PipeMode)]
         public string Pipe { get; set; } = null!;
-
+#if DEBUG // --modifier
+        [Option(
+            longName: OptionNames.Modifier,
+            HelpText = OptionHelpText.Modifier,
+            MetaValue = MetaValues.Modifier)]
+        public IEnumerable<string> Modifier { get; set; } = null!;
+#endif
         [Option(
             longName: OptionNames.Modify,
             HelpText = "Functions to modify results.",
@@ -64,6 +79,9 @@ namespace Orang.CommandLine
 
             options = (FindCommandOptions)baseOptions;
 
+            if (!TryParseProperties(Ask, Name, options))
+                return false;
+
             string? input = null;
 
             if (pipeMode != PipeMode.Paths
@@ -71,8 +89,8 @@ namespace Orang.CommandLine
             {
                 if (options.ContentFilter == null)
                 {
-                    WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Content)}' is required " +
-                        "when redirected/piped input is used as a text to be searched.");
+                    WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Content)}' is required "
+                        + "when redirected/piped input is used as a text to be searched.");
 
                     return false;
                 }
@@ -80,7 +98,15 @@ namespace Orang.CommandLine
                 input = ConsoleHelpers.ReadRedirectedInput();
             }
 
-            if (!TryParseModifyOptions(Modify, OptionNames.Modify, out ModifyOptions? modifyOptions, out bool aggregateOnly))
+            EnumerableModifier<string>? modifier = null;
+#if DEBUG // --modifier
+            if (Modifier.Any()
+                && !TryParseModifier(Modifier, OptionNames.Modifier, out modifier))
+            {
+                return false;
+            }
+#endif
+            if (!TryParseModifyOptions(Modify, OptionNames.Modify, modifier, out ModifyOptions? modifyOptions, out bool aggregateOnly))
                 return false;
 
             OutputDisplayFormat format = options.Format;

@@ -1,5 +1,8 @@
 @echo off
 
+set _programFiles=%ProgramFiles(x86)%
+if not defined _programFiles set _programFiles=%ProgramFiles%
+
 set _version=0.1.2
 
 orang replace -e cmd -c "(?<=--version )\d+\.\d+\.\d+" -r "%_version%"
@@ -14,7 +17,7 @@ echo.
 
 dotnet restore --force "..\src\Orang.sln"
 
-"%ProgramFiles%\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild" "..\src\Orang.sln" ^
+"%_programFiles%\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\msbuild" "..\src\Orang.sln" ^
  /t:Clean,Build ^
  /p:Configuration=Release,RunCodeAnalysis=false,Deterministic=true,TreatWarningsAsErrors=true,WarningsNotAsErrors=1591 ^
  /nr:false ^
@@ -26,14 +29,14 @@ if errorlevel 1 (
  exit
 )
 
-dotnet "..\src\DocumentationGenerator\bin\Release\netcoreapp3.0\Orang.DocumentationGenerator.dll" "..\docs\cli"
+dotnet "..\src\DocumentationGenerator\bin\Release\netcoreapp3.1\Orang.DocumentationGenerator.dll" "..\docs\cli"
 
 if errorlevel 1 (
  pause
  exit
 )
 
-dotnet "..\src\CommandLine\bin\Release\netcoreapp3.0\Orang.dll" help -m -v d > "..\docs\cli\manual.txt"
+dotnet "..\src\CommandLine\bin\Release\netcoreapp3.1\Orang.dll" help -m -v d > "..\docs\cli\manual.txt"
 
 if errorlevel 1 (
  pause

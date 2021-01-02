@@ -113,7 +113,7 @@ namespace Orang.CommandLine
                 if (!AskToOverwrite(context, question, indent))
                     return;
             }
-            else if (Options.Ask)
+            else if (Options.AskMode == AskMode.File)
             {
                 if (!AskToExecute(context, question, indent))
                     return;

@@ -27,7 +27,7 @@ namespace Orang.CommandLine.Help
         {
             ImmutableArray<CommandItem> commandsHelp = HelpProvider.GetCommandItems(commands, filter);
 
-            ImmutableArray<OptionValueList> values = HelpProvider.GetAllowedValues(
+            ImmutableArray<OptionValueList> values = HelpProvider.GetOptionValues(
                 commands.SelectMany(f => f.Options),
                 providers ?? ImmutableArray<OptionValueProvider>.Empty,
                 filter);

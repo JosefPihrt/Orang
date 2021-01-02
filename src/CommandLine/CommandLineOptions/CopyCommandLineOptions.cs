@@ -11,16 +11,21 @@ namespace Orang.CommandLine
     internal sealed class CopyCommandLineOptions : CommonCopyCommandLineOptions
     {
         [Option(
+            longName: OptionNames.Ask,
+            HelpText = "Ask for a permission to copy file or directory.")]
+        public bool Ask { get; set; }
+
+        [Option(
             longName: OptionNames.Conflict,
             HelpText = "Defines how to resolve conflict when a file/directory already exists.",
             MetaValue = MetaValues.ConflictResolution)]
-        public string OnConflict { get; set; } = null!;
+        public string Conflict { get; set; } = null!;
 
         [Option(
             shortName: OptionShortNames.DryRun,
             longName: OptionNames.DryRun,
-            HelpText = "Display which files/directories should be copied " +
-                "but do not actually copy any file/directory.")]
+            HelpText = "Display which files/directories should be copied "
+                + "but do not actually copy any file/directory.")]
         public bool DryRun { get; set; }
 
         [Option(
@@ -58,7 +63,7 @@ namespace Orang.CommandLine
                 return false;
 
             if (!TryParseAsEnum(
-                OnConflict,
+                Conflict,
                 OptionNames.Conflict,
                 out ConflictResolution conflictResolution,
                 defaultValue: ConflictResolution.Ask,
@@ -72,6 +77,7 @@ namespace Orang.CommandLine
             options.Flat = Flat;
             options.ConflictResolution = conflictResolution;
             options.Target = target;
+            options.AskMode = (Ask) ? AskMode.File : AskMode.None;
 
             return true;
         }

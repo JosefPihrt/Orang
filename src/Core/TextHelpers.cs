@@ -55,7 +55,7 @@ namespace Orang
         {
             if (value.Contains("\n"))
             {
-                string indent = new string(' ', indentLength);
+                var indent = new string(' ', indentLength);
 
                 IndentImpl(value, indent, ref sb);
             }

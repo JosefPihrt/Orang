@@ -173,9 +173,9 @@ namespace Orang.CommandLine
                         .GetValue(nameof(FileSystemAttributes.Empty))
                         .HelpValue;
 
-                    Logger.WriteError($"Value '{helpValue}' cannot be specified both for " +
-                        $"'{OptionNames.GetHelpText(OptionNames.Attributes)}' and " +
-                        $"'{OptionNames.GetHelpText(OptionNames.AttributesToSkip)}'.");
+                    Logger.WriteError($"Value '{helpValue}' cannot be specified both for "
+                        + $"'{OptionNames.GetHelpText(OptionNames.Attributes)}' and "
+                        + $"'{OptionNames.GetHelpText(OptionNames.AttributesToSkip)}'.");
 
                     return false;
                 }

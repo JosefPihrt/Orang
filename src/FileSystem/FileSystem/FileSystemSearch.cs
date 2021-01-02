@@ -698,8 +698,8 @@ namespace Orang.FileSystem
             {
                 throw new ArgumentNullException(
                     nameof(dialogProvider),
-                    $"'{nameof(dialogProvider)}' cannot be null when {nameof(ConflictResolution)} " +
-                        $"is set to {nameof(ConflictResolution.Ask)}.");
+                    $"'{nameof(dialogProvider)}' cannot be null when {nameof(ConflictResolution)} "
+                        + $"is set to {nameof(ConflictResolution.Ask)}.");
             }
         }
 

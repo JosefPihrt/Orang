@@ -10,6 +10,11 @@ namespace Orang.CommandLine
         {
         }
 
+        protected override string GetQuestionText(bool isDirectory)
+        {
+            return (isDirectory) ? "Copy directory?" : "Copy file?";
+        }
+
         protected override void ExecuteOperation(string sourcePath, string destinationPath)
         {
             File.Copy(sourcePath, destinationPath);

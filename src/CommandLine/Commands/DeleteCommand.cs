@@ -31,36 +31,39 @@ namespace Orang.CommandLine
             string indent = GetPathIndent(baseDirectoryPath);
 
             if (!Options.OmitPath)
-                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
+                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, includeNewline: true);
 
-            if (!Options.Ask || AskToExecute(context, (Options.ContentOnly) ? "Delete content?" : "Delete?", indent))
+            if (Options.AskMode == AskMode.File
+                && !AskToExecute(context, (Options.ContentOnly) ? "Delete content?" : "Delete?", indent))
             {
-                try
-                {
-                    if (!Options.DryRun)
-                    {
-                        FileSystemHelpers.Delete(
-                            fileMatch,
-                            contentOnly: Options.ContentOnly,
-                            includingBom: Options.IncludingBom,
-                            filesOnly: Options.FilesOnly,
-                            directoriesOnly: Options.DirectoriesOnly);
-                    }
+                return;
+            }
 
-                    if (fileMatch.IsDirectory)
-                    {
-                        context.Telemetry.ProcessedDirectoryCount++;
-                    }
-                    else
-                    {
-                        context.Telemetry.ProcessedFileCount++;
-                    }
-                }
-                catch (Exception ex) when (ex is IOException
-                    || ex is UnauthorizedAccessException)
+            try
+            {
+                if (!Options.DryRun)
                 {
-                    WriteFileError(ex, indent: indent);
+                    FileSystemHelpers.Delete(
+                        fileMatch,
+                        contentOnly: Options.ContentOnly,
+                        includingBom: Options.IncludingBom,
+                        filesOnly: Options.FilesOnly,
+                        directoriesOnly: Options.DirectoriesOnly);
                 }
+
+                if (fileMatch.IsDirectory)
+                {
+                    context.Telemetry.ProcessedDirectoryCount++;
+                }
+                else
+                {
+                    context.Telemetry.ProcessedFileCount++;
+                }
+            }
+            catch (Exception ex) when (ex is IOException
+                || ex is UnauthorizedAccessException)
+            {
+                WriteFileError(ex, indent: indent);
             }
         }
 

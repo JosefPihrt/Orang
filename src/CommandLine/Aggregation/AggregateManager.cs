@@ -34,9 +34,9 @@ namespace Orang.Aggregation
         {
             ModifyOptions modifyOptions = Options.ModifyOptions;
 
-            bool shouldCreate = modifyOptions.HasFunction(ModifyFunctions.Except_Intersect_GroupBy)
+            bool shouldCreate = modifyOptions.HasFunction(ModifyFunctions.Except_Intersect_Group)
                 || (modifyOptions.Aggregate
-                    && (modifyOptions.Method != null
+                    && (modifyOptions.Modifier != null
                         || modifyOptions.HasFunction(ModifyFunctions.Enumerable)));
 
             if (!shouldCreate)
@@ -51,7 +51,7 @@ namespace Orang.Aggregation
                 sections = new List<StorageSection>();
             }
             else if ((Options.ContentFilter != null || Options.NameFilter != null)
-                && modifyOptions.HasFunction(ModifyFunctions.GroupBy))
+                && modifyOptions.HasFunction(ModifyFunctions.Group))
             {
                 sections = new List<StorageSection>();
             }
@@ -81,7 +81,7 @@ namespace Orang.Aggregation
             Dictionary<string, List<StorageSection>>? valuesMap = null;
 
             if (Sections?.Count > 0
-                && ModifyOptions.HasFunction(ModifyFunctions.GroupBy))
+                && ModifyOptions.HasFunction(ModifyFunctions.Group))
             {
                 if (Options.ContentFilter != null)
                 {
@@ -205,9 +205,10 @@ namespace Orang.Aggregation
 
         private Dictionary<string, List<StorageSection>> GroupByValues(List<string> values)
         {
-            var sectionsValues = new List<(StorageSection section, IEnumerable<string> values)>();
-
-            sectionsValues.Add((Sections![0], GetRange(values, 0, Sections[0].Count)));
+            var sectionsValues = new List<(StorageSection section, IEnumerable<string> values)>()
+            {
+                (Sections![0], GetRange(values, 0, Sections[0].Count))
+            };
 
             for (int i = 1; i < Sections.Count; i++)
             {

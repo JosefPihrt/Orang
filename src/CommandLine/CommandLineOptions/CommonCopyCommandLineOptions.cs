@@ -11,6 +11,8 @@ namespace Orang.CommandLine
 {
     internal abstract class CommonCopyCommandLineOptions : CommonFindCommandLineOptions
     {
+        public override ContentDisplayStyle DefaultContentDisplayStyle => ContentDisplayStyle.Omit;
+
         [Option(
             longName: OptionNames.AllowedTimeDiff,
             HelpText = "Syntax is d|[d.]hh:mm[:ss[.ff]].",
@@ -39,6 +41,17 @@ namespace Orang.CommandLine
 
             options = (CommonCopyCommandOptions)baseOptions;
 
+            if (!FilterParser.TryParse(
+                Name,
+                OptionNames.Name,
+                OptionValueProviders.PatternOptionsProvider,
+                out Filter? nameFilter,
+                out FileNamePart namePart,
+                allowNull: true))
+            {
+                return false;
+            }
+
             if (!TryParseAsEnumFlags(
                 IgnoredAttributes,
                 OptionNames.IgnoredAttributes,
@@ -59,6 +72,8 @@ namespace Orang.CommandLine
                 return false;
             }
 
+            options.NameFilter = nameFilter;
+            options.NamePart = namePart;
             options.AllowedTimeDiff = allowedTimeDiff;
             options.IgnoredAttributes = GetFileAttributes(ignoredAttributes);
 

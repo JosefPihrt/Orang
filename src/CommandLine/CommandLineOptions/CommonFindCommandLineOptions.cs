@@ -12,11 +12,7 @@ namespace Orang.CommandLine
     [OptionValueProvider(nameof(Highlight), OptionValueProviderNames.FindHighlightOptions)]
     internal abstract class CommonFindCommandLineOptions : FileSystemCommandLineOptions
     {
-        [Option(
-            longName: OptionNames.Ask,
-            HelpText = "Ask for permission after each file or value.",
-            MetaValue = MetaValues.AskMode)]
-        public string Ask { get; set; } = null!;
+        public abstract ContentDisplayStyle DefaultContentDisplayStyle { get; }
 
         [Option(
             shortName: OptionShortNames.Content,
@@ -47,9 +43,6 @@ namespace Orang.CommandLine
                 return false;
 
             options = (CommonFindCommandOptions)baseOptions;
-
-            if (!TryParseProperties(Ask, Name, options))
-                return false;
 
             if (!TryParseAsEnumFlags(
                 Highlight,
@@ -106,8 +99,8 @@ namespace Orang.CommandLine
 
                 string helpValue2 = OptionValueProviders.AskModeProvider.GetValue(nameof(AskMode.Value)).HelpValue;
 
-                WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Display)}' cannot have value '{helpValue}' " +
-                    $"when option '{OptionNames.GetHelpText(OptionNames.Ask)}' has value '{helpValue2}'.");
+                WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Display)}' cannot have value '{helpValue}' "
+                    + $"when option '{OptionNames.GetHelpText(OptionNames.Ask)}' has value '{helpValue2}'.");
 
                 return false;
             }
@@ -116,7 +109,7 @@ namespace Orang.CommandLine
                 return false;
 
             options.Format = new OutputDisplayFormat(
-                contentDisplayStyle: contentDisplayStyle ?? ContentDisplayStyle.Line,
+                contentDisplayStyle: contentDisplayStyle ?? DefaultContentDisplayStyle,
                 pathDisplayStyle: pathDisplayStyle ?? PathDisplayStyle.Full,
                 lineOptions: lineDisplayOptions,
                 lineContext: lineContext,

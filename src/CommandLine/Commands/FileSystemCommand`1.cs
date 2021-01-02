@@ -448,51 +448,6 @@ namespace Orang.CommandLine
                 : "";
         }
 
-        protected virtual void WritePath(
-            SearchContext context,
-            FileMatch fileMatch,
-            string? baseDirectoryPath,
-            string indent,
-            ColumnWidths? columnWidths)
-        {
-            WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, Colors.Match);
-
-            WriteLine(Verbosity.Minimal);
-        }
-
-        protected void WritePath(
-            SearchContext context,
-            FileMatch fileMatch,
-            string? baseDirectoryPath,
-            string indent,
-            ColumnWidths? columnWidths,
-            ConsoleColors matchColors)
-        {
-            if (Options.PathDisplayStyle == PathDisplayStyle.Match
-                && fileMatch.NameMatch != null
-                && !object.ReferenceEquals(fileMatch.NameMatch, Match.Empty))
-            {
-                if (ShouldLog(Verbosity.Minimal))
-                {
-                    Write(indent, Verbosity.Minimal);
-                    Write(fileMatch.NameMatch.Value, (Options.HighlightMatch) ? matchColors : default, Verbosity.Minimal);
-                }
-            }
-            else
-            {
-                LogHelpers.WritePath(
-                    fileMatch,
-                    baseDirectoryPath,
-                    relativePath: Options.DisplayRelativePath,
-                    colors: Colors.Matched_Path,
-                    matchColors: (Options.HighlightMatch) ? matchColors : default,
-                    indent: indent,
-                    verbosity: Verbosity.Minimal);
-            }
-
-            WriteProperties(context, fileMatch, columnWidths);
-        }
-
         protected void WriteProperties(SearchContext context, FileMatch fileMatch, ColumnWidths? columnWidths)
         {
             if (!ShouldLog(Verbosity.Minimal))

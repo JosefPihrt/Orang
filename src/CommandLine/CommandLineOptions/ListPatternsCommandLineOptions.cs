@@ -16,8 +16,8 @@ namespace Orang.CommandLine
         [Value(
             index: 0,
             Required = false,
-            HelpText = "Character or a decimal number that represents the character. " +
-                "For a number literal use escape like \\1.",
+            HelpText = "Character or a decimal number that represents the character. "
+                + "For a number literal use escape like \\1.",
             MetaName = ArgumentMetaNames.Char)]
         public string Value { get; set; } = null!;
 

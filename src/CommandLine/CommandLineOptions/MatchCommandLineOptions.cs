@@ -7,7 +7,7 @@ using static Orang.CommandLine.ParseHelpers;
 namespace Orang.CommandLine
 {
     [Verb("match", HelpText = "Searches the input string for occurrences of the regular expression.")]
-    [OptionValueProvider(nameof(Content), OptionValueProviderNames.PatternOptionsWithoutPartAndNegative)]
+    [OptionValueProvider(nameof(Content), OptionValueProviderNames.PatternOptions_Match)]
     [OptionValueProvider(nameof(Highlight), OptionValueProviderNames.MatchHighlightOptions)]
     [CommandGroup("Regex", 2)]
     internal sealed class MatchCommandLineOptions : RegexCommandLineOptions
@@ -40,7 +40,7 @@ namespace Orang.CommandLine
             if (!FilterParser.TryParse(
                 Content,
                 OptionNames.Content,
-                OptionValueProviders.PatternOptionsWithoutPartAndNegativeProvider,
+                OptionValueProviders.PatternOptions_Match_Provider,
                 out Filter? filter))
             {
                 return false;

@@ -48,7 +48,7 @@ namespace Orang.CommandLine.Help
 
             ImmutableArray<OptionItem> options = HelpProvider.GetOptionItems(command.Options, filter);
 
-            ImmutableArray<OptionValueList> values = HelpProvider.GetAllowedValues(
+            ImmutableArray<OptionValueList> values = HelpProvider.GetOptionValues(
                 command.Options,
                 providers ?? ImmutableArray<OptionValueProvider>.Empty,
                 filter);

@@ -39,6 +39,8 @@ namespace Orang.CommandLine
             return search;
         }
 
+        protected abstract string GetQuestionText(bool isDirectory);
+
         protected abstract void ExecuteOperation(string sourcePath, string destinationPath);
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
@@ -58,16 +60,6 @@ namespace Orang.CommandLine
             base.ExecuteDirectory(directoryPath, context);
         }
 
-        protected override void ExecuteMatchWithContentCore(
-            FileMatch fileMatch,
-            SearchContext context,
-            ContentWriterOptions writerOptions,
-            string? baseDirectoryPath = null,
-            ColumnWidths? columnWidths = null)
-        {
-            ExecuteMatchCore(fileMatch, context, baseDirectoryPath, columnWidths);
-        }
-
         protected sealed override void ExecuteMatchCore(
             FileMatch fileMatch,
             SearchContext context,
@@ -75,9 +67,6 @@ namespace Orang.CommandLine
             ColumnWidths? columnWidths = null)
         {
             ExecuteOperation(fileMatch, context, baseDirectoryPath, GetPathIndent(baseDirectoryPath));
-
-            if (context.TerminationReason != TerminationReason.Canceled)
-                AskToContinue(context, GetPathIndent(baseDirectoryPath));
         }
 
         private void ExecuteOperation(
@@ -183,7 +172,7 @@ namespace Orang.CommandLine
                     destinationPath,
                     basePath: Target,
                     relativePath: Options.DisplayRelativePath,
-                    colors: Colors.Matched_Path,
+                    colors: default,
                     indent: indent,
                     verbosity: Verbosity.Minimal);
 
@@ -235,6 +224,11 @@ namespace Orang.CommandLine
                             throw new InvalidOperationException($"Unknown enum value '{dialogResult}'.");
                         }
                 }
+            }
+            else if (Options.AskMode == AskMode.File
+                && !AskToExecute(context, GetQuestionText(isDirectory), indent))
+            {
+                return DialogResult.No;
             }
 
             if (isDirectory)
@@ -375,15 +369,6 @@ namespace Orang.CommandLine
                     Directory.CreateDirectory(destinationPath);
                 }
             }
-        }
-
-        protected sealed override void WritePath(
-            SearchContext context,
-            FileMatch fileMatch,
-            string? baseDirectoryPath,
-            string indent,
-            ColumnWidths? columnWidths)
-        {
         }
 
         protected virtual void WriteError(

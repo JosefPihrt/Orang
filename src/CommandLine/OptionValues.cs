@@ -19,6 +19,7 @@ namespace Orang.CommandLine
         public static readonly SimpleOptionValue ContentDisplayStyle_UnmatchedLines = SimpleOptionValue.Create(ContentDisplayStyle.UnmatchedLines, description: "Display all lines that do not contain the matched value.");
         public static readonly SimpleOptionValue ContentDisplayStyle_Value = SimpleOptionValue.Create(ContentDisplayStyle.Value, description: "Display just the matched value.");
         public static readonly SimpleOptionValue ContentDisplayStyle_ValueDetail = SimpleOptionValue.Create(ContentDisplayStyle.ValueDetail, shortValue: "d", description: "Display matched value and include information about each value such as index or length.");
+        public static readonly SimpleOptionValue ContentDisplayStyle_Omit = SimpleOptionValue.Create(ContentDisplayStyle.Omit, shortValue: "o", description: "Do not display file's content.");
 
         public static readonly SimpleOptionValue Display_Count = SimpleOptionValue.Create("Count", description: "Include number of matches in file.");
         public static readonly SimpleOptionValue Display_CreationTime = SimpleOptionValue.Create("CreationTime", shortValue: "ct", helpValue: "c[reation-]t[ime]", description: "Include file creation time.");
@@ -49,7 +50,7 @@ namespace Orang.CommandLine
 
         public static readonly SimpleOptionValue ModifyFlags_Except = SimpleOptionValue.Create(ModifyFlags.Except, shortValue: "", description: "Return values from first file except values from second file.");
         public static readonly SimpleOptionValue ModifyFlags_Intersect = SimpleOptionValue.Create(ModifyFlags.Intersect, shortValue: "", description: "Return values that were found in all files.");
-        public static readonly SimpleOptionValue ModifyFlags_GroupBy = SimpleOptionValue.Create(ModifyFlags.GroupBy, shortValue: "", description: "Group matching files by matched values.");
+        public static readonly SimpleOptionValue ModifyFlags_Group = SimpleOptionValue.Create(ModifyFlags.Group, shortValue: "", description: "Group matching files by matched values.");
 
         public static readonly SimpleOptionValue NamePart_Extension = SimpleOptionValue.Create(FileNamePart.Extension, description: "Search in file extension.");
         public static readonly SimpleOptionValue NamePart_FullName = SimpleOptionValue.Create(FileNamePart.FullName, description: "Search in full path.");
@@ -92,8 +93,8 @@ namespace Orang.CommandLine
         public static readonly SimpleOptionValue ReplacementOptions_FromDll = SimpleOptionValue.Create(
             ReplacementOptions.FromDll,
             shortValue: "",
-            description: $"{MetaValues.Replacement} is a path to a method in DLL file. " +
-                "The format is 'DllPath,FullTypeName.MethodName'.");
+            description: "<REPLACEMENT> is a path to a method in DLL file. "
+                + "The format is 'DllPath,FullTypeName.MethodName'.");
 
         public static readonly KeyValuePairOptionValue Display_Context = KeyValuePairOptionValue.Create("context", "<NUM>", shortKey: "t", description: "A number of lines to display before and after matching line.");
         public static readonly KeyValuePairOptionValue Display_ContextBefore = KeyValuePairOptionValue.Create("context-before", "<NUM>", shortKey: "tb", description: "A number of lines to display before matching line.");

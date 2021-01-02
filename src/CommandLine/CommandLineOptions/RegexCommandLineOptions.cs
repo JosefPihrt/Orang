@@ -26,7 +26,13 @@ namespace Orang.CommandLine
             HelpText = "The input string to be searched.",
             MetaValue = MetaValues.Input)]
         public IEnumerable<string> Input { get; set; } = null!;
-
+#if DEBUG // --modifier
+        [Option(
+            longName: OptionNames.Modifier,
+            HelpText = OptionHelpText.Modifier,
+            MetaValue = MetaValues.Modifier)]
+        public IEnumerable<string> Modifier { get; set; } = null!;
+#endif
         [Option(
             longName: OptionNames.Modify,
             HelpText = "Functions to modify results.",
@@ -48,8 +54,8 @@ namespace Orang.CommandLine
             {
                 if (input != null)
                 {
-                    WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Input)}' and " +
-                        $"argument '{ArgumentMetaNames.Path}' cannot be set both at the same time.");
+                    WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Input)}' and "
+                        + $"argument '{ArgumentMetaNames.Path}' cannot be set both at the same time.");
 
                     return false;
                 }
@@ -101,7 +107,15 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            if (!TryParseModifyOptions(Modify, OptionNames.Modify, out ModifyOptions? modifyOptions, out bool aggregateOnly))
+            EnumerableModifier<string>? modifier = null;
+#if DEBUG // --modifier
+            if (Modifier.Any()
+                && !TryParseModifier(Modifier, OptionNames.Modifier, out modifier))
+            {
+                return false;
+            }
+#endif
+            if (!TryParseModifyOptions(Modify, OptionNames.Modify, modifier, out ModifyOptions? modifyOptions, out bool aggregateOnly))
                 return false;
 
             if (modifyOptions.HasAnyFunction

@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Orang.CommandLine.Help;
 using static Orang.Logger;
@@ -23,6 +25,7 @@ namespace Orang.CommandLine
             {
                 WriteHelp(
                     commandName: Options.Command,
+                    online: Options.Online,
                     manual: Options.Manual,
                     includeValues: ConsoleOut.Verbosity > Verbosity.Normal,
                     filter: Options.Filter);
@@ -38,11 +41,16 @@ namespace Orang.CommandLine
 
         private static void WriteHelp(
             string? commandName,
+            bool online,
             bool manual,
             bool includeValues,
             Filter? filter = null)
         {
-            if (commandName != null)
+            if (online)
+            {
+                OpenHelpInBrowser(commandName);
+            }
+            else if (commandName != null)
             {
                 Command? command = CommandLoader.LoadCommand(typeof(HelpCommand).Assembly, commandName);
 
@@ -58,6 +66,45 @@ namespace Orang.CommandLine
             else
             {
                 WriteCommandsHelp(includeValues: includeValues, filter: filter);
+            }
+        }
+
+        // https://github.com/dotnet/corefx/issues/10361
+        private static void OpenHelpInBrowser(string? commandName)
+        {
+            var url = "http://pihrt.net/redirect?id=orang";
+
+            if (commandName != null)
+                url += "-" + commandName;
+
+            try
+            {
+                Process.Start(url);
+            }
+            catch
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    var psi = new ProcessStartInfo()
+                    {
+                        FileName = url,
+                        UseShellExecute = true
+                    };
+
+                    Process.Start(psi);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("xdg-open", url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", url);
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
 
@@ -85,7 +132,7 @@ namespace Orang.CommandLine
                 if (metaValues.Any())
                 {
                     WriteLine();
-                    Write($"Run 'orang help {command.Name} -v d' to display list of allowed values for ");
+                    Write($"Run 'orang help {command.Name} -v d' to display list of option values for ");
                     Write(TextHelpers.Join(", ", " and ", metaValues));
                     WriteLine(".");
                 }
@@ -125,7 +172,7 @@ namespace Orang.CommandLine
 
             if (commandItems.Any())
             {
-                values = HelpProvider.GetAllowedValues(
+                values = HelpProvider.GetOptionValues(
                     commandHelps.SelectMany(f => f.Command.Options),
                     OptionValueProviders.Providers,
                     filter);
@@ -162,7 +209,7 @@ namespace Orang.CommandLine
 
                 if (includeValues)
                 {
-                    values = HelpProvider.GetAllowedValues(
+                    values = HelpProvider.GetOptionValues(
                         commands.Select(f => CommandHelp.Create(f)).SelectMany(f => f.Command.Options),
                         OptionValueProviders.Providers,
                         filter);
@@ -194,7 +241,7 @@ namespace Orang.CommandLine
         {
             return $"Run 'orang help {command ?? "[command]"}' for more information on a command."
                 + Environment.NewLine
-                + $"Run 'orang help {command ?? "[command]"} -v d' for more information on allowed values.";
+                + $"Run 'orang help {command ?? "[command]"} -v d' for more information on option values.";
         }
     }
 }

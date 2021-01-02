@@ -33,7 +33,9 @@ namespace Orang.CommandLine
             get
             {
                 return !Options.OmitPath
-                    || (ContentFilter != null && ConsoleOut.Verbosity > Verbosity.Minimal);
+                    || (ContentFilter != null
+                        && Options.ContentDisplayStyle != ContentDisplayStyle.Omit
+                        && ConsoleOut.Verbosity > Verbosity.Minimal);
             }
         }
 
@@ -123,7 +125,7 @@ namespace Orang.CommandLine
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
         {
-            foreach (FileMatch fileMatch in GetMatches(directoryPath, context))
+            foreach (FileMatch fileMatch in GetMatches(directoryPath, context, this as INotifyDirectoryChanged))
             {
                 if (ContentFilter != null)
                 {
@@ -175,12 +177,42 @@ namespace Orang.CommandLine
             }
         }
 
-        protected abstract void ExecuteMatchWithContentCore(
+        protected virtual void ExecuteMatchWithContentCore(
             FileMatch fileMatch,
             SearchContext context,
             ContentWriterOptions writerOptions,
             string? baseDirectoryPath = null,
-            ColumnWidths? columnWidths = null);
+            ColumnWidths? columnWidths = null)
+        {
+            if (!fileMatch.IsDirectory
+                && ContentFilter?.IsNegative == false
+                && Options.ContentDisplayStyle != ContentDisplayStyle.Omit
+                && ShouldLog(Verbosity.Normal))
+            {
+                string indent = GetPathIndent(baseDirectoryPath);
+
+                bool isPathDisplayed = !Options.OmitPath;
+
+                if (isPathDisplayed)
+                    WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, includeNewline: false);
+
+                if (ContentFilter!.IsNegative
+                    || fileMatch.IsDirectory)
+                {
+                    WriteLineIf(isPathDisplayed, Verbosity.Minimal);
+                }
+                else
+                {
+                    WriteContent(
+                        context,
+                        fileMatch,
+                        writerOptions,
+                        isPathDisplayed: isPathDisplayed);
+                }
+            }
+
+            ExecuteMatchCore(fileMatch, context, baseDirectoryPath, columnWidths);
+        }
 
         protected override void ExecuteResult(SearchResult result, SearchContext context, ColumnWidths? columnWidths)
         {
@@ -288,20 +320,168 @@ namespace Orang.CommandLine
             return (maxMatchesInFile, maxTotalMatches, count);
         }
 
-        protected override void WritePath(
+        protected void WritePath(
             SearchContext context,
             FileMatch fileMatch,
             string? baseDirectoryPath,
             string indent,
-            ColumnWidths? columnWidths)
+            ColumnWidths? columnWidths,
+            bool includeNewline)
         {
-            if (ContentFilter != null)
+            WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, Colors.Match_Path);
+
+            if (includeNewline)
+                WriteLine(Verbosity.Minimal);
+        }
+
+        private void WritePath(
+            SearchContext context,
+            FileMatch fileMatch,
+            string? baseDirectoryPath,
+            string indent,
+            ColumnWidths? columnWidths,
+            ConsoleColors matchColors)
+        {
+            if (Options.PathDisplayStyle == PathDisplayStyle.Match
+                && fileMatch.NameMatch != null
+                && !object.ReferenceEquals(fileMatch.NameMatch, Match.Empty))
             {
-                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, Colors.Match_Path);
+                if (ShouldLog(Verbosity.Minimal))
+                {
+                    Write(indent, Verbosity.Minimal);
+                    Write(fileMatch.NameMatch.Value, (Options.HighlightMatch) ? matchColors : default, Verbosity.Minimal);
+                }
             }
             else
             {
-                base.WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
+                LogHelpers.WritePath(
+                    fileMatch,
+                    baseDirectoryPath,
+                    relativePath: Options.DisplayRelativePath,
+                    colors: Colors.Matched_Path,
+                    matchColors: (Options.HighlightMatch) ? matchColors : default,
+                    indent: indent,
+                    verbosity: Verbosity.Minimal);
+            }
+
+            WriteProperties(context, fileMatch, columnWidths);
+        }
+
+        private void WriteContent(
+            SearchContext context,
+            FileMatch fileMatch,
+            ContentWriterOptions writerOptions,
+            bool isPathDisplayed)
+        {
+            ContentWriter? contentWriter = null;
+
+            try
+            {
+                Match match = fileMatch.ContentMatch!;
+
+                contentWriter = ContentWriter.CreateFind(
+                    contentDisplayStyle: Options.ContentDisplayStyle,
+                    input: fileMatch.ContentText,
+                    options: writerOptions,
+                    storage: null,
+                    outputInfo: Options.CreateOutputInfo(fileMatch.ContentText, match, ContentFilter!),
+                    writer: ContentTextWriter.Default,
+                    ask: AskMode == AskMode.Value);
+
+                WriteMatches(context, match, writerOptions, contentWriter, isPathDisplayed);
+
+                SearchTelemetry telemetry = context.Telemetry;
+
+                telemetry.MatchCount += contentWriter.MatchCount;
+
+                if (contentWriter.MatchingLineCount >= 0)
+                {
+                    if (telemetry.MatchingLineCount == -1)
+                        telemetry.MatchingLineCount = 0;
+
+                    telemetry.MatchingLineCount += contentWriter.MatchingLineCount;
+                }
+
+                if (AskMode == AskMode.Value)
+                {
+                    if (contentWriter is AskValueContentWriter askValueContentWriter)
+                    {
+                        if (!askValueContentWriter.Ask)
+                            AskMode = AskMode.None;
+                    }
+                    else if (contentWriter is AskLineContentWriter askLineContentWriter)
+                    {
+                        if (!askLineContentWriter.Ask)
+                            AskMode = AskMode.None;
+                    }
+                }
+            }
+            finally
+            {
+                contentWriter?.Dispose();
+            }
+        }
+
+        protected void WriteMatches(
+            SearchContext context,
+            Match match,
+            ContentWriterOptions writerOptions,
+            ContentWriter contentWriter,
+            bool isPathDisplayed)
+        {
+            List<Capture>? captures = null;
+
+            try
+            {
+                captures = ListCache<Capture>.GetInstance();
+
+                GetCaptures(
+                    match,
+                    writerOptions.GroupNumber,
+                    context,
+                    isPathDisplayed: isPathDisplayed,
+                    predicate: ContentFilter!.Predicate,
+                    captures: captures);
+
+                WriteMatches(contentWriter, captures, context);
+            }
+            finally
+            {
+                if (captures != null)
+                    ListCache<Capture>.Free(captures);
+            }
+        }
+
+        protected bool AskToExecute(SearchContext context, string question, string indent)
+        {
+            DialogResult result = ConsoleHelpers.Ask(question, indent);
+
+            switch (result)
+            {
+                case DialogResult.Yes:
+                    {
+                        return true;
+                    }
+                case DialogResult.YesToAll:
+                    {
+                        Options.AskMode = AskMode.None;
+                        return true;
+                    }
+                case DialogResult.No:
+                case DialogResult.None:
+                    {
+                        return false;
+                    }
+                case DialogResult.NoToAll:
+                case DialogResult.Cancel:
+                    {
+                        context.TerminationReason = TerminationReason.Canceled;
+                        return false;
+                    }
+                default:
+                    {
+                        throw new InvalidOperationException($"Unknown enum value '{result}'.");
+                    }
             }
         }
 

@@ -16,7 +16,13 @@ namespace Orang.CommandLine
 {
     internal static class AssemblyFactory
     {
-        public static Assembly? FromExpression(string expressionText)
+        public static Assembly? FromExpression(
+            string expressionText,
+            string className,
+            string methodName,
+            string returnTypeName,
+            string parameterType,
+            string parameterName)
         {
             ExpressionSyntax expression = ParseExpression(expressionText);
 
@@ -40,7 +46,7 @@ namespace Orang.CommandLine
                             ClassDeclaration(
                                 default,
                                 TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)),
-                                Identifier("EvaluatorClass"),
+                                Identifier(className),
                                 default,
                                 default,
                                 default,
@@ -48,17 +54,17 @@ namespace Orang.CommandLine
                                     MethodDeclaration(
                                         default,
                                         TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)),
-                                        PredefinedType(Token(SyntaxKind.StringKeyword)),
+                                        ParseTypeName(returnTypeName),
                                         default!,
-                                        Identifier("EvaluatorMethod"),
+                                        Identifier(methodName),
                                         default!,
                                         ParameterList(
                                             SingletonSeparatedList(
                                                 Parameter(
                                                     default,
                                                     default,
-                                                    ParseTypeName("Match"),
-                                                    Identifier("match"),
+                                                    ParseTypeName(parameterType),
+                                                    Identifier(parameterName),
                                                     default))),
                                         default,
                                         default,

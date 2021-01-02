@@ -14,9 +14,22 @@ namespace Orang.CommandLine
     {
         public static bool TryCreateFromExpression<TDelegate>(
             string expressionText,
+            string className,
+            string methodName,
+            string returnTypeName,
+            Type returnType,
+            string parameterTypeName,
+            Type parameterType,
+            string parameterName,
             [NotNullWhen(true)] out TDelegate? result) where TDelegate : Delegate
         {
-            Assembly? assembly = AssemblyFactory.FromExpression(expressionText);
+            Assembly? assembly = AssemblyFactory.FromExpression(
+                expressionText,
+                className,
+                methodName,
+                returnTypeName,
+                parameterTypeName,
+                parameterName);
 
             if (assembly == null)
             {
@@ -26,15 +39,18 @@ namespace Orang.CommandLine
 
             result = CreateDelegateAndCatchIfThrows<TDelegate>(
                 assembly,
-                new Type[] { typeof(Match) },
-                "Orang.Runtime.EvaluatorClass",
-                "EvaluatorMethod");
+                returnType,
+                new Type[] { parameterType },
+                $"Orang.Runtime.{className}",
+                methodName);
 
             return result != null;
         }
 
         public static bool TryCreateFromSourceText<TDelegate>(
             string sourceText,
+            Type returnType,
+            Type parameterType,
             [NotNullWhen(true)] out TDelegate? result) where TDelegate : Delegate
         {
             Assembly? assembly = AssemblyFactory.FromSourceText(sourceText);
@@ -45,12 +61,14 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            result = CreateDelegateAndCatchIfThrows<TDelegate>(assembly, new Type[] { typeof(Match) });
+            result = CreateDelegateAndCatchIfThrows<TDelegate>(assembly, returnType, new Type[] { parameterType });
             return result != null;
         }
 
         public static bool TryCreateFromCodeFile<TDelegate>(
             string filePath,
+            Type returnType,
+            Type parameterType,
             [NotNullWhen(true)] out TDelegate? result) where TDelegate : Delegate
         {
             if (!FileSystemHelpers.TryReadAllText(filePath, out string? content, f => WriteError(f)))
@@ -67,19 +85,22 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            result = CreateDelegateAndCatchIfThrows<TDelegate>(assembly, new Type[] { typeof(Match) });
+            result = CreateDelegateAndCatchIfThrows<TDelegate>(assembly, returnType, new Type[] { parameterType });
             return result != null;
         }
 
         public static bool TryCreateFromAssembly<TDelegate>(
             string path,
+            Type returnType,
+            Type parameterType,
             [NotNullWhen(true)] out TDelegate? result) where TDelegate : Delegate
         {
-            return TryCreateFromAssembly(path, new Type[] { typeof(Match) }, out result);
+            return TryCreateFromAssembly(path, returnType, new Type[] { parameterType }, out result);
         }
 
         private static bool TryCreateFromAssembly<TDelegate>(
             string path,
+            Type returnType,
             Type[] parameters,
             [NotNullWhen(true)] out TDelegate? result) where TDelegate : Delegate
         {
@@ -93,8 +114,8 @@ namespace Orang.CommandLine
             if (index <= 0
                 || index >= path.Length - 1)
             {
-                WriteError($"Invalid value: {path}. " +
-                    "The expected format is \"MyLib.dll,MyNamespace.MyClass.MyMethod\".");
+                WriteError($"Invalid value: {path}. "
+                    + "The expected format is \"MyLib.dll,MyNamespace.MyClass.MyMethod\".");
 
                 return false;
             }
@@ -108,8 +129,8 @@ namespace Orang.CommandLine
             if (index < 0
                 || index >= path.Length - 1)
             {
-                WriteError($"Invalid method full name: {methodFullName}. " +
-                    "The expected format is \"MyNamespace.MyClass.MyMethod\".");
+                WriteError($"Invalid method full name: {methodFullName}. "
+                    + "The expected format is \"MyNamespace.MyClass.MyMethod\".");
 
                 return false;
             }
@@ -132,20 +153,21 @@ namespace Orang.CommandLine
 
             string methodName = methodFullName.Substring(index + 1);
 
-            result = CreateDelegateAndCatchIfThrows<TDelegate>(assembly, parameters, typeName, methodName);
+            result = CreateDelegateAndCatchIfThrows<TDelegate>(assembly, returnType, parameters, typeName, methodName);
 
             return result != null;
         }
 
         private static TDelegate? CreateDelegateAndCatchIfThrows<TDelegate>(
             Assembly assembly,
+            Type returnType,
             Type[] parameters,
             string? typeName = null,
             string? methodName = null) where TDelegate : Delegate
         {
             try
             {
-                return CreateDelegate<TDelegate>(assembly, parameters, typeName, methodName);
+                return CreateDelegate<TDelegate>(assembly, returnType, parameters, typeName, methodName);
             }
             catch (Exception ex) when (ex is ArgumentException
                 || ex is AmbiguousMatchException
@@ -161,6 +183,7 @@ namespace Orang.CommandLine
 
         private static TDelegate? CreateDelegate<TDelegate>(
             Assembly assembly,
+            Type returnType,
             Type[] parameters,
             string? typeName = null,
             string? methodName = null) where TDelegate : Delegate
@@ -190,12 +213,12 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    method = FindMethod(type, parameters);
+                    method = FindMethod(type, returnType, parameters);
 
                     if (method == null)
                     {
-                        WriteError("Cannot find public method with signature 'string M(Match)' in type " +
-                            $"'{typeName}'");
+                        WriteError("Cannot find public method with signature 'string M(Match)' in type "
+                            + $"'{typeName}'");
 
                         return null;
                     }
@@ -205,12 +228,12 @@ namespace Orang.CommandLine
             }
             else
             {
-                method = FindMethod(assembly, parameters, methodName);
+                method = FindMethod(assembly, returnType, parameters, methodName);
 
                 if (method == null)
                 {
-                    WriteError($"Cannot find public method with signature 'string {methodName ?? "M"}(Match)' in type " +
-                        $"'{typeName}'");
+                    WriteError($"Cannot find public method with signature 'string {methodName ?? "M"}(Match)' in type "
+                        + $"'{typeName}'");
 
                     return null;
                 }
@@ -238,13 +261,13 @@ namespace Orang.CommandLine
             }
         }
 
-        private static MethodInfo? FindMethod(Assembly assembly, Type[] parameters, string? methodName = null)
+        private static MethodInfo? FindMethod(Assembly assembly, Type returnType, Type[] parameters, string? methodName = null)
         {
             foreach (Type type in assembly.GetTypes())
             {
                 MethodInfo? method = (methodName != null)
                     ? type.GetMethod(methodName, parameters)
-                    : FindMethod(type, parameters);
+                    : FindMethod(type, returnType, parameters);
 
                 if (method != null)
                     return method;
@@ -253,14 +276,14 @@ namespace Orang.CommandLine
             return null;
         }
 
-        private static MethodInfo? FindMethod(Type type, Type[] parameters)
+        private static MethodInfo? FindMethod(Type type, Type returnType, Type[] parameters)
         {
             foreach (MethodInfo methodInfo in type.GetMethods())
             {
                 if (!methodInfo.IsPublic)
                     continue;
 
-                if (methodInfo.ReturnType != typeof(string))
+                if (methodInfo.ReturnType != returnType)
                     continue;
 
                 ParameterInfo[]? parameters2 = methodInfo.GetParameters();

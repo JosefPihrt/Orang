@@ -17,14 +17,14 @@ namespace Orang
             bool ignoreCase = false,
             bool cultureInvariant = false,
             ValueSortProperty sortProperty = ValueSortProperty.None,
-            Func<IEnumerable<string>, IEnumerable<string>>? method = null)
+            EnumerableModifier<string>? modifier = null)
         {
             Functions = functions;
             Aggregate = aggregate;
             IgnoreCase = ignoreCase;
             CultureInvariant = cultureInvariant;
             SortProperty = sortProperty;
-            Method = method;
+            Modifier = modifier;
         }
 
         public ModifyFunctions Functions { get; }
@@ -37,7 +37,7 @@ namespace Orang
 
         public ValueSortProperty SortProperty { get; }
 
-        public Func<IEnumerable<string>, IEnumerable<string>>? Method { get; }
+        public EnumerableModifier<string>? Modifier { get; }
 
         public StringComparer StringComparer
         {
@@ -63,7 +63,7 @@ namespace Orang
             get
             {
                 return Functions != ModifyFunctions.None
-                    || Method != null;
+                    || Modifier != null;
             }
         }
 
@@ -111,9 +111,6 @@ namespace Orang
                 values = values.Select(f => f.ToUpper(CultureInfo));
             }
 
-            if (Method != null)
-                values = Method(values);
-
             if ((functions & ModifyFunctions.Distinct) != 0)
                 values = values.Distinct(comparer);
 
@@ -121,24 +118,27 @@ namespace Orang
             {
                 if (SortProperty == ValueSortProperty.Length)
                 {
-                    return values.OrderBy(f => f.Length);
+                    values = values.OrderBy(f => f.Length);
                 }
                 else
                 {
-                    return values.OrderBy(f => f, comparer);
+                    values = values.OrderBy(f => f, comparer);
                 }
             }
             else if ((functions & ModifyFunctions.SortDescending) != 0)
             {
                 if (SortProperty == ValueSortProperty.Length)
                 {
-                    return values.OrderByDescending(f => f.Length);
+                    values = values.OrderByDescending(f => f.Length);
                 }
                 else
                 {
-                    return values.OrderByDescending(f => f, comparer);
+                    values = values.OrderByDescending(f => f, comparer);
                 }
             }
+
+            if (Modifier != null)
+                values = Modifier(values);
 
             return values;
         }

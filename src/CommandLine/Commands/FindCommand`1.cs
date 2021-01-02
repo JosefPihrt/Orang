@@ -28,7 +28,9 @@ namespace Orang.CommandLine
             get
             {
                 return !Options.OmitPath
-                    || (ContentFilter != null && ConsoleOut.Verbosity > Verbosity.Minimal);
+                    || (ContentFilter != null
+                        && Options.ContentDisplayStyle != ContentDisplayStyle.Omit
+                        && ConsoleOut.Verbosity > Verbosity.Minimal);
             }
         }
 
@@ -106,7 +108,7 @@ namespace Orang.CommandLine
             bool isPathDisplayed = !Options.OmitPath && !AggregateOnly;
 
             if (isPathDisplayed)
-                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
+                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, includeNewline: false);
 
             if (ContentFilter!.IsNegative
                 || fileMatch.IsDirectory)
@@ -139,7 +141,7 @@ namespace Orang.CommandLine
             if (!Options.OmitPath
                 && !AggregateOnly)
             {
-                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
+                WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, includeNewline: true);
             }
 
             if (_aggregate?.Storage != null
@@ -182,7 +184,7 @@ namespace Orang.CommandLine
                     {
                         IEnumerable<string> values = _modify!.FileValues!.Modify(
                             Options.ModifyOptions,
-                            filter: Options.ModifyOptions.Functions & ~(ModifyFunctions.Enumerable | ModifyFunctions.Except_Intersect_GroupBy));
+                            filter: Options.ModifyOptions.Functions & ~(ModifyFunctions.Enumerable | ModifyFunctions.Except_Intersect_Group));
 
                         _aggregate?.Storage.AddRange(values);
                     }
@@ -239,7 +241,8 @@ namespace Orang.CommandLine
 
             if (hasAnyFunction
                 || Options.AskMode == AskMode.Value
-                || ShouldLog(Verbosity.Normal))
+                || (Options.ContentDisplayStyle != ContentDisplayStyle.Omit
+                    && ShouldLog(Verbosity.Normal)))
             {
                 if (hasAnyFunction)
                     (_modify ??= new ModifyManager(Options)).Reset();
@@ -258,27 +261,7 @@ namespace Orang.CommandLine
                 contentWriter = new EmptyContentWriter(writerOptions);
             }
 
-            List<Capture>? captures = null;
-
-            try
-            {
-                captures = ListCache<Capture>.GetInstance();
-
-                GetCaptures(
-                    match,
-                    writerOptions.GroupNumber,
-                    context,
-                    isPathDisplayed: isPathDisplayed,
-                    predicate: ContentFilter!.Predicate,
-                    captures: captures);
-
-                WriteMatches(contentWriter, captures, context);
-            }
-            finally
-            {
-                if (captures != null)
-                    ListCache<Capture>.Free(captures);
-            }
+            WriteMatches(context, match, writerOptions, contentWriter, isPathDisplayed);
 
             return contentWriter;
         }
@@ -322,7 +305,8 @@ namespace Orang.CommandLine
 
                 if (hasAnyFunction
                     || Options.AskMode == AskMode.Value
-                    || ShouldLog(Verbosity.Normal))
+                    || (Options.ContentDisplayStyle != ContentDisplayStyle.Omit
+                        && ShouldLog(Verbosity.Normal)))
                 {
                     if (hasAnyFunction)
                         (_modify ??= new ModifyManager(Options)).Reset();

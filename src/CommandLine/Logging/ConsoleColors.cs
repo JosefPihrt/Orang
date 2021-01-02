@@ -30,8 +30,8 @@ namespace Orang
         {
             get
             {
-                return $"{((Foreground != null) ? Foreground.ToString() : "None")}  " +
-                    $"{((Background != null) ? Background.ToString() : "None")}";
+                return $"{((Foreground != null) ? Foreground.ToString() : "None")}  "
+                    + $"{((Background != null) ? Background.ToString() : "None")}";
             }
         }
 
