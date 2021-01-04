@@ -87,7 +87,7 @@ namespace Orang.CommandLine
 #endif
 
                 if (help)
-                    return 0;
+                    return ExitCodes.Match;
 
                 var success = true;
 
@@ -127,7 +127,7 @@ namespace Orang.CommandLine
                 });
 
                 if (!success)
-                    return 2;
+                    return ExitCodes.Error;
 
                 parserResult.WithParsed<AbstractCommandLineOptions>(options =>
                 {
@@ -136,7 +136,7 @@ namespace Orang.CommandLine
                 });
 
                 if (!success)
-                    return 2;
+                    return ExitCodes.Error;
 
                 return parserResult.MapResult(
                     (CopyCommandLineOptions options) => Copy(options),
@@ -151,7 +151,7 @@ namespace Orang.CommandLine
                     (RenameCommandLineOptions options) => Rename(options),
                     (ReplaceCommandLineOptions options) => Replace(options),
                     (SplitCommandLineOptions options) => Split(options),
-                    _ => 2);
+                    _ => ExitCodes.Error);
             }
             catch (Exception ex)
             {
@@ -163,7 +163,7 @@ namespace Orang.CommandLine
                 Out = null;
             }
 
-            return 2;
+            return ExitCodes.Error;
         }
 
         private static Parser CreateParser(bool? ignoreUnknownArguments = null)
@@ -243,7 +243,7 @@ namespace Orang.CommandLine
             var options = new CopyCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 1;
+                return ExitCodes.Error;
 
             return Execute(new CopyCommand(options));
         }
@@ -253,7 +253,7 @@ namespace Orang.CommandLine
             var options = new DeleteCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 2;
+                return ExitCodes.Error;
 
             return Execute(new DeleteCommand(options));
         }
@@ -263,7 +263,7 @@ namespace Orang.CommandLine
             var options = new EscapeCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 2;
+                return ExitCodes.Error;
 
             return Execute(new EscapeCommand(options));
         }
@@ -273,7 +273,7 @@ namespace Orang.CommandLine
             var options = new FindCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 2;
+                return ExitCodes.Error;
 
             return Execute(new FindCommand<FindCommandOptions>(options));
         }
@@ -283,7 +283,7 @@ namespace Orang.CommandLine
             var options = new HelpCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 2;
+                return ExitCodes.Error;
 
             return Execute(new HelpCommand(options));
         }
@@ -293,7 +293,7 @@ namespace Orang.CommandLine
             var options = new ListPatternsCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 2;
+                return ExitCodes.Error;
 
             return Execute(new ListPatternsCommand(options));
         }
@@ -303,7 +303,7 @@ namespace Orang.CommandLine
             var options = new MatchCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 2;
+                return ExitCodes.Error;
 
             return Execute(new MatchCommand(options));
         }
@@ -313,7 +313,7 @@ namespace Orang.CommandLine
             var options = new MoveCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 1;
+                return ExitCodes.Error;
 
             return Execute(new MoveCommand(options));
         }
@@ -333,7 +333,7 @@ namespace Orang.CommandLine
             var options = new RenameCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 2;
+                return ExitCodes.Error;
 
             return Execute(new RenameCommand(options));
         }
@@ -343,7 +343,7 @@ namespace Orang.CommandLine
             var options = new ReplaceCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 2;
+                return ExitCodes.Error;
 
             return Execute(new ReplaceCommand(options));
         }
@@ -353,7 +353,7 @@ namespace Orang.CommandLine
             var options = new SplitCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 2;
+                return ExitCodes.Error;
 
             return Execute(new SplitCommand(options));
         }
@@ -369,15 +369,22 @@ namespace Orang.CommandLine
             switch (result)
             {
                 case CommandResult.Success:
-                    return 0;
+                    return ExitCodes.Match;
                 case CommandResult.NoMatch:
-                    return 1;
+                    return ExitCodes.NoMatch;
                 case CommandResult.Fail:
                 case CommandResult.Canceled:
-                    return 2;
+                    return ExitCodes.Error;
                 default:
                     throw new InvalidOperationException($"Unknown enum value '{result}'.");
             }
+        }
+
+        private static class ExitCodes
+        {
+            public const int Match = 0;
+            public const int NoMatch = 1;
+            public const int Error = 2;
         }
     }
 }

@@ -12,6 +12,8 @@ using DotMarkdown;
 using DotMarkdown.Linq;
 using Orang.CommandLine;
 using static DotMarkdown.Linq.MFactory;
+using System.Collections;
+using Orang.CommandLine.Help;
 
 namespace Orang.Documentation
 {
@@ -46,21 +48,28 @@ namespace Orang.Documentation
 
             string readmeFilePath = Path.GetFullPath(Path.Combine(destinationDirectoryPath, "README.md"));
 
+            var settings = new MarkdownWriterSettings(
+                MarkdownFormat.Default.WithTableOptions(
+                    MarkdownFormat.Default.TableOptions | TableOptions.FormatHeaderAndContent));
+
             using (var sw = new StreamWriter(readmeFilePath, append: false, Encoding.UTF8))
-            using (MarkdownWriter mw = MarkdownWriter.Create(sw))
+            using (MarkdownWriter mw = MarkdownWriter.Create(sw, settings))
             {
-                mw.WriteHeading1("Orang Command-Line Interface");
+                mw.WriteStartHeading(1);
+                mw.WriteString("Orang Command-Line Interface");
+                mw.WriteRaw(" <img align=\"left\" src=\"../../images/icon48.png\">");
+                mw.WriteEndHeading();
                 mw.WriteString(application.Description);
                 mw.WriteLine();
 
                 mw.WriteHeading2("Commands");
 
-                foreach (Command command in application.Commands)
-                {
-                    mw.WriteStartBulletItem();
-                    mw.WriteLink(command.Name, command.Name + "-command.md");
-                    mw.WriteEndBulletItem();
-                }
+                Table(
+                    TableRow("Command", "Description"),
+                    application
+                        .Commands
+                        .Select(f => TableRow(Link(f.Name, f.Name + "-command.md"), f.Description)))
+                    .WriteTo(mw);
 
                 mw.WriteLine();
 
@@ -92,30 +101,17 @@ namespace Orang.Documentation
                     {
                         Heading2(provider.Name),
                         Table(
-                            TableRow("Value", "Description"),
-                            provider.Values.Select(f =>
-                            {
-                                string value = f.HelpValue;
-                                MInline mvalue = Inline(value);
-
-                                Match metaValueMatch = Regex.Match(value, @"(?<==)\<[\p{Lu}_]+>\z");
-
-                                if (metaValueMatch.Success)
-                                {
-                                    string metaValue = metaValueMatch.Value;
-
-                                    if (providers.Any(f => f.Name == metaValue))
-                                    {
-                                        mvalue = Inline(
-                                            value.Remove(metaValueMatch.Index),
-                                            Link(metaValue, MarkdownHelpers.CreateGitHubHeadingLink(metaValue)));
-                                    }
-                                }
-
-                                return TableRow(mvalue, _removeNewlineRegex.Replace(f.Description ?? "", " "));
-                            }))
+                            TableRow("Value", " ", "Description"),
+                            provider.Values.Select(f => CreateTableRow(f, providers)))
                     };
                 }));
+
+            document.Add(
+                Heading2("Expression Syntax"),
+                Table(
+                    TableRow("Expression", "Description"),
+                    HelpProvider.GetExpressionItems(includeDate: true)
+                        .Select(f => TableRow(InlineCode(f.expression), f.description))));
 
             AddFootnote(document);
 
@@ -135,6 +131,19 @@ namespace Orang.Documentation
 
                     writer.WriteCommandHeading(command, application);
                     writer.WriteCommandDescription(command);
+
+                    mw.WriteLink("Home", "README.md#readme");
+
+                    foreach (string section in new[] { "Synopsis", "Arguments", "Options", "Samples" })
+                    {
+                        mw.WriteString(" ");
+                        mw.WriteCharEntity((char)0x2022);
+                        mw.WriteString(" ");
+                        mw.WriteLink(section, "#" + section);
+                    }
+
+                    mw.WriteLine();
+
                     writer.WriteCommandSynopsis(command, application);
                     writer.WriteArguments(command.Arguments);
                     writer.WriteOptions(command.Options);
@@ -157,6 +166,50 @@ namespace Orang.Documentation
 
             if (Debugger.IsAttached)
                 Console.ReadKey();
+        }
+
+        private static MTableRow CreateTableRow(
+            OptionValue optionValue,
+            ImmutableArray<OptionValueProvider> providers)
+        {
+            object? value = null;
+            string? shortValue = null;
+
+            switch (optionValue)
+            {
+                case SimpleOptionValue simpleOptionValue:
+                    {
+                        value = simpleOptionValue.Value;
+                        shortValue = simpleOptionValue.ShortValue;
+                        break;
+                    }
+                case KeyValuePairOptionValue keyValuePairOptionValue:
+                    {
+                        string value2 = keyValuePairOptionValue.Value;
+
+                        if (OptionValueProvider.MetaValueRegex.IsMatch(value2)
+                            && providers.Any(f => f.Name == value2))
+                        {
+                            value = Inline(
+                                $"{keyValuePairOptionValue.Key}=",
+                                Link(value2, MarkdownHelpers.CreateGitHubHeadingLink(value2)));
+                        }
+                        else
+                        {
+                            value = $"{keyValuePairOptionValue.Key}={value2}";
+                        }
+
+                        shortValue = keyValuePairOptionValue.ShortKey;
+                        break;
+                    }
+            }
+
+            string description = _removeNewlineRegex.Replace(optionValue.Description ?? "", " ");
+
+            return TableRow(
+                value,
+                (string.IsNullOrEmpty(shortValue)) ? " " : shortValue,
+                (string.IsNullOrEmpty(description)) ? " " : description);
         }
 
         private static void WriteFootNote(MarkdownWriter mw)

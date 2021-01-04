@@ -1,3 +1,27 @@
+## 0.2.0-rc (2021-01-04)
+
+* Update target framework to .netcoreapp3.1 (LTS)
+* Update Roslyn reference to 3.8.0
+* Disallow empty regex pattern
+* Copy/move directory including its content
+* Add option `--split` (applies to `find` command)
+* Add option `--pipe p[aths]` to use piped input as a list of paths  (applies to `find` and `replace` commands)
+* Add option value `--modify group` to group paths by matched value  (applies to `find` command)
+* Add option value `--display c[ontent]=o[mit]` to not display content of a file (applies to `find` and `replace` commands)
+* Add option `-o|--online` to open help in a default browser
+
+### Breaking Changes
+
+* Redirected/piped input is used by default as a text not as a list of paths (applies to `find` and `replace` commands)
+* Filter for `list-patterns` command uses regex search instead of simple text search and search is case-insensitive by default
+* Filter for `help` command is case-insensitive by default
+* Option `--ask` has no value (applies to `copy` and `move`)
+* Change option value `new-line` to `newline` and remove shortcut `nl`
+* Change shortcut `ao` to `o` (`aggregate-only`)
+* Change shortcut `t` to `co` (`context`)
+* Change shortcut `ta` to `a` (`context-after`)
+* Change shortcut `tb` to `b` (`context-before`)
+
 ## 0.1.2 (2020-12-12)
 
 * Enable 'except' for more than two files

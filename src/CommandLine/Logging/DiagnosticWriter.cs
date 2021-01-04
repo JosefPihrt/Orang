@@ -21,7 +21,7 @@ namespace Orang.CommandLine
 
         private static OutputSymbols Symbols_Character { get; } = OutputSymbols.Create(HighlightOptions.Character);
 
-        private static OutputSymbols Symbols_NewLine { get; } = OutputSymbols.Create(HighlightOptions.NewLine);
+        private static OutputSymbols Symbols_Newline { get; } = OutputSymbols.Create(HighlightOptions.Newline);
 
         internal static void WriteStart()
         {
@@ -658,7 +658,7 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    ValueWriter.Write(value, Symbols_NewLine, ValueColors);
+                    ValueWriter.Write(value, Symbols_Newline, ValueColors);
                 }
             }
         }

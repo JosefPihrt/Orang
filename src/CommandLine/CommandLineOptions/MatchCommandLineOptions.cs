@@ -46,9 +46,8 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            if (!TryParseAsEnumFlags(
+            if (!TryParseHighlightOptions(
                 Highlight,
-                OptionNames.Highlight,
                 out HighlightOptions highlightOptions,
                 defaultValue: HighlightOptions.Default,
                 provider: OptionValueProviders.MatchHighlightOptionsProvider))

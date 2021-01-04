@@ -10,6 +10,16 @@ namespace Orang.CommandLine
 {
     internal static class ConsoleHelpers
     {
+        public static void WaitForKeyPress(string? message = null)
+        {
+            if (Console.IsInputRedirected)
+                return;
+
+            ConsoleOut.Write(message ?? "Press any key to continue...");
+            Console.ReadKey();
+            ConsoleOut.WriteLine();
+        }
+
         public static string? ReadRedirectedInput()
         {
             if (Console.IsInputRedirected)

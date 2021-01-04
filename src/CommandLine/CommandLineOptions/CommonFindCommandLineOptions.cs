@@ -44,9 +44,8 @@ namespace Orang.CommandLine
 
             options = (CommonFindCommandOptions)baseOptions;
 
-            if (!TryParseAsEnumFlags(
+            if (!TryParseHighlightOptions(
                 Highlight,
-                OptionNames.Highlight,
                 out HighlightOptions highlightOptions,
                 defaultValue: HighlightOptions.Default,
                 provider: OptionValueProviders.FindHighlightOptionsProvider))

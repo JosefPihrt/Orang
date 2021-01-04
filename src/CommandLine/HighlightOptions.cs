@@ -21,7 +21,7 @@ namespace Orang
         Tab = 1 << 8,
         CarriageReturn = 1 << 9,
         Linefeed = 1 << 10,
-        NewLine = CarriageReturn | Linefeed,
+        Newline = CarriageReturn | Linefeed,
         Space = 1 << 11,
         Character = Tab | CarriageReturn | Linefeed | Space
     }

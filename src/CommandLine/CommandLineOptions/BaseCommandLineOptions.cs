@@ -13,11 +13,5 @@ namespace Orang.CommandLine
             HelpText = "Path to a file that should store output.",
             MetaValue = MetaValues.Output)]
         public IEnumerable<string> Output { get; set; } = null!;
-
-        [Option(
-            shortName: OptionShortNames.Help,
-            longName: OptionNames.Help,
-            HelpText = "Show command line help.")]
-        public bool Help { get; set; }
     }
 }

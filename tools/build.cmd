@@ -3,11 +3,13 @@
 set _programFiles=%ProgramFiles(x86)%
 if not defined _programFiles set _programFiles=%ProgramFiles%
 
-set _version=0.1.2
+set _version=0.2.0-rc
 
-orang replace -e cmd -c "(?<=--version )\d+\.\d+\.\d+" -r "%_version%"
+orang replace -e cmd -c "(?<=--version )\d+\.\d+\.\d+(-\w+)?" -r "%_version%"
 
-orang replace "..\src" -e csproj -c "(?<=<PackageVersion>)\d+\.\d+\.\d+(?=</PackageVersion>)" -r "%_version%"
+orang replace "..\src" -e csproj -c "(?<=<PackageVersion>)\d+\.\d+\.\d+(-\w+)?(?=</PackageVersion>)" -r "%_version%"
+
+orang replace "..\src\CommandLine\PackageInfo.cs" -c "(?<="")\d+\.\d+\.\d+(-\w+)(?="")" -r "%_version%"
 
 echo.
 

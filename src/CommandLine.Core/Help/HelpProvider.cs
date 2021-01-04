@@ -10,7 +10,7 @@ namespace Orang.CommandLine.Help
 {
     internal static class HelpProvider
     {
-        private const int SeparatorWidth = 2;
+        public const int SeparatorWidth = 2;
 
         public static ImmutableArray<CommandItem> GetCommandItems(IEnumerable<Command> commands, Filter? filter = null)
         {
@@ -259,31 +259,54 @@ namespace Orang.CommandLine.Help
         public static ImmutableArray<string> GetExpressionItems(IEnumerable<OptionValueList> values, bool includeDate = true)
         {
             return (values.SelectMany(f => f.Values).Any(f => f.Value.CanContainExpression))
-                ? GetExpressionItems(includeDate: includeDate)
+                ? GetExpressionLines(includeDate: includeDate)
                 : ImmutableArray<string>.Empty;
         }
 
         public static string GetExpressionsText(string indent, bool includeDate = true)
         {
-            ImmutableArray<string> expressions = GetExpressionItems(includeDate: includeDate);
+            ImmutableArray<string> expressions = GetExpressionLines(includeDate: includeDate);
 
             return indent + string.Join(Environment.NewLine + indent, expressions);
         }
 
-        public static ImmutableArray<string> GetExpressionItems(bool includeDate = true)
+        public static ImmutableArray<string> GetExpressionLines(bool includeDate = true)
         {
-            ImmutableArray<string>.Builder builder = ImmutableArray.CreateBuilder<string>();
+            ImmutableArray<(string expression, string description)> items = GetExpressionItems(includeDate);
 
-            builder.Add("x=n");
-            builder.Add("x<n");
-            builder.Add("x>n");
-            builder.Add("x<=n");
-            builder.Add("x>=n");
-            builder.Add("x=<min;max>          Inclusive interval");
-            builder.Add("x=(min;max)          Exclusive interval");
+            int maxWidth = items.Max(f => f.expression.Length);
+
+            return items
+                .Select(f =>
+                {
+                    string s = f.expression;
+
+                    if (!string.IsNullOrEmpty(f.description))
+                    {
+                        s = s.PadRight(maxWidth + SeparatorWidth);
+                        s += f.description;
+                    }
+
+                    return s;
+                })
+                .ToImmutableArray();
+        }
+
+        public static ImmutableArray<(string expression, string description)> GetExpressionItems(
+            bool includeDate = true)
+        {
+            ImmutableArray<(string, string)>.Builder builder = ImmutableArray.CreateBuilder<(string, string)>();
+
+            builder.Add(("x=n", ""));
+            builder.Add(("x<n", ""));
+            builder.Add(("x>n", ""));
+            builder.Add(("x<=n", ""));
+            builder.Add(("x>=n", ""));
+            builder.Add(("x=<min;max>", "Inclusive interval"));
+            builder.Add(("x=(min;max)", "Exclusive interval"));
 
             if (includeDate)
-                builder.Add("x=-d|[d.]hh:mm[:ss]  x is greater than actual date - <VALUE>");
+                builder.Add(("x=-d|[d.]hh:mm[:ss]", "x is greater than actual date - <VALUE>"));
 
             return builder.ToImmutableArray();
         }

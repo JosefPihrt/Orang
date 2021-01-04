@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Orang.CommandLine.Help;
 using Orang.Syntax;
 using Orang.Text.RegularExpressions;
 using static Orang.Logger;
@@ -104,8 +105,7 @@ namespace Orang.CommandLine
                         }
 
                         Write(text, prevIndex, length - prevIndex, Colors.Syntax);
-                        Write(' ', width - text.Length + text.Count(ch => ch == '%'));
-                        Write(" ");
+                        Write(' ', width - text.Length + text.Count(ch => ch == '%') + HelpProvider.SeparatorWidth);
                         WriteLine(item.Description);
                     }
                 }
@@ -165,7 +165,7 @@ namespace Orang.CommandLine
                 in ConsoleColors colors2 = default)
             {
                 Write(value1, colors1);
-                Write(' ', width - value1.Length + 1);
+                Write(' ', width - value1.Length + HelpProvider.SeparatorWidth);
                 WriteLine(value2 ?? "-", colors2);
             }
         }

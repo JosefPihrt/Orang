@@ -2,28 +2,30 @@
 
 Searches the file system for files and directories and copy them to a destination directory\.
 
+[Home](README.md#readme) &#x2022; [Synopsis](#Synopsis) &#x2022; [Arguments](#Arguments) &#x2022; [Options](#Options) &#x2022; [Samples](#Samples)
+
 ## Synopsis
 
 ```
 orang copy [<PATH>]
-[   --ask]                <ASK_MODE>
+[   --ask]
 [-a|--attributes]         <ATTRIBUTES>
 [-b|--attributes-to-skip] <ATTRIBUTES>
 [   --compare]            <COMPARE_OPTIONS>
 [   --conflict]           <CONFLICT_RESOLUTION>
-[-c|--content]            <REGEX>
+[-c|--content]            <PATTERN> [<PATTERN_OPTIONS>]
 [-y|--display]            <DISPLAY_OPTIONS>
 [-d|--dry-run]
 [   --encoding]           <ENCODING>
-[-e|--extension]          <EXTENSION_FILTER>
+[-e|--extension]          EXT1[,EXT2] [<EXTENSION_OPTIONS>]
 [   --flat]
 [-h|--help]
 [-t|--highlight]          <HIGHLIGHT>
-[-i|--include-directory]  <REGEX>
+[-i|--include-directory]  <PATTERN> [<PATTERN_OPTIONS>]
 [-m|--max-count]          <MAX_OPTIONS>
-[-n|--name]               <REGEX>
+[-n|--name]               <PATTERN> [<PATTERN_OPTIONS>]
 [   --no-recurse]
-[-o|--output]             <OUTPUT_OPTIONS>
+[-o|--output]             <PATH> [<OUTPUT_OPTIONS>]
 [   --paths]              <PATH>
 [   --paths-from]         <FILE_PATH>
 [   --progress]
@@ -41,109 +43,133 @@ Path to one or more files and/or directories that should be searched\.
 
 ## Options
 
-**`[--ask] <ASK_MODE>`**
+##### `[--ask]`
 
-Ask for permission after each file or value\. Allowed values are f\[ile\] and v\[alue\]\.
+Ask for a permission to copy file or directory\.
 
-**`[-a|--attributes] <ATTRIBUTES>`**
+##### `[-a|--attributes] <ATTRIBUTES>`
 
-File attributes that are required\. Allowed values are archive, compressed, d\[irectory\], e\[mpty\], encrypted, f\[ile\], h\[idden\], normal, offline, r\[ead\-only\], r\[eparse\]\-p\[oint\], s\[ystem\] and temporary\.
+File attributes that are required\.
 
-**`[-b|--attributes-to-skip] <ATTRIBUTES>`**
+[\<ATTRIBUTES>](OptionValues.md#attributes): `archive`, `compressed`, `d[irectory]`, `e[mpty]`, `encrypted`, `f[ile]`, `h[idden]`, `normal`, `offline`, `r[ead-only]`, `r[eparse]-p[oint]`, `s[ystem]`, `temporary`\.
 
-File attributes that should be skipped\. Allowed values are archive, compressed, e\[mpty\], encrypted, h\[idden\], normal, offline, r\[ead\-only\], r\[eparse\]\-p\[oint\], s\[ystem\] and temporary\.
+##### `[-b|--attributes-to-skip] <ATTRIBUTES>`
 
-**`[--compare] <COMPARE_OPTIONS>`**
+File attributes that should be skipped\.
 
-File properties to be compared\. Allowed values are n\[one\], a\[ttributes\], c\[ontent\], m\[odified\-\]t\[ime\] and s\[ize\]\.
+[\<ATTRIBUTES>](OptionValues.md#attributes): `archive`, `compressed`, `e[mpty]`, `encrypted`, `h[idden]`, `normal`, `offline`, `r[ead-only]`, `r[eparse]-p[oint]`, `s[ystem]`, `temporary`\.
 
-**`[--conflict] <CONFLICT_RESOLUTION>`**
+##### `[--compare] <COMPARE_OPTIONS>`
 
-Defines how to resolve conflict when a file/directory already exists\. Allowed values are a\[sk\], o\[verwrite\], suffix and s\[kip\]\.
+File properties to be compared\.
 
-**`[-c|--content] <REGEX>`**
+[\<COMPARE_OPTIONS>](OptionValues.md#compare_options): `n[one]`, `a[ttributes]`, `c[ontent]`, `m[odified-]t[ime]`, `s[ize]`\.
 
-Regular expression for files' content\. Syntax is \<PATTERN> \[\<PATTERN\_OPTIONS>\]\. Allowed values are compiled, c\[ulture\-\]i\[nvariant\], e\[cma\-\]s\[cript\], e\[nds\-\]w\[ith\], e\[quals\], n \[explicit\-capture\], f\[rom\-file\], g\[roup\]=\<GROUP\_NAME>, i\[gnore\-case\], x \[ignore\-pattern\-whitespace\], li\[st\], length=\<NUM>, l\[ist\-\]s\[eparator\], l\[iteral\], m\[ultiline\], ne\[gative\], r\[ight\-to\-left\], s\[ingleline\], s\[tarts\-\]w\[ith\], timeout=\<NUM>, w\[hole\-\]l\[ine\] and w\[hole\-word\]\.
+##### `[--conflict] <CONFLICT_RESOLUTION>`
 
-**`[-y|--display] <DISPLAY_OPTIONS>`**
+Defines how to resolve conflict when a file/directory already exists\.
 
-Display of the results\. Allowed values are c\[ontent\]=\<CONTENT\_DISPLAY>, t \[context\]=\<NUM>, tb \[context\-before\]=\<NUM>, ta \[context\-after\]=\<NUM>, c\[ount\], c\[reation\-\]t\[ime\], indent=\<INDENT>, l\[ine\-number\], m\[odified\-\]t\[ime\], no\-align, p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR>, su\[mmary\] and trim\-line\.
+[\<CONFLICT_RESOLUTION>](OptionValues.md#conflict_resolution): `a[sk]`, `o[verwrite]`, `suffix`, `s[kip]`\.
 
-**`[-d|--dry-run]`**
+##### `[-c|--content] <PATTERN> [<PATTERN_OPTIONS>]`
 
-Display which files or directories should be copied but do not actually copy any file or directory\.
+Regular expression for files' content\.
 
-**`[--encoding] <ENCODING>`**
+[\<PATTERN_OPTIONS>](OptionValues.md#pattern_options): `compiled`, `c[ulture-]i[nvariant]`, `e[cma-]s[cript]`, `e[nds-]w[ith]`, `e[quals]`, `n [explicit-capture]`, `f[rom-file]`, `g[roup]=<GROUP_NAME>`, `i[gnore-case]`, `x [ignore-pattern-whitespace]`, `li[st]`, `length=<NUM>`, `l[ist-]s[eparator]`, `l[iteral]`, `m[ultiline]`, `ne[gative]`, `r[ight-to-left]`, `s[ingleline]`, `s[tarts-]w[ith]`, `timeout=<NUM>`, `w[hole-]l[ine]`, `w[hole-word]`\.
 
-Encoding to use when a file does not contain byte order mark\. Default encoding is UTF\-8\.
+##### `[-y|--display] <DISPLAY_OPTIONS>`
 
-**`[-e|--extension] <EXTENSION_FILTER>`**
+Display of the results\.
 
-A filter for file extensions \(case\-insensitive by default\)\. Syntax is EXT1\[,EXT2,\.\.\.\] \[\<EXTENSION\_OPTIONS>\]\. Allowed values are c\[ase\-\]s\[ensitive\], c\[ulture\-\]i\[nvariant\], f\[rom\-file\], l\[ist\-\]s\[eparator\], l\[iteral\], ne\[gative\] and timeout=\<NUM>\.
+[\<DISPLAY_OPTIONS>](OptionValues.md#display_options): `c[ontent]=`[\<CONTENT_DISPLAY>](OptionValues.md#content_display), `co[ntext]=<NUM>`, `b [context-before]=<NUM>`, `a [context-after]=<NUM>`, `c[ount]`, `c[reation-]t[ime]`, `indent=<INDENT>`, `l[ine-number]`, `m[odified-]t[ime]`, `no-align`, `p[ath]=`[\<PATH_DISPLAY>](OptionValues.md#path_display), `s[ize]`, `s[eparator]=<SEPARATOR>`, `su[mmary]`, `trim-line`\.
 
-**`[--flat]`**
+##### `[-d|--dry-run]`
+
+Display which files/directories should be copied but do not actually copy any file/directory\.
+
+##### `[--encoding] <ENCODING>`
+
+Encoding to use when a file does not contain BOM\. Default encoding is UTF\-8\.
+
+##### `[-e|--extension] EXT1[,EXT2] [<EXTENSION_OPTIONS>]`
+
+A filter for file extensions \(case\-insensitive by default\)\.
+
+[\<EXTENSION_OPTIONS>](OptionValues.md#extension_options): `c[ase-]s[ensitive]`, `c[ulture-]i[nvariant]`, `f[rom-file]`, `l[ist-]s[eparator]`, `l[iteral]`, `ne[gative]`, `timeout=<NUM>`\.
+
+##### `[--flat]`
 
 Copy files directly into target directory\.
 
-**`[-h|--help]`**
+##### `[-h|--help]`
 
 Show command line help\.
 
-**`[-t|--highlight] <HIGHLIGHT>`**
+##### `[-t|--highlight] <HIGHLIGHT>`
 
-Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\], e\[mpty\-\]m\[atch\], e\[mpty\], b\[oundary\], t\[ab\], c\[arriage\-\]r\[eturn\], l\[ine\]f\[eed\], n\[ew\-\]l\[ine\] and space\.
+Parts of the output to highlight\.
 
-**`[-i|--include-directory] <REGEX>`**
+[\<HIGHLIGHT>](OptionValues.md#highlight): `n[one]`, `m[atch]`, `e[mpty-]m[atch]`, `e[mpty]`, `b[oundary]`, `t[ab]`, `c[arriage-]r[eturn]`, `l[ine]f[eed]`, `newline`, `space`\.
 
-Regular expression for a directory name\. Syntax is \<PATTERN> \[\<PATTERN\_OPTIONS>\]\. Allowed values are compiled, c\[ulture\-\]i\[nvariant\], e\[cma\-\]s\[cript\], e\[nds\-\]w\[ith\], e\[quals\], n \[explicit\-capture\], f\[rom\-file\], g\[roup\]=\<GROUP\_NAME>, i\[gnore\-case\], x \[ignore\-pattern\-whitespace\], li\[st\], length=\<NUM>, l\[ist\-\]s\[eparator\], l\[iteral\], m\[ultiline\], ne\[gative\], p\[art\]=\<NAME\_PART>, r\[ight\-to\-left\], s\[ingleline\], s\[tarts\-\]w\[ith\], timeout=\<NUM>, w\[hole\-\]l\[ine\] and w\[hole\-word\]\.
+##### `[-i|--include-directory] <PATTERN> [<PATTERN_OPTIONS>]`
 
-**`[-m|--max-count] <MAX_OPTIONS>`**
+Regular expression for a directory name\.
 
-Stop searching after specified number is reached\. Allowed values are \<NUM> and m\[atches\]=\<NUM>\.
+##### `[-m|--max-count] <MAX_OPTIONS>`
 
-**`[-n|--name] <REGEX>`**
+Stop searching after specified number is reached\.
 
-Regular expression for file or directory name\. Syntax is \<PATTERN> \[\<PATTERN\_OPTIONS>\]\. Allowed values are compiled, c\[ulture\-\]i\[nvariant\], e\[cma\-\]s\[cript\], e\[nds\-\]w\[ith\], e\[quals\], n \[explicit\-capture\], f\[rom\-file\], g\[roup\]=\<GROUP\_NAME>, i\[gnore\-case\], x \[ignore\-pattern\-whitespace\], li\[st\], length=\<NUM>, l\[ist\-\]s\[eparator\], l\[iteral\], m\[ultiline\], ne\[gative\], p\[art\]=\<NAME\_PART>, r\[ight\-to\-left\], s\[ingleline\], s\[tarts\-\]w\[ith\], timeout=\<NUM>, w\[hole\-\]l\[ine\] and w\[hole\-word\]\.
+[\<MAX_OPTIONS>](OptionValues.md#max_options): `<NUM>`, `m[atches]=<NUM>`\.
 
-**`[--no-recurse]`**
+##### `[-n|--name] <PATTERN> [<PATTERN_OPTIONS>]`
+
+Regular expression for file or directory name\.
+
+##### `[--no-recurse]`
 
 Do not search subdirectories\.
 
-**`[-o|--output] <OUTPUT_OPTIONS>`**
+##### `[-o|--output] <PATH> [<OUTPUT_OPTIONS>]`
 
-Path to a file that should store output\. Syntax is \<PATH> \[\<OUTPUT\_OPTIONS>\]\. Allowed values are e\[ncoding\]=\<ENCODING>, v\[erbosity\]=\<VERBOSITY> and a\[ppend\]\.
+Path to a file that should store output\.
 
-**`[--paths] <PATH>`**
+##### `[--paths] <PATH>`
 
 Path to one or more files and/or directories that should be searched\.
 
-**`[--paths-from] <FILE_PATH>`**
+##### `[--paths-from] <FILE_PATH>`
 
 Read the list of paths to search from a file\. Paths should be separated by newlines\.
 
-**`[--progress]`**
+##### `[--progress]`
 
 Display dot \(\.\) for every hundredth searched file or directory\.
 
-**`[-p|--properties] <FILE_PROPERTIES>`**
+##### `[-p|--properties] <FILE_PROPERTIES>`
 
-A filter for file properties\. Allowed values are c\[reation\-\]t\[ime\], m\[odified\-\]t\[ime\] and s\[ize\]=\<NUM>\.
+A filter for file properties\.
 
-**`[-s|--sort] <SORT_OPTIONS>`**
+[\<FILE_PROPERTIES>](OptionValues.md#file_properties): `c[reation-]t[ime]`, `m[odified-]t[ime]`, `s[ize]=<NUM>`\.
 
-Sort matched files and directories\. Allowed values are a\[scending\], c\[reation\-\]t\[ime\], d\[escending\], m\[ax\-count\]=\<NUM>, m\[odified\-\]t\[ime\], n\[ame\] and s\[ize\]\.
+##### `[-s|--sort] <SORT_OPTIONS>`
 
-**`--target <DIRECTORY_PATH>`**
+Sort matched files and directories\.
+
+[\<SORT_OPTIONS>](OptionValues.md#sort_options): `a[scending]`, `c[reation-]t[ime]`, `d[escending]`, `m[ax-count]=<NUM>`, `m[odified-]t[ime]`, `n[ame]`, `s[ize]`\.
+
+##### `--target <DIRECTORY_PATH>`
 
 A directory to copy files and directories to\.
 
-**`[-v|--verbosity] <VERBOSITY>`**
+##### `[-v|--verbosity] <VERBOSITY>`
 
-The amount of information to display in the log\. Allowed values are q\[uiet\], m\[inimal\], n\[ormal\], d\[etailed\] and di\[agnostic\]\.
+The amount of information to display in the log\.
 
-## Use Redirected Input
+[\<VERBOSITY>](OptionValues.md#verbosity): `q[uiet]`, `m[inimal]`, `n[ormal]`, `d[etailed]`, `di[agnostic]`\.
 
-Piped output from a previous command will be treated as a list of paths separated by newlines.
+## Redirected/Piped Input
+
+Redirected/piped input will be used as a list of paths separated with newlines.
 
 ## Samples
 

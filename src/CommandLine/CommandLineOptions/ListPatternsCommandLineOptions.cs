@@ -11,7 +11,7 @@ namespace Orang.CommandLine
 {
     [Verb("list-patterns", HelpText = "Lists regular expression patterns.")]
     [CommandGroup("Regex", 2)]
-    internal sealed class ListPatternsCommandLineOptions : CommonListCommandLineOptions
+    internal sealed class ListPatternsCommandLineOptions : AbstractCommandLineOptions
     {
         [Value(
             index: 0,
@@ -20,6 +20,13 @@ namespace Orang.CommandLine
                 + "For a number literal use escape like \\1.",
             MetaName = ArgumentMetaNames.Char)]
         public string Value { get; set; } = null!;
+
+        [Option(
+            shortName: OptionShortNames.Filter,
+            longName: OptionNames.Filter,
+            HelpText = "Regular expression to filter patterns (case-insensitive by default).",
+            MetaValue = MetaValues.Regex)]
+        public IEnumerable<string> Filter { get; set; } = null!;
 
         [Option(
             longName: OptionNames.CharGroup,
@@ -42,13 +49,6 @@ namespace Orang.CommandLine
 
         public bool TryParse(ListPatternsCommandOptions options)
         {
-            var baseOptions = (CommonListCommandOptions)options;
-
-            if (!TryParse(baseOptions))
-                return false;
-
-            options = (ListPatternsCommandOptions)baseOptions;
-
             char? value = null;
 
             if (Value != null)
@@ -77,6 +77,18 @@ namespace Orang.CommandLine
                 return false;
             }
 
+            if (!FilterParser.TryParse(
+                Filter,
+                OptionNames.Filter,
+                OptionValueProviders.PatternOptions_List_Provider,
+                out Filter? filter,
+                includedPatternOptions: PatternOptions.IgnoreCase,
+                allowNull: true))
+            {
+                return false;
+            }
+
+            options.Filter = filter;
             options.Value = value;
             options.RegexOptions = regexOptions;
             options.InCharGroup = CharGroup;

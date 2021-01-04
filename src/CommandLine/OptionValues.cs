@@ -41,13 +41,15 @@ namespace Orang.CommandLine
         public static readonly SimpleOptionValue HighlightOptions_EmptySplit = SimpleOptionValue.Create(HighlightOptions.EmptySplit, shortValue: "es", helpValue: "e[mpty-]s[plit]", description: "Highlight split value that is empty string.");
         public static readonly SimpleOptionValue HighlightOptions_Linefeed = SimpleOptionValue.Create(HighlightOptions.Linefeed, shortValue: "lf", helpValue: "l[ine]f[eed]", description: "Highlight linefeed character.");
         public static readonly SimpleOptionValue HighlightOptions_Match = SimpleOptionValue.Create(HighlightOptions.Match, description: "Highlight match value.");
-        public static readonly SimpleOptionValue HighlightOptions_NewLine = SimpleOptionValue.Create(HighlightOptions.NewLine, shortValue: "nl", helpValue: "n[ew-]l[ine]", description: "Highlight carriage return and linefeed characters.");
+        public static readonly SimpleOptionValue HighlightOptions_Newline = SimpleOptionValue.Create(HighlightOptions.Newline, shortValue: "", description: "Highlight carriage return and linefeed characters.");
         public static readonly SimpleOptionValue HighlightOptions_None = SimpleOptionValue.Create(HighlightOptions.None, description: "No highlighting.");
         public static readonly SimpleOptionValue HighlightOptions_Replacement = SimpleOptionValue.Create(HighlightOptions.Replacement, description: "Highlight replacement value.");
         public static readonly SimpleOptionValue HighlightOptions_Space = SimpleOptionValue.Create(HighlightOptions.Space, shortValue: "", description: "Highlight space character.");
         public static readonly SimpleOptionValue HighlightOptions_Split = SimpleOptionValue.Create(HighlightOptions.Split, description: "Highlight split value.");
         public static readonly SimpleOptionValue HighlightOptions_Tab = SimpleOptionValue.Create(HighlightOptions.Tab, description: "Highlight tab character.");
 
+        public static readonly SimpleOptionValue ModifyFlags_Aggregate = SimpleOptionValue.Create(ModifyFlags.Aggregate, shortValue: "ag", description: "Display list of all values at the end of search.");
+        public static readonly SimpleOptionValue ModifyFlags_AggregateOnly = SimpleOptionValue.Create(ModifyFlags.AggregateOnly, shortValue: "o", description: "Display only list of all values at the end of search.");
         public static readonly SimpleOptionValue ModifyFlags_Except = SimpleOptionValue.Create(ModifyFlags.Except, shortValue: "", description: "Return values from first file except values from second file.");
         public static readonly SimpleOptionValue ModifyFlags_Intersect = SimpleOptionValue.Create(ModifyFlags.Intersect, shortValue: "", description: "Return values that were found in all files.");
         public static readonly SimpleOptionValue ModifyFlags_Group = SimpleOptionValue.Create(ModifyFlags.Group, shortValue: "", description: "Group matching files by matched values.");
@@ -96,9 +98,9 @@ namespace Orang.CommandLine
             description: "<REPLACEMENT> is a path to a method in DLL file. "
                 + "The format is 'DllPath,FullTypeName.MethodName'.");
 
-        public static readonly KeyValuePairOptionValue Display_Context = KeyValuePairOptionValue.Create("context", "<NUM>", shortKey: "t", description: "A number of lines to display before and after matching line.");
-        public static readonly KeyValuePairOptionValue Display_ContextBefore = KeyValuePairOptionValue.Create("context-before", "<NUM>", shortKey: "tb", description: "A number of lines to display before matching line.");
-        public static readonly KeyValuePairOptionValue Display_ContextAfter = KeyValuePairOptionValue.Create("context-after", "<NUM>", shortKey: "ta", description: "A number of lines to display after matching line.");
+        public static readonly KeyValuePairOptionValue Display_Context = KeyValuePairOptionValue.Create("context", "<NUM>", shortKey: "co", description: "A number of lines to display before and after matching line.");
+        public static readonly KeyValuePairOptionValue Display_ContextBefore = KeyValuePairOptionValue.Create("context-before", "<NUM>", shortKey: "b", description: "A number of lines to display before matching line.");
+        public static readonly KeyValuePairOptionValue Display_ContextAfter = KeyValuePairOptionValue.Create("context-after", "<NUM>", shortKey: "a", description: "A number of lines to display after matching line.");
         public static readonly KeyValuePairOptionValue Display_Content = KeyValuePairOptionValue.Create("content", MetaValues.ContentDisplay, shortKey: "c");
         public static readonly KeyValuePairOptionValue Display_Indent = KeyValuePairOptionValue.Create("indent", "<INDENT>", shortKey: "", description: "Indentation for a list of results. Default indentation are 2 spaces.");
         public static readonly KeyValuePairOptionValue Display_Path = KeyValuePairOptionValue.Create("path", MetaValues.PathDisplay, shortKey: "p");

@@ -6,13 +6,15 @@ using Orang.Syntax;
 
 namespace Orang.CommandLine
 {
-    internal sealed class ListPatternsCommandOptions : CommonListCommandOptions
+    internal sealed class ListPatternsCommandOptions : AbstractCommandOptions
     {
         internal ListPatternsCommandOptions()
         {
         }
 
         public char? Value { get; internal set; }
+
+        public Filter? Filter { get; internal set; }
 
         public bool InCharGroup { get; internal set; }
 

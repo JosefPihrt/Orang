@@ -67,9 +67,8 @@ namespace Orang.CommandLine
 
             options = (DeleteCommandOptions)baseOptions;
 
-            if (!TryParseAsEnumFlags(
+            if (!TryParseHighlightOptions(
                 Highlight,
-                OptionNames.Highlight,
                 out HighlightOptions highlightOptions,
                 defaultValue: HighlightOptions.Default,
                 provider: OptionValueProviders.DeleteHighlightOptionsProvider))

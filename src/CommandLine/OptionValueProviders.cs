@@ -265,14 +265,8 @@ namespace Orang.CommandLine
 
         public static OptionValueProvider ModifyFlagsProvider { get; } = new OptionValueProvider(
             MetaValues.ModifyOptions,
-            SimpleOptionValue.Create(
-                ModifyFlags.Aggregate,
-                shortValue: "ag",
-                description: "Display list of all values at the end of search."),
-            SimpleOptionValue.Create(
-                ModifyFlags.AggregateOnly,
-                shortValue: "ao",
-                description: "Display only list of all values at the end of search."),
+            OptionValues.ModifyFlags_Aggregate,
+            OptionValues.ModifyFlags_AggregateOnly,
             SimpleOptionValue.Create(ModifyFlags.Ascending, description: "Sort values in an ascending order."),
             SimpleOptionValue.Create(
                 ModifyFlags.CultureInvariant,
@@ -314,7 +308,7 @@ namespace Orang.CommandLine
             OptionValues.HighlightOptions_Tab,
             OptionValues.HighlightOptions_CarriageReturn,
             OptionValues.HighlightOptions_Linefeed,
-            OptionValues.HighlightOptions_NewLine,
+            OptionValues.HighlightOptions_Newline,
             OptionValues.HighlightOptions_Space
         );
 
@@ -557,7 +551,7 @@ namespace Orang.CommandLine
 
         public static OptionValueProvider PipeMode { get; } = new OptionValueProvider(
             MetaValues.PipeMode,
-            SimpleOptionValue.Create(CommandLine.PipeMode.Text, description: "Use redirected input as a text to be searched (default)."),
+            SimpleOptionValue.Create(CommandLine.PipeMode.Text, description: "Use redirected input as a text to be searched."),
             SimpleOptionValue.Create(CommandLine.PipeMode.Paths, description: "Use redirected input as a list of paths separated with newlines."));
 
         public static ImmutableDictionary<string, OptionValueProvider> ProvidersByName

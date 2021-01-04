@@ -2,12 +2,16 @@
 
 Displays help\.
 
+[Home](README.md#readme) &#x2022; [Synopsis](#Synopsis) &#x2022; [Arguments](#Arguments) &#x2022; [Options](#Options) &#x2022; [Samples](#Samples)
+
 ## Synopsis
 
 ```
 orang help [<COMMAND>]
-[-f|--filter]    <REGEX>
+[-f|--filter]    <PATTERN> [<PATTERN_OPTIONS>]
+[-h|--help]
 [-m|--manual]
+[-o|--online]
 [-v|--verbosity] <VERBOSITY>
 ```
 
@@ -19,17 +23,29 @@ Command name\.
 
 ## Options
 
-**`[-f|--filter] <REGEX>`**
+##### `[-f|--filter] <PATTERN> [<PATTERN_OPTIONS>]`
 
-Regular expression for filtering help text\. Syntax is \<PATTERN> \[\<PATTERN\_OPTIONS>\]\. Allowed values are compiled, c\[ulture\-\]i\[nvariant\], e\[cma\-\]s\[cript\], e\[nds\-\]w\[ith\], e\[quals\], n \[explicit\-capture\], f\[rom\-file\], g\[roup\]=\<GROUP\_NAME>, i\[gnore\-case\], x \[ignore\-pattern\-whitespace\], li\[st\], length=\<NUM>, l\[ist\-\]s\[eparator\], l\[iteral\], m\[ultiline\], r\[ight\-to\-left\], s\[ingleline\], s\[tarts\-\]w\[ith\], timeout=\<NUM>, w\[hole\-\]l\[ine\] and w\[hole\-word\]\.
+Regular expression to filter results\.
 
-**`[-m|--manual]`**
+[PatternOptions_List](OptionValues.md#patternoptions_list): `c[ase-]s[ensitive]`, `compiled`, `c[ulture-]i[nvariant]`, `e[cma-]s[cript]`, `n [explicit-capture]`, `f[rom-file]`, `g[roup]=<GROUP_NAME>`, `x [ignore-pattern-whitespace]`, `li[st]`, `l[ist-]s[eparator]`, `l[iteral]`, `m[ultiline]`, `ne[gative]`, `r[ight-to-left]`, `s[ingleline]`, `timeout=<NUM>`, `w[hole-]l[ine]`\.
+
+##### `[-h|--help]`
+
+Show command line help\.
+
+##### `[-m|--manual]`
 
 Display full manual\.
 
-**`[-v|--verbosity] <VERBOSITY>`**
+##### `[-o|--online]`
 
-The amount of information to display in the log\. Allowed values are q\[uiet\], m\[inimal\], n\[ormal\], d\[etailed\] and di\[agnostic\]\.
+Launch online help in a default browser\.
+
+##### `[-v|--verbosity] <VERBOSITY>`
+
+The amount of information to display in the log\.
+
+[\<VERBOSITY>](OptionValues.md#verbosity): `q[uiet]`, `m[inimal]`, `n[ormal]`, `d[etailed]`, `di[agnostic]`\.
 
 
 *\(Generated with [DotMarkdown](http://github.com/JosefPihrt/DotMarkdown)\)*

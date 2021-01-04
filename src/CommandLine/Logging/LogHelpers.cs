@@ -13,6 +13,12 @@ namespace Orang.CommandLine
 {
     internal static class LogHelpers
     {
+        public static void WriteObsoleteWarning(string message)
+        {
+            WriteWarning(message);
+            ConsoleHelpers.WaitForKeyPress();
+        }
+
         public static void WriteFilePathEnd(int count, MaxReason maxReason, bool includeCount)
         {
             Verbosity verbosity = ConsoleOut.Verbosity;

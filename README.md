@@ -32,7 +32,7 @@ To update Orang run:
 dotnet tool update -g orang.dotnet.cli
 ```
 
-Note: Orang requires [.NET Core Runtime](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) 3.0 or higher.
+Note: Orang requires [.NET Core Runtime](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) 3.1 or higher.
 
 ## How to Use
 
@@ -72,6 +72,10 @@ orang list-patterns
 ```
 
 ## Features
+
+### Matches Across Multiple Lines
+
+Orang supports matches across multiple lines.
 
 ### Dry Run
 

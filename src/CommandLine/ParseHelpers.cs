@@ -18,6 +18,50 @@ namespace Orang.CommandLine
 {
     internal static class ParseHelpers
     {
+        public static bool TryParseHighlightOptions(
+            IEnumerable<string> values,
+            out HighlightOptions highlightOptions,
+            HighlightOptions? defaultValue = null,
+            OptionValueProvider? provider = null)
+        {
+            if (values.Any())
+            {
+                string[] arr = values.ToArray();
+
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    switch (arr[i])
+                    {
+                        case "new-line":
+                            {
+                                LogHelpers.WriteObsoleteWarning($"Value '{arr[i]}' is obsolete. "
+                                    + $"Use value '{OptionValues.HighlightOptions_Newline.HelpValue}' instead.");
+
+                                arr[i] = OptionValues.HighlightOptions_Newline.Value;
+                                break;
+                            }
+                        case "nl":
+                            {
+                                LogHelpers.WriteObsoleteWarning($"Value '{arr[i]}' is obsolete. "
+                                    + $"Use value '{OptionValues.HighlightOptions_Newline.HelpValue}' instead.");
+
+                                arr[i] = OptionValues.HighlightOptions_Newline.Value;
+                                break;
+                            }
+                    }
+                }
+
+                values = arr;
+            }
+
+            return TryParseAsEnumFlags(
+                values,
+                OptionNames.Highlight,
+                out highlightOptions,
+                defaultValue: defaultValue,
+                provider: provider ?? OptionValueProviders.HighlightOptionsProvider);
+        }
+
         public static bool TryParseFileProperties(
             IEnumerable<string> values,
             string optionName,
@@ -120,7 +164,7 @@ namespace Orang.CommandLine
 
                     if (OptionValues.MaxCount.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseCount(value2, out maxCount, value))
+                        if (!TryParseCount(value2, OptionNames.Sort, out maxCount, value))
                             return false;
                     }
                     else
@@ -247,7 +291,17 @@ namespace Orang.CommandLine
                 }
                 else
                 {
-                    (options ??= new List<string>()).Add(value);
+                    string value2 = value;
+
+                    if (value2 == "ao")
+                    {
+                        LogHelpers.WriteObsoleteWarning(
+                            $"Value '{value2}' is obsolete. Use value '{OptionValues.ModifyFlags_AggregateOnly.HelpValue}' instead.");
+
+                        value2 = OptionValues.ModifyFlags_AggregateOnly.ShortValue;
+                    }
+
+                    (options ??= new List<string>()).Add(value2);
                 }
             }
 
@@ -491,6 +545,28 @@ namespace Orang.CommandLine
                     string key = value.Substring(0, index);
                     string value2 = value.Substring(index + 1);
 
+                    if (key == "t")
+                    {
+                        LogHelpers.WriteObsoleteWarning($"Value '{key}' is obsolete. "
+                            + $"Use value '{OptionValues.Display_Context.HelpValue}' instead.");
+
+                        key = OptionValues.Display_Context.ShortKey;
+                    }
+                    else if (key == "ta")
+                    {
+                        LogHelpers.WriteObsoleteWarning($"Value '{key}' is obsolete. "
+                            + $"Use value '{OptionValues.Display_ContextAfter.HelpValue}' instead.");
+
+                        key = OptionValues.Display_ContextAfter.ShortKey;
+                    }
+                    else if (key == "tb")
+                    {
+                        LogHelpers.WriteObsoleteWarning($"Value '{key}' is obsolete. "
+                            + $"Use value '{OptionValues.Display_ContextBefore.HelpValue}' instead.");
+
+                        key = OptionValues.Display_ContextBefore.ShortKey;
+                    }
+
                     if (OptionValues.Display_Content.IsKeyOrShortKey(key))
                     {
                         if (!TryParseAsEnum(
@@ -527,21 +603,21 @@ namespace Orang.CommandLine
                     }
                     else if (OptionValues.Display_Context.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseCount(value2, out int count, value))
+                        if (!TryParseCount(value2, OptionNames.Display, out int count, value))
                             return false;
 
                         lineContext = new LineContext(count);
                     }
                     else if (OptionValues.Display_ContextBefore.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseCount(value2, out int before, value))
+                        if (!TryParseCount(value2, OptionNames.Display, out int before, value))
                             return false;
 
                         lineContext = lineContext.WithBefore(before);
                     }
                     else if (OptionValues.Display_ContextAfter.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseCount(value2, out int after, value))
+                        if (!TryParseCount(value2, OptionNames.Display, out int after, value))
                             return false;
 
                         lineContext = lineContext.WithAfter(after);
@@ -924,7 +1000,7 @@ namespace Orang.CommandLine
 
                     if (OptionValues.MaxMatches.IsKeyOrShortKey(key))
                     {
-                        if (!TryParseCount(value2, out maxMatchesInFile, value))
+                        if (!TryParseCount(value2, OptionNames.MaxCount, out maxMatchesInFile, value))
                             return false;
                     }
                     else
@@ -933,7 +1009,7 @@ namespace Orang.CommandLine
                         return false;
                     }
                 }
-                else if (!TryParseCount(value, out maxMatchingFiles))
+                else if (!TryParseCount(value, OptionNames.MaxCount, out maxMatchingFiles))
                 {
                     return false;
                 }
@@ -942,12 +1018,12 @@ namespace Orang.CommandLine
             return true;
         }
 
-        private static bool TryParseCount(string value, out int count, string? value2 = null)
+        private static bool TryParseCount(string value, string optionName, out int count, string? value2 = null)
         {
             if (int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out count))
                 return true;
 
-            WriteError($"Option '{OptionNames.GetHelpText(OptionNames.MaxCount)}' has invalid value '{value2 ?? value}'.");
+            WriteError($"Option '{OptionNames.GetHelpText(optionName)}' has invalid value '{value2 ?? value}'.");
             return false;
         }
 

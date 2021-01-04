@@ -2,12 +2,8 @@
 
 namespace Orang.CommandLine
 {
-    internal abstract class CommonListCommandOptions : AbstractCommandOptions
+    internal static class PackageInfo
     {
-        internal CommonListCommandOptions()
-        {
-        }
-
-        public Filter? Filter { get; internal set; }
+        public const string Version = "0.2.0-rc";
     }
 }

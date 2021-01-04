@@ -2,6 +2,8 @@
 
 Deletes files and directories\.
 
+[Home](README.md#readme) &#x2022; [Synopsis](#Synopsis) &#x2022; [Arguments](#Arguments) &#x2022; [Options](#Options) &#x2022; [Samples](#Samples)
+
 ## Synopsis
 
 ```
@@ -9,20 +11,20 @@ orang delete [<PATH>]
 [   --ask]
 [-a|--attributes]         <ATTRIBUTES>
 [-b|--attributes-to-skip] <ATTRIBUTES>
-[-c|--content]            <REGEX>
+[-c|--content]            <PATTERN> [<PATTERN_OPTIONS>]
 [   --content-only]
 [-y|--display]            <DISPLAY_OPTIONS>
 [-d|--dry-run]
 [   --encoding]           <ENCODING>
-[-e|--extension]          <EXTENSION_FILTER>
+[-e|--extension]          EXT1[,EXT2] [<EXTENSION_OPTIONS>]
 [-h|--help]
 [-t|--highlight]          <HIGHLIGHT>
-[-i|--include-directory]  <REGEX>
+[-i|--include-directory]  <PATTERN> [<PATTERN_OPTIONS>]
 [   --including-bom]
 [-m|--max-count]          <NUM>
-[-n|--name]               <REGEX>
+[-n|--name]               <PATTERN> [<PATTERN_OPTIONS>]
 [   --no-recurse]
-[-o|--output]             <OUTPUT_OPTIONS>
+[-o|--output]             <PATH> [<OUTPUT_OPTIONS>]
 [   --paths]              <PATH>
 [   --paths-from]         <FILE_PATH>
 [   --progress]
@@ -39,101 +41,119 @@ Path to one or more files and/or directories that should be searched\.
 
 ## Options
 
-**`[--ask]`**
+##### `[--ask]`
 
 Ask for a permission to delete file or directory\.
 
-**`[-a|--attributes] <ATTRIBUTES>`**
+##### `[-a|--attributes] <ATTRIBUTES>`
 
-File attributes that are required\. Allowed values are archive, compressed, d\[irectory\], e\[mpty\], encrypted, f\[ile\], h\[idden\], normal, offline, r\[ead\-only\], r\[eparse\]\-p\[oint\], s\[ystem\] and temporary\.
+File attributes that are required\.
 
-**`[-b|--attributes-to-skip] <ATTRIBUTES>`**
+[\<ATTRIBUTES>](OptionValues.md#attributes): `archive`, `compressed`, `d[irectory]`, `e[mpty]`, `encrypted`, `f[ile]`, `h[idden]`, `normal`, `offline`, `r[ead-only]`, `r[eparse]-p[oint]`, `s[ystem]`, `temporary`\.
 
-File attributes that should be skipped\. Allowed values are archive, compressed, e\[mpty\], encrypted, h\[idden\], normal, offline, r\[ead\-only\], r\[eparse\]\-p\[oint\], s\[ystem\] and temporary\.
+##### `[-b|--attributes-to-skip] <ATTRIBUTES>`
 
-**`[-c|--content] <REGEX>`**
+File attributes that should be skipped\.
 
-Regular expression for files' content\. Syntax is \<PATTERN> \[\<PATTERN\_OPTIONS>\]\. Allowed values are compiled, c\[ulture\-\]i\[nvariant\], e\[cma\-\]s\[cript\], e\[nds\-\]w\[ith\], e\[quals\], n \[explicit\-capture\], f\[rom\-file\], g\[roup\]=\<GROUP\_NAME>, i\[gnore\-case\], x \[ignore\-pattern\-whitespace\], li\[st\], length=\<NUM>, l\[ist\-\]s\[eparator\], l\[iteral\], m\[ultiline\], ne\[gative\], r\[ight\-to\-left\], s\[ingleline\], s\[tarts\-\]w\[ith\], timeout=\<NUM>, w\[hole\-\]l\[ine\] and w\[hole\-word\]\.
+[\<ATTRIBUTES>](OptionValues.md#attributes): `archive`, `compressed`, `e[mpty]`, `encrypted`, `h[idden]`, `normal`, `offline`, `r[ead-only]`, `r[eparse]-p[oint]`, `s[ystem]`, `temporary`\.
 
-**`[--content-only]`**
+##### `[-c|--content] <PATTERN> [<PATTERN_OPTIONS>]`
+
+Regular expression for files' content\.
+
+[\<PATTERN_OPTIONS>](OptionValues.md#pattern_options): `compiled`, `c[ulture-]i[nvariant]`, `e[cma-]s[cript]`, `e[nds-]w[ith]`, `e[quals]`, `n [explicit-capture]`, `f[rom-file]`, `g[roup]=<GROUP_NAME>`, `i[gnore-case]`, `x [ignore-pattern-whitespace]`, `li[st]`, `length=<NUM>`, `l[ist-]s[eparator]`, `l[iteral]`, `m[ultiline]`, `ne[gative]`, `r[ight-to-left]`, `s[ingleline]`, `s[tarts-]w[ith]`, `timeout=<NUM>`, `w[hole-]l[ine]`, `w[hole-word]`\.
+
+##### `[--content-only]`
 
 Delete content of a file or directory but not the file or directory itself\.
 
-**`[-y|--display] <DISPLAY_OPTIONS>`**
+##### `[-y|--display] <DISPLAY_OPTIONS>`
 
-Display of the results\. Allowed values are c\[reation\-\]t\[ime\], indent=\<INDENT>, m\[odified\-\]t\[ime\], no\-align, p\[ath\]=\<PATH\_DISPLAY>, s\[ize\], s\[eparator\]=\<SEPARATOR> and su\[mmary\]\.
+Display of the results\.
 
-**`[-d|--dry-run]`**
+[\<DISPLAY_OPTIONS>](OptionValues.md#display_options): `c[reation-]t[ime]`, `indent=<INDENT>`, `m[odified-]t[ime]`, `no-align`, `p[ath]=`[\<PATH_DISPLAY>](OptionValues.md#path_display), `s[ize]`, `s[eparator]=<SEPARATOR>`, `su[mmary]`\.
 
-Display which files or directories should be deleted but do not actually delete any file or directory\.
+##### `[-d|--dry-run]`
 
-**`[--encoding] <ENCODING>`**
+Display which files/directories should be deleted but do not actually delete any file/directory\.
 
-Encoding to use when a file does not contain byte order mark\. Default encoding is UTF\-8\.
+##### `[--encoding] <ENCODING>`
 
-**`[-e|--extension] <EXTENSION_FILTER>`**
+Encoding to use when a file does not contain BOM\. Default encoding is UTF\-8\.
 
-A filter for file extensions \(case\-insensitive by default\)\. Syntax is EXT1\[,EXT2,\.\.\.\] \[\<EXTENSION\_OPTIONS>\]\. Allowed values are c\[ase\-\]s\[ensitive\], c\[ulture\-\]i\[nvariant\], f\[rom\-file\], l\[ist\-\]s\[eparator\], l\[iteral\], ne\[gative\] and timeout=\<NUM>\.
+##### `[-e|--extension] EXT1[,EXT2] [<EXTENSION_OPTIONS>]`
 
-**`[-h|--help]`**
+A filter for file extensions \(case\-insensitive by default\)\.
+
+[\<EXTENSION_OPTIONS>](OptionValues.md#extension_options): `c[ase-]s[ensitive]`, `c[ulture-]i[nvariant]`, `f[rom-file]`, `l[ist-]s[eparator]`, `l[iteral]`, `ne[gative]`, `timeout=<NUM>`\.
+
+##### `[-h|--help]`
 
 Show command line help\.
 
-**`[-t|--highlight] <HIGHLIGHT>`**
+##### `[-t|--highlight] <HIGHLIGHT>`
 
-Parts of the output to highlight\. Allowed values are n\[one\], m\[atch\] and e\[mpty\]\.
+Parts of the output to highlight\.
 
-**`[-i|--include-directory] <REGEX>`**
+[\<HIGHLIGHT>](OptionValues.md#highlight): `n[one]`, `m[atch]`, `e[mpty]`\.
 
-Regular expression for a directory name\. Syntax is \<PATTERN> \[\<PATTERN\_OPTIONS>\]\. Allowed values are compiled, c\[ulture\-\]i\[nvariant\], e\[cma\-\]s\[cript\], e\[nds\-\]w\[ith\], e\[quals\], n \[explicit\-capture\], f\[rom\-file\], g\[roup\]=\<GROUP\_NAME>, i\[gnore\-case\], x \[ignore\-pattern\-whitespace\], li\[st\], length=\<NUM>, l\[ist\-\]s\[eparator\], l\[iteral\], m\[ultiline\], ne\[gative\], p\[art\]=\<NAME\_PART>, r\[ight\-to\-left\], s\[ingleline\], s\[tarts\-\]w\[ith\], timeout=\<NUM>, w\[hole\-\]l\[ine\] and w\[hole\-word\]\.
+##### `[-i|--include-directory] <PATTERN> [<PATTERN_OPTIONS>]`
 
-**`[--including-bom]`**
+Regular expression for a directory name\.
+
+##### `[--including-bom]`
 
 Delete byte order mark \(BOM\) when deleting file's content\.
 
-**`[-m|--max-count] <NUM>`**
+##### `[-m|--max-count] <NUM>`
 
 Stop deleting after specified number is reached\.
 
-**`[-n|--name] <REGEX>`**
+##### `[-n|--name] <PATTERN> [<PATTERN_OPTIONS>]`
 
-Regular expression for file or directory name\. Syntax is \<PATTERN> \[\<PATTERN\_OPTIONS>\]\. Allowed values are compiled, c\[ulture\-\]i\[nvariant\], e\[cma\-\]s\[cript\], e\[nds\-\]w\[ith\], e\[quals\], n \[explicit\-capture\], f\[rom\-file\], g\[roup\]=\<GROUP\_NAME>, i\[gnore\-case\], x \[ignore\-pattern\-whitespace\], li\[st\], length=\<NUM>, l\[ist\-\]s\[eparator\], l\[iteral\], m\[ultiline\], ne\[gative\], p\[art\]=\<NAME\_PART>, r\[ight\-to\-left\], s\[ingleline\], s\[tarts\-\]w\[ith\], timeout=\<NUM>, w\[hole\-\]l\[ine\] and w\[hole\-word\]\.
+Regular expression for file or directory name\.
 
-**`[--no-recurse]`**
+##### `[--no-recurse]`
 
 Do not search subdirectories\.
 
-**`[-o|--output] <OUTPUT_OPTIONS>`**
+##### `[-o|--output] <PATH> [<OUTPUT_OPTIONS>]`
 
-Path to a file that should store output\. Syntax is \<PATH> \[\<OUTPUT\_OPTIONS>\]\. Allowed values are e\[ncoding\]=\<ENCODING>, v\[erbosity\]=\<VERBOSITY> and a\[ppend\]\.
+Path to a file that should store output\.
 
-**`[--paths] <PATH>`**
+##### `[--paths] <PATH>`
 
 Path to one or more files and/or directories that should be searched\.
 
-**`[--paths-from] <FILE_PATH>`**
+##### `[--paths-from] <FILE_PATH>`
 
 Read the list of paths to search from a file\. Paths should be separated by newlines\.
 
-**`[--progress]`**
+##### `[--progress]`
 
 Display dot \(\.\) for every hundredth searched file or directory\.
 
-**`[-p|--properties] <FILE_PROPERTIES>`**
+##### `[-p|--properties] <FILE_PROPERTIES>`
 
-A filter for file properties\. Allowed values are c\[reation\-\]t\[ime\], m\[odified\-\]t\[ime\] and s\[ize\]=\<NUM>\.
+A filter for file properties\.
 
-**`[-s|--sort] <SORT_OPTIONS>`**
+[\<FILE_PROPERTIES>](OptionValues.md#file_properties): `c[reation-]t[ime]`, `m[odified-]t[ime]`, `s[ize]=<NUM>`\.
 
-Sort matched files and directories\. Allowed values are a\[scending\], c\[reation\-\]t\[ime\], d\[escending\], m\[ax\-count\]=\<NUM>, m\[odified\-\]t\[ime\], n\[ame\] and s\[ize\]\.
+##### `[-s|--sort] <SORT_OPTIONS>`
 
-**`[-v|--verbosity] <VERBOSITY>`**
+Sort matched files and directories\.
 
-The amount of information to display in the log\. Allowed values are q\[uiet\], m\[inimal\], n\[ormal\], d\[etailed\] and di\[agnostic\]\.
+[\<SORT_OPTIONS>](OptionValues.md#sort_options): `a[scending]`, `c[reation-]t[ime]`, `d[escending]`, `m[ax-count]=<NUM>`, `m[odified-]t[ime]`, `n[ame]`, `s[ize]`\.
 
-## Use Redirected Input
+##### `[-v|--verbosity] <VERBOSITY>`
 
-Piped output from a previous command will be treated as a list of paths separated by newlines.
+The amount of information to display in the log\.
+
+[\<VERBOSITY>](OptionValues.md#verbosity): `q[uiet]`, `m[inimal]`, `n[ormal]`, `d[etailed]`, `di[agnostic]`\.
+
+## Redirected/Piped Input
+
+Redirected/piped input will be used as a list of paths separated with newlines.
 
 ## Samples
 

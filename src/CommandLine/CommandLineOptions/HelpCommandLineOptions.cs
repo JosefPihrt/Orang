@@ -7,7 +7,7 @@ namespace Orang.CommandLine
 {
     [Verb("help", HelpText = "Displays help.")]
     [OptionValueProvider(nameof(Filter), OptionValueProviderNames.PatternOptions_List)]
-    [CommandGroup("Main", 0)]
+    [CommandGroup("Other", 3)]
     internal sealed class HelpCommandLineOptions : AbstractCommandLineOptions
     {
         [Value(

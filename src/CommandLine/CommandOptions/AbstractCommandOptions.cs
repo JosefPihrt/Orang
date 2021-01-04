@@ -12,8 +12,8 @@ namespace Orang.CommandLine
             WriteDiagnosticCore();
             DiagnosticWriter.WriteEnd();
 #if DEBUG
-            Console.WriteLine("Press any key to continue...");
-            Console.Read();
+            if (Logger.ConsoleOut.Verbosity == Verbosity.Diagnostic)
+                ConsoleHelpers.WaitForKeyPress();
 #endif
         }
 

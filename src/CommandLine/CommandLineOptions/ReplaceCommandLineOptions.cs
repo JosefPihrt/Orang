@@ -127,9 +127,8 @@ namespace Orang.CommandLine
             if (!TryParseProperties(Ask, Name, options))
                 return false;
 
-            if (!TryParseAsEnumFlags(
+            if (!TryParseHighlightOptions(
                 Highlight,
-                OptionNames.Highlight,
                 out HighlightOptions highlightOptions,
                 defaultValue: HighlightOptions.Replacement,
                 provider: OptionValueProviders.ReplaceHighlightOptionsProvider))
@@ -152,8 +151,9 @@ namespace Orang.CommandLine
             if (matchEvaluator == null
                 && Evaluator != null)
             {
-                WriteWarning($"Option '{OptionNames.GetHelpText(OptionNames.Evaluator)}' is obsolete. "
-                    + $"Use option '{OptionNames.GetHelpText(OptionNames.Replacement)}' instead.");
+                LogHelpers.WriteObsoleteWarning(
+                    $"Option '{OptionNames.GetHelpText(OptionNames.Evaluator)}' is obsolete. "
+                        + $"Use option '{OptionNames.GetHelpText(OptionNames.Replacement)}' instead.");
 
                 if (!DelegateFactory.TryCreateFromAssembly(Evaluator, typeof(string), typeof(Match), out matchEvaluator))
                     return false;

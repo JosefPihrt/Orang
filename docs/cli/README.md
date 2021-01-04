@@ -1,20 +1,23 @@
-﻿# Orang Command\-Line Interface
+﻿# Orang Command\-Line Interface <img align="left" src="../../images/icon48.png">
 
 Search, replace, rename and delete files and its content using the power of \.NET regular expressions\.
 
 ## Commands
 
-* [copy](copy-command.md)
-* [delete](delete-command.md)
-* [escape](escape-command.md)
-* [find](find-command.md)
-* [help](help-command.md)
-* [list-patterns](list-patterns-command.md)
-* [match](match-command.md)
-* [move](move-command.md)
-* [rename](rename-command.md)
-* [replace](replace-command.md)
-* [split](split-command.md)
+| Command                                   | Description                                                                                           |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| [copy](copy-command.md)                   | Searches the file system for files and directories and copy them to a destination directory\.         |
+| [delete](delete-command.md)               | Deletes files and directories\.                                                                       |
+| [escape](escape-command.md)               | Escapes special characters by replacing them with their escape codes\.                                |
+| [find](find-command.md)                   | Searches the file system for files and directories and optionally searches files' content\.           |
+| [help](help-command.md)                   | Displays help\.                                                                                       |
+| [list-patterns](list-patterns-command.md) | Lists regular expression patterns\.                                                                   |
+| [match](match-command.md)                 | Searches the input string for occurrences of the regular expression\.                                 |
+| [move](move-command.md)                   | Searches the file system for files and directories and move them to a destination directory\.         |
+| [rename](rename-command.md)               | Renames files and directories\.                                                                       |
+| [replace](replace-command.md)             | Searches the file system for files and replaces its content\.                                         |
+| [split](split-command.md)                 | Splits the input string into an list of substrings at the positions defined by a regular expression\. |
+
 
 ## Exit Code
 
@@ -24,9 +27,47 @@ Code | Comment
 1 | No match found
 2 | Error occured or execution canceled
 
+## Redirected/Piped Input
+
+Redirected/piped input will be used either as a raw text or as a list of paths separated with newlines.
+
+Command | Piped Input
+--- | ---
+[copy](copy-command.md) | list of paths
+[delete](delete-command.md) | list of paths
+[escape](escape-command.md) | text
+[find](find-command.md) | text (default) or list of paths when `--pipe p[aths]` is specified
+[match](match-command.md) | text
+[move](move-command.md) | list of paths
+[rename](rename-command.md) | list of paths
+[replace](replace-command.md) | text (default) or list of paths when `--pipe p[aths]` is specified
+[split](split-command.md) | text
+
+## Multi-value Parameters
+
+A lot of Orang parameters can have multiple values. Only shortcoming of this approach is that
+a user cannot specify argument (usually path(s)) as a last value of a command
+if the argument is preceded with multi-value parameter.
+
+Following command is invalid because path `C:/Documents` is treated as a value of multi-value parameter `-c | --content`.
+```
+orang find -c "^abc" i m "C:/Documents"
+```
+
+To fix this problem you can either add parameter `--paths`
+```
+orang find -c "abc" i m --paths "C:/Documents"
+```
+
+or you can specify path right after the command name:
+
+```
+orang find "C:/Documents" -c "abc" i m
+```
+
 ## Links
 
-* [List of Allowed Values](AllowedValues.md)
+* [List of Option Values](OptionValues.md)
 * [How To](HowTo.md)
 
 ## External Links
