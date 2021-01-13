@@ -26,14 +26,12 @@ namespace Orang.CommandLine
 
         public override bool CanUseResults => false;
 
-        protected override FileSystemSearch CreateSearch()
+        protected override void OnSearchCreating(FileSystemSearch search)
         {
-            FileSystemSearch search = base.CreateSearch();
-
             search.DisallowEnumeration = !Options.DryRun;
             search.MatchPartOnly = true;
 
-            return search;
+            base.OnSearchCreating(search);
         }
 
         protected override void ExecuteMatchCore(

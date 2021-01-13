@@ -13,13 +13,9 @@ namespace Orang.CommandLine
         {
         }
 
-        protected override FileSystemSearch CreateSearch()
+        protected override void OnSearchCreating(FileSystemSearch search)
         {
-            FileSystemSearch search = base.CreateSearch();
-
             search.CanRecurseMatch = false;
-
-            return search;
         }
 
         protected override void ExecuteMatchCore(

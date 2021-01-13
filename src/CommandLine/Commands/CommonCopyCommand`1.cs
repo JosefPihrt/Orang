@@ -26,17 +26,13 @@ namespace Orang.CommandLine
 
         protected HashSet<string>? IgnoredPaths { get; set; }
 
-        protected override FileSystemSearch CreateSearch()
+        protected override void OnSearchCreating(FileSystemSearch search)
         {
-            FileSystemSearch search = base.CreateSearch();
-
             if (Options.SearchTarget != SearchTarget.Files
                 && !Options.StructureOnly)
             {
                 search.CanRecurseMatch = false;
             }
-
-            return search;
         }
 
         protected abstract string GetQuestionText(bool isDirectory);

@@ -35,7 +35,11 @@ namespace Orang.CommandLine
 
         public virtual bool CanUseResults => true;
 
-        protected virtual FileSystemSearch CreateSearch()
+        protected virtual void OnSearchCreating(FileSystemSearch search)
+        {
+        }
+
+        private FileSystemSearch CreateSearch()
         {
             var filter = new FileSystemFilter(
                 name: Options.NameFilter,
@@ -61,11 +65,15 @@ namespace Orang.CommandLine
                 recurseSubdirectories: Options.RecurseSubdirectories,
                 defaultEncoding: Options.DefaultEncoding);
 
-            return new FileSystemSearch(
+            var search = new FileSystemSearch(
                 filter: filter,
                 directoryFilter: directoryFilter,
                 searchProgress: ProgressReporter,
                 options: options);
+
+            OnSearchCreating(search);
+
+            return search;
         }
 
         protected abstract void ExecuteDirectory(string directoryPath, SearchContext context);
