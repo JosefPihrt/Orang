@@ -47,13 +47,9 @@ namespace Orang.CommandLine
             return (isDirectory) ? "Sync directory?" : "Sync file?";
         }
 
-        protected override FileSystemSearch CreateSearch()
+        protected override void OnSearchCreating(FileSystemSearch search)
         {
-            FileSystemSearch search = base.CreateSearch();
-
             search.CanRecurseMatch = true;
-
-            return search;
         }
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
