@@ -6,8 +6,8 @@ using static Orang.CommandLine.ParseHelpers;
 
 namespace Orang.CommandLine
 {
-    //TODO: --allowed-time-diff <SECONDS>
     [Verb("sync", HelpText = "Synchronizes content of two directories.")]
+    [CommandGroup("File System", 1)]
     internal sealed class SyncCommandLineOptions : CommonCopyCommandLineOptions
     {
         [Option(

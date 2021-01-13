@@ -47,6 +47,15 @@ namespace Orang.CommandLine
             return (isDirectory) ? "Sync directory?" : "Sync file?";
         }
 
+        protected override FileSystemSearch CreateSearch()
+        {
+            FileSystemSearch search = base.CreateSearch();
+
+            search.CanRecurseMatch = true;
+
+            return search;
+        }
+
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
         {
             _destinationPaths = new HashSet<string>(FileSystemHelpers.Comparer);
