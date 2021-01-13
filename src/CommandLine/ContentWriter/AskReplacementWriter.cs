@@ -208,15 +208,21 @@ namespace Orang.CommandLine
 
             protected override void WriteStartMatch(CaptureInfo capture)
             {
-                Write(Options.Indent);
-
                 if (Options.IncludeLineNumber)
                 {
                     _lineNumber += TextHelpers.CountLines(Input, _solIndex, capture.Index - _solIndex);
                     ((LineNumberValueWriter)ValueWriter).LineNumber = _lineNumber;
-
-                    WriteLineNumber(_lineNumber);
                 }
+
+                _solIndex = FindStartOfLine(capture);
+
+                if (Options.ContextBefore > 0)
+                    WriteContextBefore(0, _solIndex, _lineNumber);
+
+                Write(Options.Indent);
+
+                if (Options.IncludeLineNumber)
+                    WriteLineNumber(_lineNumber);
 
                 if (capture.Index >= _eolIndex)
                 {
@@ -233,7 +239,6 @@ namespace Orang.CommandLine
                     }
                 }
 
-                _solIndex = FindStartOfLine(capture);
                 _eolIndex = FindEndOfLine(capture);
 
                 WriteStartLine(_solIndex, capture.Index);
@@ -251,6 +256,9 @@ namespace Orang.CommandLine
                 int eolIndex = FindEndOfLine(CaptureInfo.FromCapture(match));
 
                 WriteEndLine(endIndex, eolIndex);
+
+                if (Options.ContextAfter > 0)
+                    WriteContextAfter(eolIndex, Input.Length, _lineNumber);
 
                 base.WriteEndReplacement(match, result);
             }

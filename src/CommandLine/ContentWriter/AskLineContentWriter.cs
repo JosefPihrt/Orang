@@ -29,7 +29,7 @@ namespace Orang.CommandLine
             int solIndex = FindStartOfLine(capture);
 
             if (Options.ContextBefore > 0)
-                WriteContextBefore(0, solIndex);
+                WriteContextBefore(0, solIndex, _lineNumber);
 
             Write(Options.Indent);
 

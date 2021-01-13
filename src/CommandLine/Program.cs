@@ -50,6 +50,13 @@ namespace Orang.CommandLine
             {
                 Parser parser = CreateParser(ignoreUnknownArguments: true);
 
+                if (args == null
+                    || args.Length == 0)
+                {
+                    HelpCommand.WriteCommandsHelp();
+                    return ExitCodes.Match;
+                }
+
                 var help = false;
 
                 ParserResult<BaseCommandLineOptions> defaultResult = parser
