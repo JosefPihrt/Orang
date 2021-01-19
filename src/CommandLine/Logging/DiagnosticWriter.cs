@@ -1,9 +1,14 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using CommandLine;
 using Orang.FileSystem;
 
 namespace Orang.CommandLine
@@ -23,14 +28,114 @@ namespace Orang.CommandLine
 
         private static OutputSymbols Symbols_Newline { get; } = OutputSymbols.Create(HighlightOptions.Newline);
 
-        internal static void WriteStart()
+        internal static void WriteParameters(AbstractCommandLineOptions commandLineOptions)
         {
-            Logger.WriteLine("--- PARAMETERS ---", Verbosity);
+            Type type = commandLineOptions.GetType();
+
+            var values = new List<(int index, object? value)>();
+            var options = new List<(string name, object? value)>();
+
+            foreach (PropertyInfo propertyInfo in type.GetRuntimeProperties())
+            {
+                OptionAttribute? optionAttribute = propertyInfo.GetCustomAttribute<OptionAttribute>();
+
+                if (optionAttribute != null)
+                {
+                    object? value = propertyInfo.GetValue(commandLineOptions);
+
+                    options.Add((optionAttribute.LongName, value));
+                }
+                else
+                {
+                    ValueAttribute? valueAttribute = propertyInfo.GetCustomAttribute<ValueAttribute>();
+
+                    if (valueAttribute != null)
+                    {
+                        object? value = propertyInfo.GetValue(commandLineOptions);
+
+                        values.Add((valueAttribute.Index, value));
+                    }
+                }
+            }
+
+            foreach ((int index, object? value) in values.OrderBy(f => f.index))
+                WriteParameterValue(index.ToString(), value);
+
+            foreach ((string name, object? value) in options.OrderBy(f => f.name))
+                WriteParameterValue(name, value);
         }
 
-        internal static void WriteEnd()
+        private static void WriteParameterValue(string name, object? value)
         {
-            Logger.WriteLine("--- END OF PARAMETERS ---", Verbosity);
+            WriteName(name);
+
+            if (value is null)
+            {
+                WriteNullValue();
+            }
+            else if (value is bool boolValue)
+            {
+                if (boolValue)
+                {
+                    WriteIndent();
+                    Write("true");
+                }
+                else
+                {
+                    WriteNullValue();
+                }
+            }
+            else if (value is int intValue)
+            {
+                WriteIndent();
+                Write(intValue.ToString());
+            }
+            else if (value is string stringValue)
+            {
+                if (stringValue.Length == 0)
+                {
+                    WriteNullValue();
+                }
+                else
+                {
+                    WriteIndent();
+                    Write(stringValue);
+                }
+            }
+            else if (value is IEnumerable<string> values)
+            {
+                using (IEnumerator<string> en = values.GetEnumerator())
+                {
+                    if (en.MoveNext())
+                    {
+                        WriteIndent();
+
+                        while (true)
+                        {
+                            Write(en.Current);
+
+                            if (en.MoveNext())
+                            {
+                                Logger.Write(", ", Verbosity);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        WriteNullValue();
+                    }
+                }
+            }
+            else
+            {
+                Debug.Fail(value.GetType().ToString());
+            }
+
+            WriteLine();
         }
 
         internal static void WriteCopyCommand(CopyCommandOptions options)

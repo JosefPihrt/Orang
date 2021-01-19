@@ -8,9 +8,7 @@ namespace Orang.CommandLine
     {
         internal void WriteDiagnostic()
         {
-            DiagnosticWriter.WriteStart();
             WriteDiagnosticCore();
-            DiagnosticWriter.WriteEnd();
 #if DEBUG
             if (Logger.ConsoleOut.Verbosity == Verbosity.Diagnostic)
                 ConsoleHelpers.WaitForKeyPress();
