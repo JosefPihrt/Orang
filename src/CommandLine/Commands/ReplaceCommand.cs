@@ -235,7 +235,7 @@ namespace Orang.CommandLine
                         {
                             if (Options.DryRun)
                             {
-                                if (ConsoleHelpers.AskToContinue(indent))
+                                if (ConsoleHelpers.AskToContinue(indent) == DialogResult.YesToAll)
                                     Options.AskMode = AskMode.None;
                             }
                             else if (ConsoleHelpers.AskToExecute("Replace content?", indent))

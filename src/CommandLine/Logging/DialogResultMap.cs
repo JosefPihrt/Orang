@@ -9,8 +9,8 @@ namespace Orang.CommandLine
     internal static class DialogResultMap
     {
         private static ImmutableDictionary<string, DialogResult>? _all;
-        private static ImmutableDictionary<string, DialogResult>? _yesNoCancel;
-        private static ImmutableDictionary<string, DialogResult>? _yesYesToAllCancel;
+        private static ImmutableDictionary<string, DialogResult>? _yes_No_Cancel;
+        private static ImmutableDictionary<string, DialogResult>? _yes_YesToAll_Cancel;
 
         public static ImmutableDictionary<string, DialogResult> All
         {
@@ -42,14 +42,14 @@ namespace Orang.CommandLine
             }
         }
 
-        public static ImmutableDictionary<string, DialogResult> YesNoCancel
+        public static ImmutableDictionary<string, DialogResult> Yes_No_Cancel
         {
             get
             {
-                if (_yesNoCancel == null)
-                    Interlocked.CompareExchange(ref _yesNoCancel, Create(), null);
+                if (_yes_No_Cancel == null)
+                    Interlocked.CompareExchange(ref _yes_No_Cancel, Create(), null);
 
-                return _yesNoCancel;
+                return _yes_No_Cancel;
 
                 static ImmutableDictionary<string, DialogResult> Create()
                 {
@@ -68,14 +68,14 @@ namespace Orang.CommandLine
             }
         }
 
-        public static ImmutableDictionary<string, DialogResult> YesYesToAllCancel
+        public static ImmutableDictionary<string, DialogResult> Yes_YesToAll_Cancel
         {
             get
             {
-                if (_yesYesToAllCancel == null)
-                    Interlocked.CompareExchange(ref _yesYesToAllCancel, Create(), null);
+                if (_yes_YesToAll_Cancel == null)
+                    Interlocked.CompareExchange(ref _yes_YesToAll_Cancel, Create(), null);
 
-                return _yesYesToAllCancel;
+                return _yes_YesToAll_Cancel;
 
                 static ImmutableDictionary<string, DialogResult> Create()
                 {

@@ -237,7 +237,7 @@ namespace Orang.CommandLine
             {
                 try
                 {
-                    if (ConsoleHelpers.AskToContinue(indent))
+                    if (ConsoleHelpers.AskToContinue(indent) == DialogResult.YesToAll)
                         AskMode = AskMode.None;
                 }
                 catch (OperationCanceledException)

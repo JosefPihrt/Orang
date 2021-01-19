@@ -66,7 +66,7 @@ namespace Orang.CommandLine
                 }
             }
             else if (!ContinueWithoutAsking
-                && ConsoleHelpers.AskToContinue(Options.Indent))
+                && ConsoleHelpers.AskToContinue(Options.Indent) == DialogResult.YesToAll)
             {
                 ContinueWithoutAsking = true;
             }

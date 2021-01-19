@@ -32,7 +32,7 @@ namespace Orang.CommandLine
             WriteLine();
 
             if (Ask
-                && ConsoleHelpers.AskToContinue(Options.Indent))
+                && ConsoleHelpers.AskToContinue(Options.Indent) == DialogResult.YesToAll)
             {
                 Ask = false;
             }

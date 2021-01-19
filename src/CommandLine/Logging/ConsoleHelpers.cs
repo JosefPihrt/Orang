@@ -51,41 +51,33 @@ namespace Orang.CommandLine
 
         public static bool AskToExecute(string text, string? indent = null)
         {
-            switch (Ask(text, " (Y/N/C): ", "Y (Yes), N (No), C (Cancel)", DialogResultMap.YesNoCancel, indent))
+            switch (Ask(
+                text,
+                " (Y/N/C): ",
+                "Y (Yes), N (No), C (Cancel)",
+                DialogResultMap.Yes_No_Cancel,
+                indent,
+                throwOnCancel: true))
             {
                 case DialogResult.Yes:
                     return true;
                 case DialogResult.No:
                 case DialogResult.None:
                     return false;
-                case DialogResult.Cancel:
-                    throw new OperationCanceledException();
                 default:
                     throw new InvalidOperationException();
             }
         }
 
-        public static bool AskToContinue(string indent)
+        public static DialogResult AskToContinue(string indent)
         {
-            switch (Ask(
+            return Ask(
                 question: "Continue?",
                 suffix: " (Y[A]/C): ",
                 helpText: "Y (Yes), YA (Yes to All), C (Cancel)",
-                map: DialogResultMap.YesYesToAllCancel,
-                indent: indent))
-            {
-                case DialogResult.None:
-                case DialogResult.Yes:
-                    break;
-                case DialogResult.YesToAll:
-                    return true;
-                case DialogResult.Cancel:
-                    throw new OperationCanceledException();
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            return false;
+                map: DialogResultMap.Yes_YesToAll_Cancel,
+                indent: indent,
+                throwOnCancel: true);
         }
 
         public static DialogResult Ask(string question, string? indent = null)
@@ -103,7 +95,8 @@ namespace Orang.CommandLine
             string suffix,
             string helpText,
             ImmutableDictionary<string, DialogResult> map,
-            string? indent)
+            string? indent,
+            bool throwOnCancel = false)
         {
             while (true)
             {
@@ -119,7 +112,15 @@ namespace Orang.CommandLine
                         return DialogResult.None;
 
                     if (map.TryGetValue(s, out DialogResult dialogResult))
+                    {
+                        if (dialogResult == DialogResult.Cancel
+                            && throwOnCancel)
+                        {
+                            throw new OperationCanceledException();
+                        }
+
                         return dialogResult;
+                    }
                 }
                 else
                 {
