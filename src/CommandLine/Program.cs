@@ -332,7 +332,7 @@ namespace Orang.CommandLine
             if (!commandLineOptions.TryParse(options))
                 return 1;
 
-            return Execute(new SyncCommand(options));
+            return Execute(new SyncCommand(options), commandLineOptions);
         }
 
         private static int Rename(RenameCommandLineOptions commandLineOptions)
