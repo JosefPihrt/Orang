@@ -52,8 +52,8 @@ namespace Orang.CommandLine
             string newPath = ReplaceHelpers.GetNewPath(fileMatch, replaceItems);
             bool changed = !string.Equals(path, newPath, StringComparison.Ordinal);
 
-            if (!Options.OmitPath
-                && changed)
+            if (Options.Interactive
+                || (!Options.OmitPath && changed))
             {
                 LogHelpers.WritePath(
                     fileMatch,
@@ -71,6 +71,20 @@ namespace Orang.CommandLine
             }
 
             ListCache<ReplaceItem>.Free(replaceItems);
+
+            if (Options.Interactive)
+            {
+                string newName = Path.GetFileName(newPath);
+
+                string? newName2 = ConsoleHelpers.ReadUserInput("New name: ", newName, indent);
+
+                if (newName2 == null)
+                    throw new OperationCanceledException();
+
+                newPath = newPath.Substring(0, newPath.Length - newName.Length) + newName2;
+
+                changed = !string.Equals(path, newPath, StringComparison.Ordinal);
+            }
 
             if (!changed)
                 return;

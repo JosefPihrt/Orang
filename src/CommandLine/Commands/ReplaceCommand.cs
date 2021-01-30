@@ -146,19 +146,14 @@ namespace Orang.CommandLine
                 int fileMatchCount = 0;
                 int fileReplacementCount = 0;
 
-                if (!Options.DryRun)
+                if (!Options.DryRun
+                    && Options.AskMode == AskMode.File)
                 {
-                    if (Options.AskMode == AskMode.File)
-                    {
-                        textWriter = new StringWriter();
-                    }
-                    else if (Options.AskMode == AskMode.None)
-                    {
-                        textWriter = new StreamWriter(fileMatch.Path, false, fileMatch.Encoding);
-                    }
+                    textWriter = new StringWriter();
                 }
 
                 if (Options.AskMode == AskMode.Value
+                    || Options.Interactive
                     || (Options.ContentDisplayStyle != ContentDisplayStyle.Omit
                         && ShouldLog(Verbosity.Normal)))
                 {
@@ -167,11 +162,19 @@ namespace Orang.CommandLine
                         fileMatch.ContentMatch!,
                         ContentFilter!);
 
-                    if (Options.AskMode == AskMode.Value)
+                    if (Options.AskMode == AskMode.Value
+                        || Options.Interactive)
                     {
-                        Lazy<TextWriter>? lazyWriter = (Options.DryRun)
-                            ? null
-                            : new Lazy<TextWriter>(() => new StreamWriter(fileMatch.Path, false, fileMatch.Encoding));
+                        Lazy<TextWriter>? lazyWriter = null;
+
+                        if (!Options.DryRun)
+                        {
+                            lazyWriter = new Lazy<TextWriter>(() =>
+                            {
+                                textWriter = new StringWriter();
+                                return textWriter;
+                            });
+                        }
 
                         contentWriter = AskReplacementWriter.Create(
                             Options.ContentDisplayStyle,
@@ -179,7 +182,8 @@ namespace Orang.CommandLine
                             Options.ReplaceOptions,
                             lazyWriter,
                             writerOptions,
-                            outputInfo);
+                            outputInfo,
+                            isInteractive: Options.Interactive);
                     }
                     else
                     {
@@ -223,7 +227,21 @@ namespace Orang.CommandLine
                     telemetry.MatchingLineCount += contentWriter.MatchingLineCount;
                 }
 
-                if (Options.AskMode == AskMode.File)
+                if (Options.AskMode == AskMode.Value
+                    || Options.Interactive)
+                {
+                    if (textWriter != null)
+                    {
+                        File.WriteAllText(fileMatch.Path, textWriter.ToString(), fileMatch.Encoding);
+
+                        if (Options.AskMode == AskMode.Value
+                            && ((AskReplacementWriter)contentWriter).ContinueWithoutAsking)
+                        {
+                            Options.AskMode = AskMode.None;
+                        }
+                    }
+                }
+                else if (Options.AskMode == AskMode.File)
                 {
                     if (context.TerminationReason == TerminationReason.Canceled)
                     {
@@ -253,11 +271,6 @@ namespace Orang.CommandLine
                             fileReplacementCount = 0;
                         }
                     }
-                }
-                else if (Options.AskMode == AskMode.Value)
-                {
-                    if (((AskReplacementWriter)contentWriter).ContinueWithoutAsking)
-                        Options.AskMode = AskMode.None;
                 }
 
                 telemetry.ProcessedMatchCount += fileReplacementCount;

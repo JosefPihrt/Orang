@@ -44,15 +44,6 @@ namespace Orang.CommandLine
 
             options = (CommonFindCommandOptions)baseOptions;
 
-            if (!TryParseHighlightOptions(
-                Highlight,
-                out HighlightOptions highlightOptions,
-                defaultValue: HighlightOptions.Default,
-                provider: OptionValueProviders.FindHighlightOptionsProvider))
-            {
-                return false;
-            }
-
             if (!FilterParser.TryParse(
                 Content,
                 OptionNames.Content,
@@ -106,6 +97,16 @@ namespace Orang.CommandLine
 
             if (!TryParseMaxCount(MaxCount, out int maxMatchingFiles, out int maxMatchesInFile))
                 return false;
+
+            if (!TryParseHighlightOptions(
+                Highlight,
+                out HighlightOptions highlightOptions,
+                defaultValue: HighlightOptions.Default,
+                contentDisplayStyle: contentDisplayStyle,
+                provider: OptionValueProviders.FindHighlightOptionsProvider))
+            {
+                return false;
+            }
 
             options.Format = new OutputDisplayFormat(
                 contentDisplayStyle: contentDisplayStyle ?? DefaultContentDisplayStyle,

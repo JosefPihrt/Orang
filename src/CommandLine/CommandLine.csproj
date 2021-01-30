@@ -11,7 +11,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>orang</ToolCommandName>
     <PackageId>Orang.DotNet.Cli</PackageId>
-    <PackageVersion>0.2.0-rc</PackageVersion>
+    <PackageVersion>0.2.0</PackageVersion>
     <Description>Search, replace, rename and delete directories, files and its content using the power of .NET regular expressions.</Description>
     <PackageProjectUrl>https://github.com/JosefPihrt/Orang</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>

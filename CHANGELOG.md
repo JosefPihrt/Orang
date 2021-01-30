@@ -1,3 +1,5 @@
+## 0.2.0 (2021-01-30)
+
 ## 0.2.0-rc (2021-01-04)
 
 * Update target framework to .netcoreapp3.1 (LTS)

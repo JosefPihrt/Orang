@@ -14,6 +14,8 @@ namespace Orang.CommandLine
 
         public ReplaceOptions ReplaceOptions { get; internal set; } = null!;
 
+        public bool Interactive { get; internal set; }
+
         protected override void WriteDiagnosticCore()
         {
             DiagnosticWriter.WriteReplaceCommand(this);

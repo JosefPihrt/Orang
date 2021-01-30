@@ -51,6 +51,11 @@ namespace Orang.CommandLine
         public string Evaluator { get; set; } = null!;
 
         [Option(
+            longName: OptionNames.Interactive,
+            HelpText = "Enable editing of a new name.")]
+        public bool Interactive { get; set; }
+
+        [Option(
             shortName: OptionShortNames.MaxCount,
             longName: OptionNames.MaxCount,
             HelpText = "Stop renaming after specified number is reached.",
@@ -197,6 +202,7 @@ namespace Orang.CommandLine
             options.ContentFilter = contentFilter;
             options.MaxMatchingFiles = MaxCount;
             options.ConflictResolution = conflictResolution;
+            options.Interactive = Interactive;
 
             return true;
         }

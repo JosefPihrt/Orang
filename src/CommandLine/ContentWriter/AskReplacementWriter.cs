@@ -8,6 +8,8 @@ namespace Orang.CommandLine
 {
     internal abstract class AskReplacementWriter : ContentWriter
     {
+        private static readonly char[] _newLineChars = new[] { '\r', '\n' };
+
         protected readonly Lazy<TextWriter>? _lazyWriter;
         protected int _writerIndex;
         private ValueWriter? _valueWriter;
@@ -16,9 +18,12 @@ namespace Orang.CommandLine
             string input,
             ReplaceOptions replaceOptions,
             Lazy<TextWriter>? lazyWriter,
-            ContentWriterOptions options) : base(input, options)
+            ContentWriterOptions options,
+            bool isInteractive) : base(input, options)
         {
             ReplaceOptions = replaceOptions;
+            IsInteractive = isInteractive;
+
             _lazyWriter = lazyWriter;
         }
 
@@ -28,21 +33,24 @@ namespace Orang.CommandLine
 
         public bool ContinueWithoutAsking { get; private set; }
 
+        public bool IsInteractive { get; }
+
         public static AskReplacementWriter Create(
             ContentDisplayStyle contentDisplayStyle,
             string input,
             ReplaceOptions replaceOptions,
             Lazy<TextWriter>? lazyWriter,
             ContentWriterOptions options,
-            MatchOutputInfo? outputInfo)
+            MatchOutputInfo? outputInfo,
+            bool isInteractive)
         {
             switch (contentDisplayStyle)
             {
                 case ContentDisplayStyle.Value:
                 case ContentDisplayStyle.ValueDetail:
-                    return new AskValueReplacementWriter(input, replaceOptions, lazyWriter, options, outputInfo);
+                    return new AskValueReplacementWriter(input, replaceOptions, lazyWriter, options, outputInfo, isInteractive);
                 case ContentDisplayStyle.Line:
-                    return new AskLineReplacementWriter(input, replaceOptions, lazyWriter, options);
+                    return new AskLineReplacementWriter(input, replaceOptions, lazyWriter, options, isInteractive);
                 case ContentDisplayStyle.UnmatchedLines:
                 case ContentDisplayStyle.AllLines:
                     throw new InvalidOperationException();
@@ -53,9 +61,21 @@ namespace Orang.CommandLine
 
         protected override void WriteEndReplacement(Match match, string result)
         {
+            if (IsInteractive
+                && result.IndexOfAny(_newLineChars) == -1)
+            {
+                string? newResult = ConsoleHelpers.ReadUserInput("Replacement: ", result, Options.Indent);
+
+                if (newResult == null)
+                    return;
+
+                result = newResult;
+            }
+
             if (_lazyWriter != null)
             {
-                if (ConsoleHelpers.AskToExecute("Replace?", Options.Indent))
+                if (IsInteractive
+                    || ConsoleHelpers.AskToExecute("Replace?", Options.Indent))
                 {
                     _lazyWriter.Value.Write(Input.AsSpan(_writerIndex, match.Index - _writerIndex));
                     _lazyWriter.Value.Write(result);
@@ -66,6 +86,7 @@ namespace Orang.CommandLine
                 }
             }
             else if (!ContinueWithoutAsking
+                && !IsInteractive
                 && ConsoleHelpers.AskToContinue(Options.Indent) == DialogResult.YesToAll)
             {
                 ContinueWithoutAsking = true;
@@ -103,15 +124,14 @@ namespace Orang.CommandLine
 
         protected override void WriteEndMatches()
         {
+            if (_lazyWriter?.IsValueCreated == true)
+                _lazyWriter.Value.Write(Input.AsSpan(_writerIndex, Input.Length - _writerIndex));
         }
 
         public override void Dispose()
         {
             if (_lazyWriter?.IsValueCreated == true)
-            {
-                _lazyWriter.Value.Write(Input.AsSpan(_writerIndex, Input.Length - _writerIndex));
                 _lazyWriter.Value.Dispose();
-            }
         }
 
         private class AskValueReplacementWriter : AskReplacementWriter
@@ -121,7 +141,8 @@ namespace Orang.CommandLine
                 ReplaceOptions replaceOptions,
                 Lazy<TextWriter>? lazyWriter,
                 ContentWriterOptions options,
-                MatchOutputInfo? outputInfo) : base(input, replaceOptions, lazyWriter, options)
+                MatchOutputInfo? outputInfo,
+                bool isInteractive) : base(input, replaceOptions, lazyWriter, options, isInteractive)
             {
                 OutputInfo = outputInfo;
             }
@@ -170,7 +191,8 @@ namespace Orang.CommandLine
                 string input,
                 ReplaceOptions replaceOptions,
                 Lazy<TextWriter>? lazyWriter,
-                ContentWriterOptions options) : base(input, replaceOptions, lazyWriter, options)
+                ContentWriterOptions options,
+                bool isInteractive) : base(input, replaceOptions, lazyWriter, options, isInteractive)
             {
                 MatchingLineCount = 0;
             }

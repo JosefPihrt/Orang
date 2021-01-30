@@ -3,7 +3,7 @@
 set _programFiles=%ProgramFiles(x86)%
 if not defined _programFiles set _programFiles=%ProgramFiles%
 
-set _version=0.2.0-rc
+set _version=0.2.0
 
 orang replace -e cmd -c "(?<=--version )\d+\.\d+\.\d+(-\w+)?" -r "%_version%"
 

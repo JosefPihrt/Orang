@@ -51,6 +51,11 @@ namespace Orang.CommandLine
         public bool Find { get; set; }
 #endif
         [Option(
+            longName: OptionNames.Interactive,
+            HelpText = "Enable editing of a replacement.")]
+        public bool Interactive { get; set; }
+
+        [Option(
             longName: OptionNames.Pipe,
             HelpText = "Defines how to use redirected/piped input.",
             MetaValue = MetaValues.PipeMode)]
@@ -127,15 +132,6 @@ namespace Orang.CommandLine
             if (!TryParseProperties(Ask, Name, options))
                 return false;
 
-            if (!TryParseHighlightOptions(
-                Highlight,
-                out HighlightOptions highlightOptions,
-                defaultValue: HighlightOptions.Replacement,
-                provider: OptionValueProviders.ReplaceHighlightOptionsProvider))
-            {
-                return false;
-            }
-
             if (!FilterParser.TryParse(
                 Content,
                 OptionNames.Content,
@@ -191,7 +187,7 @@ namespace Orang.CommandLine
                     return false;
                 }
 
-                if (options.ContentFilter == null)
+                if (contentFilter == null)
                 {
                     WriteError($"Option '{OptionNames.GetHelpText(OptionNames.Content)}' is required "
                         + "when redirected/piped input is used as a text to be searched.");
@@ -260,6 +256,16 @@ namespace Orang.CommandLine
                 pathDisplayStyle = PathDisplayStyle.Full;
             }
 
+            if (!TryParseHighlightOptions(
+                Highlight,
+                out HighlightOptions highlightOptions,
+                defaultValue: HighlightOptions.Replacement,
+                contentDisplayStyle: contentDisplayStyle,
+                provider: OptionValueProviders.ReplaceHighlightOptionsProvider))
+            {
+                return false;
+            }
+
             options.Format = new OutputDisplayFormat(
                 contentDisplayStyle: contentDisplayStyle,
                 pathDisplayStyle: pathDisplayStyle,
@@ -279,6 +285,7 @@ namespace Orang.CommandLine
             options.MaxMatchesInFile = maxMatchesInFile;
             options.MaxMatchingFiles = maxMatchingFiles;
             options.MaxTotalMatches = 0;
+            options.Interactive = Interactive;
 #if DEBUG // --find
             if (Find)
             {

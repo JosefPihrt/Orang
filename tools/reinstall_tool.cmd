@@ -19,6 +19,6 @@ dotnet pack -c Release --no-build -v normal "..\src\CommandLine\CommandLine.cspr
 
 dotnet tool uninstall orang.dotnet.cli -g
 
-dotnet tool install orang.dotnet.cli --version 0.2.0-rc -g --add-source "..\src\CommandLine\bin\Release"
+dotnet tool install orang.dotnet.cli --version 0.2.0 -g --add-source "..\src\CommandLine\bin\Release"
 
 pause

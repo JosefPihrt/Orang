@@ -315,6 +315,7 @@ namespace Orang.CommandLine
                 options.CreationTimePredicate,
                 options.ModifiedTimePredicate);
             WriteOption("highlight options", options.HighlightOptions);
+            WriteOption("interactive", options.Interactive);
             WriteOption("max matching files", options.MaxMatchingFiles);
             WriteReplaceModify("modify", options.ReplaceOptions);
             WriteFilter("name filter", options.NameFilter, options.NamePart);
@@ -346,6 +347,7 @@ namespace Orang.CommandLine
                 options.ModifiedTimePredicate);
             WriteOption("highlight options", options.HighlightOptions);
             WriteInput(options.Input);
+            WriteOption("interactive", options.Interactive);
             WriteOption("max matching files", options.MaxMatchingFiles);
             WriteOption("max matches in file", options.MaxMatchesInFile);
             WriteReplaceModify("modify", options.ReplaceOptions);

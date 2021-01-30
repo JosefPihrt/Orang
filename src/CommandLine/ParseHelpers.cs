@@ -24,6 +24,27 @@ namespace Orang.CommandLine
             HighlightOptions? defaultValue = null,
             OptionValueProvider? provider = null)
         {
+            return TryParseHighlightOptions(
+                values,
+                out highlightOptions,
+                defaultValue,
+                default(ContentDisplayStyle?),
+                provider);
+        }
+
+        public static bool TryParseHighlightOptions(
+            IEnumerable<string> values,
+            out HighlightOptions highlightOptions,
+            HighlightOptions? defaultValue = null,
+            ContentDisplayStyle? contentDisplayStyle = null,
+            OptionValueProvider? provider = null)
+        {
+            if (contentDisplayStyle == ContentDisplayStyle.Value
+                || contentDisplayStyle == ContentDisplayStyle.ValueDetail)
+            {
+                defaultValue = HighlightOptions.None;
+            }
+
             if (values.Any())
             {
                 string[] arr = values.ToArray();
