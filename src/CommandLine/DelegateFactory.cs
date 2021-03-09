@@ -261,7 +261,11 @@ namespace Orang.CommandLine
             }
         }
 
-        private static MethodInfo? FindMethod(Assembly assembly, Type returnType, Type[] parameters, string? methodName = null)
+        private static MethodInfo? FindMethod(
+            Assembly assembly,
+            Type returnType,
+            Type[] parameters,
+            string? methodName = null)
         {
             foreach (Type type in assembly.GetTypes())
             {

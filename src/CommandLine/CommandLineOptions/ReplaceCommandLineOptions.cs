@@ -115,7 +115,9 @@ namespace Orang.CommandLine
             {
                 if (!Console.IsInputRedirected)
                 {
-                    WriteError($"Redirected/piped input is required when option '{OptionNames.GetHelpText(OptionNames.Pipe)}' is specified.");
+                    WriteError("Redirected/piped input is required "
+                        + $"when option '{OptionNames.GetHelpText(OptionNames.Pipe)}' is specified.");
+
                     return false;
                 }
 

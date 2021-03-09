@@ -65,7 +65,9 @@ namespace Orang.CommandLine
             {
                 if (!Console.IsInputRedirected)
                 {
-                    WriteError($"Redirected/piped input is required when option '{OptionNames.GetHelpText(OptionNames.Pipe)}' is specified.");
+                    WriteError("Redirected/piped input is required "
+                        + $"when option '{OptionNames.GetHelpText(OptionNames.Pipe)}' is specified.");
+
                     return false;
                 }
 
@@ -106,8 +108,15 @@ namespace Orang.CommandLine
                 return false;
             }
 #endif
-            if (!TryParseModifyOptions(Modify, OptionNames.Modify, modifier, out ModifyOptions? modifyOptions, out bool aggregateOnly))
+            if (!TryParseModifyOptions(
+                Modify,
+                OptionNames.Modify,
+                modifier,
+                out ModifyOptions? modifyOptions,
+                out bool aggregateOnly))
+            {
                 return false;
+            }
 
             OutputDisplayFormat format = options.Format;
             ContentDisplayStyle contentDisplayStyle = format.ContentDisplayStyle;

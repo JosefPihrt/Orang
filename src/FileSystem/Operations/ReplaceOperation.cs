@@ -7,8 +7,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Orang.FileSystem;
 
-#pragma warning disable IDE0068
-
 namespace Orang.Operations
 {
     internal class ReplaceOperation : CommonFindOperation

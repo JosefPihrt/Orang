@@ -181,7 +181,9 @@ namespace Orang.CommandLine
                 string question;
                 if (directoryExists)
                 {
-                    question = (isDirectory && Options.StructureOnly) ? "Update directory attributes?" : "Overwrite directory?";
+                    question = (isDirectory && Options.StructureOnly)
+                        ? "Update directory attributes?"
+                        : "Overwrite directory?";
                 }
                 else
                 {

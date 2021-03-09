@@ -5,6 +5,7 @@
     <AssemblyName>Orang.FileSystem.ApiTest</AssemblyName>
     <RootNamespace>Orang.FileSystem</RootNamespace>
     <IsPackable>false</IsPackable>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
 
   <ItemGroup>

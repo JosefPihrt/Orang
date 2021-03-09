@@ -201,7 +201,7 @@ namespace Orang.CommandLine
                                     i--;
                                 }
 
-                                int offset = index - i - 1;
+                                int offset = index - i;
 
                                 int left = Console.CursorLeft;
                                 int top = Console.CursorTop;

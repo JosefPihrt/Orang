@@ -65,7 +65,6 @@ namespace Orang.Documentation
                                 _writer.WriteInlineCode(en.Current);
                             }
 
-
                             if (en.MoveNext())
                             {
                                 _writer.WriteString(", ");

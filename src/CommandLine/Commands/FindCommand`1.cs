@@ -21,7 +21,8 @@ namespace Orang.CommandLine
         {
         }
 
-        private static OutputCaptions SplitCaptions => _splitCaptions ??= OutputCaptions.Default.Update(shortMatch: OutputCaptions.Default.ShortSplit);
+        private static OutputCaptions SplitCaptions
+            => _splitCaptions ??= OutputCaptions.Default.Update(shortMatch: OutputCaptions.Default.ShortSplit);
 
         public override bool CanEndProgress
         {
@@ -184,7 +185,8 @@ namespace Orang.CommandLine
                     {
                         IEnumerable<string> values = _modify!.FileValues!.Modify(
                             Options.ModifyOptions,
-                            filter: Options.ModifyOptions.Functions & ~(ModifyFunctions.Enumerable | ModifyFunctions.Except_Intersect_Group));
+                            filter: Options.ModifyOptions.Functions
+                                & ~(ModifyFunctions.Enumerable | ModifyFunctions.Except_Intersect_Group));
 
                         _aggregate?.Storage.AddRange(values);
                     }

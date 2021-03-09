@@ -48,7 +48,13 @@ namespace Orang.CommandLine
             {
                 case ContentDisplayStyle.Value:
                 case ContentDisplayStyle.ValueDetail:
-                    return new AskValueReplacementWriter(input, replaceOptions, lazyWriter, options, outputInfo, isInteractive);
+                    return new AskValueReplacementWriter(
+                        input,
+                        replaceOptions,
+                        lazyWriter,
+                        options,
+                        outputInfo,
+                        isInteractive);
                 case ContentDisplayStyle.Line:
                     return new AskLineReplacementWriter(input, replaceOptions, lazyWriter, options, isInteractive);
                 case ContentDisplayStyle.UnmatchedLines:

@@ -56,7 +56,7 @@ namespace Orang.CommandLine
                 {
                     using (IEnumerator<string> en = matchItems
                         .SelectMany(f => f.GroupItems)
-                        .Where(f => (groupNumber >= 0) ? groupNumber == f.Number : true)
+                        .Where(f => groupNumber < 0 || groupNumber == f.Number)
                         .OrderBy(f => f.Index)
                         .ThenBy(f => f.Number)
                         .SelectMany(f => f.CaptureItems)
@@ -108,7 +108,7 @@ namespace Orang.CommandLine
                         var omitMatchInfo = false;
 
                         foreach (GroupItem groupItem in matchItem.GroupItems
-                            .Where(f => (groupNumber >= 0) ? groupNumber == f.Number : true)
+                            .Where(f => groupNumber < 0 || groupNumber == f.Number)
                             .OrderBy(f => f.Index)
                             .ThenBy(f => f.Number))
                         {
@@ -176,7 +176,7 @@ namespace Orang.CommandLine
                         highlightMatch: (HighlightOptions & HighlightOptions.DefaultOrMatch) != 0);
 
                     captureCount += matchItem.GroupItems
-                        .Where(f => (groupNumber >= 0) ? groupNumber == f.Number : true)
+                        .Where(f => groupNumber < 0 || groupNumber == f.Number)
                         .Sum(f => f.CaptureItems.Count);
 
                     lastPos = matchItem.EndIndex;

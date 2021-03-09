@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using CommandLine;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Orang.CommandLine
 {
@@ -21,6 +22,8 @@ namespace Orang.CommandLine
             MetaValue = MetaValues.Highlight)]
         public IEnumerable<string> Highlight { get; set; } = null!;
 
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter")]
+        [SuppressMessage("Redundancy", "RCS1163:Unused parameter.")]
         public bool TryParse(CommonRegexCommandOptions options)
         {
             return true;

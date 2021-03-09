@@ -2,8 +2,6 @@
 
 using System.Threading;
 
-#pragma warning disable RCS1223
-
 namespace Orang.FileSystem
 {
     public partial class FileSystemSearch

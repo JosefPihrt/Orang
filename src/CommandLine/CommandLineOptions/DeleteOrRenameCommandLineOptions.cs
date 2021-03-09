@@ -4,6 +4,7 @@ namespace Orang.CommandLine
 {
     internal abstract class DeleteOrRenameCommandLineOptions : FileSystemCommandLineOptions
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value")]
         public bool TryParse(DeleteOrRenameCommandOptions options)
         {
             var baseOptions = (FileSystemCommandOptions)options;

@@ -151,7 +151,7 @@ namespace Orang.CommandLine
             MetaValues.ReplacementOptions,
             SimpleOptionValue.Create(
                 ReplacementOptions.FromFile,
-                description: $"Load text from a file whose path is specified in <REPLACEMENT> value."),
+                description: "Load text from a file whose path is specified in <REPLACEMENT> value."),
             SimpleOptionValue.Create(
                 ReplacementOptions.Literal,
                 description: "Replacement should be treated as a literal expression and not as a replacement expression."),
@@ -162,7 +162,7 @@ namespace Orang.CommandLine
                 ReplacementOptions.CSharp,
                 shortValue: "cs",
                 description:
-                    $"<REPLACEMENT> is either expression-body of a method with signature "
+                    "<REPLACEMENT> is either expression-body of a method with signature "
                         + "'string M(Match match)'"
                         + Environment.NewLine
                         + "or a path to a code file that contains public method with signature 'string M(Match match)'."
@@ -551,8 +551,12 @@ namespace Orang.CommandLine
 
         public static OptionValueProvider PipeMode { get; } = new OptionValueProvider(
             MetaValues.PipeMode,
-            SimpleOptionValue.Create(CommandLine.PipeMode.Text, description: "Use redirected input as a text to be searched."),
-            SimpleOptionValue.Create(CommandLine.PipeMode.Paths, description: "Use redirected input as a list of paths separated with newlines."));
+            SimpleOptionValue.Create(
+                CommandLine.PipeMode.Text,
+                description: "Use redirected input as a text to be searched."),
+            SimpleOptionValue.Create(
+                CommandLine.PipeMode.Paths,
+                description: "Use redirected input as a list of paths separated with newlines."));
 
         public static ImmutableDictionary<string, OptionValueProvider> ProvidersByName
         {

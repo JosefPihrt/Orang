@@ -115,8 +115,15 @@ namespace Orang.CommandLine
                 return false;
             }
 #endif
-            if (!TryParseModifyOptions(Modify, OptionNames.Modify, modifier, out ModifyOptions? modifyOptions, out bool aggregateOnly))
+            if (!TryParseModifyOptions(
+                Modify,
+                OptionNames.Modify,
+                modifier,
+                out ModifyOptions? modifyOptions,
+                out bool aggregateOnly))
+            {
                 return false;
+            }
 
             if (modifyOptions.HasAnyFunction
                 && contentDisplayStyle == ContentDisplayStyle.ValueDetail)

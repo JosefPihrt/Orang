@@ -146,10 +146,17 @@ namespace Orang.CommandLine
                 int fileMatchCount = 0;
                 int fileReplacementCount = 0;
 
-                if (!Options.DryRun
-                    && Options.AskMode == AskMode.File)
+                if (!Options.DryRun)
                 {
-                    textWriter = new StringWriter();
+                    if (Options.AskMode == AskMode.File)
+                    {
+                        textWriter = new StringWriter();
+                    }
+                    else if (Options.AskMode != AskMode.Value
+                        && !Options.Interactive)
+                    {
+                        textWriter = new StreamWriter(fileMatch.Path, false, fileMatch.Encoding);
+                    }
                 }
 
                 if (Options.AskMode == AskMode.Value
