@@ -74,15 +74,15 @@ namespace Orang.CommandLine
                 PipeMode = pipeMode;
             }
 
+            if (!TryParseProperties(Ask, Name, options))
+                return false;
+
             var baseOptions = (CommonFindCommandOptions)options;
 
             if (!TryParse(baseOptions))
                 return false;
 
             options = (FindCommandOptions)baseOptions;
-
-            if (!TryParseProperties(Ask, Name, options))
-                return false;
 
             string? input = null;
 

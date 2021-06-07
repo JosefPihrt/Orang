@@ -27,6 +27,7 @@ namespace Orang.CommandLine
         public const string PatternOptionsWithoutPart = nameof(PatternOptionsWithoutPart);
         public const string PatternOptions_Match = nameof(PatternOptions_Match);
         public const string PatternOptions_List = nameof(PatternOptions_List);
+        public const string PatternOptions_Word = nameof(PatternOptions_Word);
         public const string RenameHighlightOptions = nameof(RenameHighlightOptions);
         public const string ReplaceHighlightOptions = nameof(ReplaceHighlightOptions);
         public const string SplitHighlightOptions = nameof(SplitHighlightOptions);

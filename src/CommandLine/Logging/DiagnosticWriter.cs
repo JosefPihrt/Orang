@@ -329,6 +329,8 @@ namespace Orang.CommandLine
 
         internal static void WriteReplaceCommand(ReplaceCommandOptions options)
         {
+            var replaceOptions = (ReplaceOptions)options.Replacer;
+
             WriteOption("ask", options.AskMode);
             WriteOption("attributes", options.Attributes);
             WriteOption("attributes to skip", options.AttributesToSkip);
@@ -338,7 +340,7 @@ namespace Orang.CommandLine
             WriteDisplayFormat("display", options.Format);
             WriteOption("dry run", options.DryRun);
             WriteOption("empty", options.EmptyOption);
-            WriteEvaluator("evaluator", options.ReplaceOptions.MatchEvaluator);
+            WriteEvaluator("evaluator", replaceOptions.MatchEvaluator);
             WriteFilter("extension filter", options.ExtensionFilter);
             WriteFilePropertyFilter(
                 "file properties",
@@ -350,14 +352,53 @@ namespace Orang.CommandLine
             WriteOption("interactive", options.Interactive);
             WriteOption("max matching files", options.MaxMatchingFiles);
             WriteOption("max matches in file", options.MaxMatchesInFile);
-            WriteReplaceModify("modify", options.ReplaceOptions);
+            WriteReplaceModify("modify", replaceOptions);
             WriteFilter("name filter", options.NameFilter, options.NamePart);
             WritePaths("paths", options.Paths);
             WriteOption("progress", options.Progress);
             WriteOption("recurse subdirectories", options.RecurseSubdirectories);
-            WriteOption("replacement", options.ReplaceOptions.Replacement);
+            WriteOption("replacement", replaceOptions.Replacement);
             WriteOption("search target", options.SearchTarget);
             WriteSortOptions("sort", options.SortOptions);
+        }
+
+        internal static void WriteSpellcheckCommand(SpellcheckCommandOptions options)
+        {
+            var spellcheckState = (SpellcheckState)options.Replacer;
+
+            WriteOption("ask", options.AskMode);
+            WriteOption("attributes", options.Attributes);
+            WriteOption("attributes to skip", options.AttributesToSkip);
+            WriteFilter("content filter", options.ContentFilter);
+            WriteEncoding("default encoding", options.DefaultEncoding);
+            WriteFilter("directory filter", options.DirectoryFilter, options.DirectoryNamePart);
+            WriteDisplayFormat("display", options.Format);
+            WriteOption("dry run", options.DryRun);
+            WriteOption("empty", options.EmptyOption);
+            WriteFilter("extension filter", options.ExtensionFilter);
+            WriteFilePropertyFilter(
+                "file properties",
+                options.SizePredicate,
+                options.CreationTimePredicate,
+                options.ModifiedTimePredicate);
+            WriteOption("fixes", spellcheckState.Data.Fixes.Items.Sum(f => f.Value.Count));
+            WriteOption("highlight options", options.HighlightOptions);
+            WriteInput(options.Input);
+            WriteOption("interactive", options.Interactive);
+            WriteOption("max matching files", options.MaxMatchingFiles);
+            WriteOption("max matches in file", options.MaxMatchesInFile);
+            WriteOption("min word length", spellcheckState.Spellchecker.Options.MinWordLength);
+            WriteFilter("name filter", options.NameFilter, options.NamePart);
+            WritePaths("paths", options.Paths);
+            WriteOption("progress", options.Progress);
+            WriteOption("recurse subdirectories", options.RecurseSubdirectories);
+            WriteOption("search target", options.SearchTarget);
+            WriteSortOptions("sort", options.SortOptions);
+            WriteOption("split mode", spellcheckState.Spellchecker.Options.SplitMode);
+#if DEBUG
+            WriteRegex("word", spellcheckState.Spellchecker.WordRegex);
+#endif
+            WriteOption("words", spellcheckState.Data.Words.Values.Count + spellcheckState.Data.CaseSensitiveWords.Values.Count);
         }
 
         internal static void WriteSplitCommand(SplitCommandOptions options)
@@ -469,15 +510,8 @@ namespace Orang.CommandLine
                 return;
             }
 
-            WriteLine();
-            WriteIndent();
-            WriteName("pattern");
-            WriteIndent();
-            WriteLine(filter.Regex.ToString());
-            WriteIndent();
-            WriteName("options");
-            WriteIndent();
-            WriteLine(filter.Regex.Options.ToString());
+            WriteRegex(filter.Regex);
+
             WriteIndent();
             WriteName("negative");
             WriteIndent();
@@ -503,6 +537,33 @@ namespace Orang.CommandLine
                 WriteIndent();
                 WriteLine(part.ToString());
             }
+        }
+
+        private static void WriteRegex(string name, Regex? regex)
+        {
+            WriteName(name);
+
+            if (regex == null)
+            {
+                WriteNullValue();
+                WriteLine();
+                return;
+            }
+
+            WriteRegex(regex);
+        }
+
+        private static void WriteRegex(Regex regex)
+        {
+            WriteLine();
+            WriteIndent();
+            WriteName("pattern");
+            WriteIndent();
+            WriteLine(regex.ToString());
+            WriteIndent();
+            WriteName("options");
+            WriteIndent();
+            WriteLine(regex.Options.ToString());
         }
 
         private static void WriteFilePropertyFilter(

@@ -4,11 +4,12 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Orang.Text.RegularExpressions;
 
 namespace Orang
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public class ReplaceOptions
+    public class ReplaceOptions : IReplacer
     {
         public static ReplaceOptions Empty { get; } = new ReplaceOptions("");
 
@@ -44,6 +45,15 @@ namespace Orang
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay => (Replacement != null) ? $"{Replacement}" : $"{MatchEvaluator!.Method}";
+
+        public string Replace(ICapture capture)
+        {
+            var regexCapture = (RegexCapture)capture;
+
+            var match = (Match)regexCapture.Capture;
+
+            return Replace(match);
+        }
 
         public string Replace(Match match)
         {

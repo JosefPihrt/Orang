@@ -11,13 +11,15 @@ namespace Orang.CommandLine
     {
         public static IEnumerable<SearchResult> SortResults(
             List<SearchResult> results,
-            ImmutableArray<SortDescriptor> descriptors,
+            SortOptions sortOptions,
             PathDisplayStyle pathDisplayStyle)
         {
+            ImmutableArray<SortDescriptor> descriptors = sortOptions.Descriptors;
+
             if (!descriptors.Any())
                 return results;
 
-            IComparer<SearchResult> comparer = GetComparer(descriptors[0].Property, pathDisplayStyle);
+            IComparer<SearchResult> comparer = GetComparer(descriptors[0].Property, pathDisplayStyle, sortOptions.CultureInvariant);
 
             if (descriptors.Length == 1)
             {
@@ -40,7 +42,7 @@ namespace Orang.CommandLine
 
                 for (int i = 1; i < descriptors.Length; i++)
                 {
-                    comparer = GetComparer(descriptors[i].Property, pathDisplayStyle);
+                    comparer = GetComparer(descriptors[i].Property, pathDisplayStyle, sortOptions.CultureInvariant);
 
                     sorted = (descriptors[i].Direction == SortDirection.Ascending)
                         ? sorted.ThenBy(f => f, comparer)
@@ -51,19 +53,32 @@ namespace Orang.CommandLine
             }
         }
 
-        private static SearchResultComparer GetComparer(SortProperty property, PathDisplayStyle pathDisplayStyle)
+        private static SearchResultComparer GetComparer(
+            SortProperty property,
+            PathDisplayStyle pathDisplayStyle,
+            bool cultureInvariant)
         {
-            return property switch
+            switch (property)
             {
-                SortProperty.Name => (pathDisplayStyle == PathDisplayStyle.Match)
-                    ? SearchResultComparer.Match
-                    : SearchResultComparer.Name,
+                case SortProperty.Name:
+                    if (pathDisplayStyle == PathDisplayStyle.Match)
+                    {
+                        return (cultureInvariant) ? SearchResultComparer.Match_CultureInvariant : SearchResultComparer.Match;
+                    }
+                    else
+                    {
+                        return (cultureInvariant) ? SearchResultComparer.Name_CultureInvariant : SearchResultComparer.Name;
+                    }
 
-                SortProperty.CreationTime => SearchResultComparer.CreationTime,
-                SortProperty.ModifiedTime => SearchResultComparer.ModifiedTime,
-                SortProperty.Size => SearchResultComparer.Size,
-                _ => throw new ArgumentException($"Unknown enum value '{property}'.", nameof(property)),
-            };
+                case SortProperty.CreationTime:
+                    return SearchResultComparer.CreationTime;
+                case SortProperty.ModifiedTime:
+                    return SearchResultComparer.ModifiedTime;
+                case SortProperty.Size:
+                    return SearchResultComparer.Size;
+                default:
+                    throw new ArgumentException($"Unknown enum value '{property}'.", nameof(property));
+            }
         }
     }
 }

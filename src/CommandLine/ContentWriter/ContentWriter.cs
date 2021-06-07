@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Orang.Text.RegularExpressions;
 
 namespace Orang.CommandLine
 {
@@ -48,6 +49,10 @@ namespace Orang.CommandLine
         public ConsoleColors MatchBoundaryColors => (Options.HighlightBoundary) ? Colors.MatchBoundary : default;
 
         public ConsoleColors ReplacementBoundaryColors => (Options.HighlightBoundary) ? Colors.ReplacementBoundary : default;
+
+        private ConsoleColors NoReplacementColors => (Options.HighlightReplacement) ? Colors.Match : default;
+
+        private ConsoleColors NoReplacementBoundaryColors => (Options.HighlightBoundary) ? Colors.MatchBoundary : default;
 
         public static ContentWriter CreateFind(
             ContentDisplayStyle contentDisplayStyle,
@@ -114,20 +119,21 @@ namespace Orang.CommandLine
         public static ContentWriter CreateReplace(
             ContentDisplayStyle contentDisplayStyle,
             string input,
-            ReplaceOptions replaceOptions,
+            IReplacer replacer,
             ContentWriterOptions options,
             TextWriter? textWriter = null,
-            MatchOutputInfo? outputInfo = null)
+            MatchOutputInfo? outputInfo = null,
+            SpellcheckState? spellcheckState = null)
         {
             switch (contentDisplayStyle)
             {
                 case ContentDisplayStyle.Value:
                 case ContentDisplayStyle.ValueDetail:
-                    return new ValueReplacementWriter(input, replaceOptions, options, textWriter, outputInfo);
+                    return new ValueReplacementWriter(input, replacer, options, textWriter, outputInfo, spellcheckState);
                 case ContentDisplayStyle.Line:
-                    return new LineReplacementWriter(input, replaceOptions, options, textWriter);
+                    return new LineReplacementWriter(input, replacer, options, textWriter, spellcheckState);
                 case ContentDisplayStyle.AllLines:
-                    return new AllLinesReplacementWriter(input, replaceOptions, options, textWriter);
+                    return new AllLinesReplacementWriter(input, replacer, options, textWriter, spellcheckState);
                 case ContentDisplayStyle.UnmatchedLines:
                     throw new NotSupportedException($"Value '{contentDisplayStyle}' is not supported.");
                 default:
@@ -139,13 +145,13 @@ namespace Orang.CommandLine
 
         protected abstract void WriteEndMatches();
 
-        protected abstract void WriteStartMatch(CaptureInfo capture);
+        protected abstract void WriteStartMatch(ICapture capture);
 
-        protected abstract void WriteEndMatch(CaptureInfo capture);
+        protected abstract void WriteEndMatch(ICapture capture);
 
-        protected abstract void WriteStartReplacement(Match match, string result);
+        protected abstract void WriteStartReplacement(ICapture capture, string? result);
 
-        protected abstract void WriteEndReplacement(Match match, string result);
+        protected abstract void WriteEndReplacement(ICapture capture, string? result);
 
         protected abstract void WriteMatchSeparator();
 
@@ -182,7 +188,7 @@ namespace Orang.CommandLine
             Write(" ");
         }
 
-        protected virtual void WriteMatchValue(CaptureInfo capture)
+        protected virtual void WriteMatchValue(ICapture capture)
         {
             if (capture.Length > 0)
             {
@@ -194,7 +200,7 @@ namespace Orang.CommandLine
             }
         }
 
-        protected virtual void WriteNonEmptyMatchValue(CaptureInfo capture)
+        protected virtual void WriteNonEmptyMatchValue(ICapture capture)
         {
             ValueWriter.Write(
                 Input,
@@ -205,21 +211,33 @@ namespace Orang.CommandLine
                 MatchBoundaryColors);
         }
 
-        protected virtual void WriteReplacementValue(Match match, string result)
+        protected virtual void WriteReplacementValue(ICapture capture, string? result)
         {
-            if (result.Length > 0)
+            string replacement = result ?? capture.Value;
+
+            if (replacement.Length > 0)
             {
-                WriteNonEmptyReplacementValue(result);
+                if (result != null)
+                {
+                    WriteNonEmptyReplacementValue(replacement, ReplacementColors, ReplacementBoundaryColors);
+                }
+                else
+                {
+                    WriteNonEmptyReplacementValue(replacement, NoReplacementColors, NoReplacementBoundaryColors);
+                }
             }
             else if (Options.HighlightEmptyReplacement)
             {
-                Write("|", Colors.EmptyReplacement);
+                Write("|", (result != null) ? Colors.EmptyReplacement : Colors.EmptyMatch);
             }
         }
 
-        protected virtual void WriteNonEmptyReplacementValue(string result)
+        protected virtual void WriteNonEmptyReplacementValue(
+            string result,
+            in ConsoleColors colors,
+            in ConsoleColors boundaryColors)
         {
-            ValueWriter.Write(result, Symbols, ReplacementColors, ReplacementBoundaryColors);
+            ValueWriter.Write(result, Symbols, colors, boundaryColors);
         }
 
         public virtual void WriteMatches(IEnumerable<Capture> matches, in CancellationToken cancellationToken = default)
@@ -236,7 +254,7 @@ namespace Orang.CommandLine
                     {
                         while (true)
                         {
-                            WriteMatch(CaptureInfo.FromCapture(en.Current));
+                            WriteMatch(new RegexCapture(en.Current));
                             MatchCount++;
 
                             if (en.MoveNext())
@@ -263,7 +281,7 @@ namespace Orang.CommandLine
             }
         }
 
-        public virtual void WriteMatches(IEnumerable<CaptureInfo> matches, in CancellationToken cancellationToken = default)
+        public virtual void WriteMatches(IEnumerable<ICapture> matches, in CancellationToken cancellationToken = default)
         {
             MatchCount = 0;
 
@@ -271,7 +289,7 @@ namespace Orang.CommandLine
 
             try
             {
-                using (IEnumerator<CaptureInfo> en = matches.GetEnumerator())
+                using (IEnumerator<ICapture> en = matches.GetEnumerator())
                 {
                     if (en.MoveNext())
                     {
@@ -304,7 +322,42 @@ namespace Orang.CommandLine
             }
         }
 
-        protected virtual void WriteMatch(CaptureInfo capture)
+        internal void WriteMatches(IEnumerator<ICapture> en, in CancellationToken cancellationToken = default)
+        {
+            MatchCount = 0;
+
+            WriteStartMatches();
+
+            try
+            {
+                while (true)
+                {
+                    WriteMatch(en.Current);
+                    MatchCount++;
+
+                    if (en.MoveNext())
+                    {
+                        WriteMatchSeparator();
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            finally
+            {
+                WriteEndMatches();
+            }
+        }
+
+        protected virtual void WriteMatch(ICapture capture)
         {
             WriteStartMatch(capture);
 
@@ -313,13 +366,13 @@ namespace Orang.CommandLine
             WriteEndMatch(capture);
         }
 
-        protected virtual void WriteReplacement(Match match, string result)
+        protected virtual void WriteReplacement(ICapture capture, string? result)
         {
-            WriteStartReplacement(match, result);
+            WriteStartReplacement(capture, result);
 
-            WriteReplacementValue(match, result);
+            WriteReplacementValue(capture, result);
 
-            WriteEndReplacement(match, result);
+            WriteEndReplacement(capture, result);
         }
 
         protected void WriteStartLine(int index, int endIndex)
@@ -371,7 +424,7 @@ namespace Orang.CommandLine
             WriteLine();
         }
 
-        protected int FindStartOfLine(CaptureInfo capture)
+        protected int FindStartOfLine(ICapture capture)
         {
             return FindStartOfLine(capture.Index);
         }
@@ -387,7 +440,7 @@ namespace Orang.CommandLine
             return index;
         }
 
-        protected int FindEndOfLine(CaptureInfo capture)
+        protected int FindEndOfLine(ICapture capture)
         {
             int index = capture.Index + capture.Length;
 

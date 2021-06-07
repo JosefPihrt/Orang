@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Orang.Text.RegularExpressions;
 
 namespace Orang
 {
@@ -152,12 +153,12 @@ namespace Orang
             string input,
             int count,
             Func<string, bool>? predicate,
-            ref List<CaptureInfo> splits,
+            ref List<ICapture> splits,
             CancellationToken cancellationToken)
         {
             var maxReason = MaxReason.None;
 
-            using (IEnumerator<CaptureInfo>? en = ((regex.RightToLeft)
+            using (IEnumerator<ICapture>? en = ((regex.RightToLeft)
                 ? GetSplitsRightToLeft(match, input)
                 : GetSplits(match, input))
                 .GetEnumerator())
@@ -187,7 +188,7 @@ namespace Orang
             return maxReason;
         }
 
-        private static IEnumerable<CaptureInfo> GetSplits(
+        private static IEnumerable<SplitCapture> GetSplits(
             Match match,
             string input)
         {
@@ -197,14 +198,14 @@ namespace Orang
 
             do
             {
-                yield return new CaptureInfo(input[prevIndex..match.Index], prevIndex);
+                yield return new SplitCapture(input[prevIndex..match.Index], prevIndex);
 
                 if (match.Groups.Count > 1)
                 {
                     groups = AddGroups(match, ref groups, (x, y) => x.Index.CompareTo(y.Index));
 
                     foreach (Group group in groups)
-                        yield return CaptureInfo.FromCapture(group);
+                        yield return new SplitCapture(group);
                 }
 
                 prevIndex = match.Index + match.Length;
@@ -213,10 +214,10 @@ namespace Orang
 
             } while (match.Success);
 
-            yield return new CaptureInfo(input[prevIndex..], prevIndex);
+            yield return new SplitCapture(input[prevIndex..], prevIndex);
         }
 
-        private static IEnumerable<CaptureInfo> GetSplitsRightToLeft(
+        private static IEnumerable<SplitCapture> GetSplitsRightToLeft(
             Match match,
             string input)
         {
@@ -228,14 +229,14 @@ namespace Orang
             {
                 int endIndex = match.Index + match.Length;
 
-                yield return new CaptureInfo(input[endIndex..prevIndex], endIndex);
+                yield return new SplitCapture(input[endIndex..prevIndex], endIndex);
 
                 if (match.Groups.Count > 1)
                 {
                     groups = AddGroups(match, ref groups, (x, y) => -x.Index.CompareTo(y.Index));
 
                     foreach (Group group in groups)
-                        yield return CaptureInfo.FromCapture(group);
+                        yield return new SplitCapture(group);
                 }
 
                 prevIndex = match.Index;
@@ -244,7 +245,7 @@ namespace Orang
 
             } while (match.Success);
 
-            yield return new CaptureInfo(input.Substring(0, prevIndex), 0);
+            yield return new SplitCapture(input.Substring(0, prevIndex), 0);
         }
 
         private static List<Group> AddGroups(Match match, ref List<Group>? groups, Comparison<Group> comparison)

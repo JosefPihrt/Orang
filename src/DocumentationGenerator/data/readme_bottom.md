@@ -4,7 +4,7 @@ Code | Comment
 --- | ---
 0 | Match found
 1 | No match found
-2 | Error occured or execution canceled
+2 | Error occurred or execution canceled
 
 ## Redirected/Piped Input
 

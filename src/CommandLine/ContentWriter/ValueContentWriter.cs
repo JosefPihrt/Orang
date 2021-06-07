@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Text.RegularExpressions;
-
 namespace Orang.CommandLine
 {
     internal class ValueContentWriter : ContentWriter
@@ -50,7 +48,7 @@ namespace Orang.CommandLine
         {
         }
 
-        protected override void WriteStartMatch(CaptureInfo capture)
+        protected override void WriteStartMatch(ICapture capture)
         {
             ResultStorage?.Add(capture.Value);
 
@@ -64,7 +62,7 @@ namespace Orang.CommandLine
                 Write(OutputInfo.GetText(capture, MatchCount + 1, groupName: Options.GroupName));
         }
 
-        protected override void WriteEndMatch(CaptureInfo capture)
+        protected override void WriteEndMatch(ICapture capture)
         {
         }
 
@@ -80,11 +78,11 @@ namespace Orang.CommandLine
             }
         }
 
-        protected override void WriteStartReplacement(Match match, string result)
+        protected override void WriteStartReplacement(ICapture capture, string? result)
         {
         }
 
-        protected override void WriteEndReplacement(Match match, string result)
+        protected override void WriteEndReplacement(ICapture capture, string? result)
         {
         }
 

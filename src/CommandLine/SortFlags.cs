@@ -14,5 +14,6 @@ namespace Orang.CommandLine
         CreationTime = 1 << 3,
         ModifiedTime = 1 << 4,
         Size = 1 << 5,
+        CultureInvariant = 1 << 6,
     }
 }

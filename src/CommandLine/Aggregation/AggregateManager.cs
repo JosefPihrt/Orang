@@ -248,7 +248,7 @@ namespace Orang.Aggregation
                     ? PathDisplayStyle.Relative
                     : PathDisplayStyle.Full;
 
-                sections = SortHelpers.SortResults(results, sortOptions.Descriptors, pathDisplayStyle)
+                sections = SortHelpers.SortResults(results, sortOptions, pathDisplayStyle)
                     .Select(f => new StorageSection(f.FileMatch, f.BaseDirectoryPath, -1));
             }
 

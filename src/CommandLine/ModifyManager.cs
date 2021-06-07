@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using Orang.Aggregation;
-using static Orang.Logger;
 
 namespace Orang.CommandLine
 {
@@ -21,7 +20,7 @@ namespace Orang.CommandLine
 
         internal IResultStorage? FileStorage { get; private set; }
 
-        private OutputSymbols Symbols
+        internal OutputSymbols Symbols
         {
             get
             {
@@ -55,35 +54,6 @@ namespace Orang.CommandLine
 
             if (FileStorage == null)
                 FileStorage = new ListResultStorage(FileValues);
-        }
-
-        public void WriteValues(string indent, SearchTelemetry telemetry, AggregateManager? aggregate)
-        {
-            ConsoleColors colors = default;
-
-            if (Options.HighlightMatch)
-            {
-                if (Options.ContentDisplayStyle == ContentDisplayStyle.Value
-                    || Options.ContentDisplayStyle == ContentDisplayStyle.ValueDetail)
-                {
-                    colors = Colors.Match;
-                }
-            }
-
-            var valueWriter = new ValueWriter(
-                ContentTextWriter.Default,
-                indent,
-                includeEndingIndent: false);
-
-            foreach (string value in FileValues!.Modify(Options.ModifyOptions))
-            {
-                Write(indent, Verbosity.Normal);
-                valueWriter.Write(value, Symbols, colors, Colors.MatchBoundary);
-                WriteLine(Verbosity.Normal);
-
-                aggregate?.Storage.Add(value);
-                telemetry.MatchCount++;
-            }
         }
     }
 }

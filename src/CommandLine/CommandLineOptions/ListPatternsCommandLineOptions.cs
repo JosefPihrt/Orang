@@ -36,7 +36,7 @@ namespace Orang.CommandLine
         [Option(
             shortName: OptionShortNames.Options,
             longName: OptionNames.Options,
-            HelpText = "Regex options that should be used. Relevant values are [e]cma-[s]cript or [i]gnore-case.",
+            HelpText = "Regex options that should be used. Relevant values are ecma-script or ignore-case.",
             MetaValue = MetaValues.RegexOptions)]
         public IEnumerable<string> Options { get; set; } = null!;
 

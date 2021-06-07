@@ -23,14 +23,17 @@ namespace Orang.CommandLine
         {
             Verbosity verbosity = ConsoleOut.Verbosity;
 
-            if (verbosity >= Verbosity.Detailed
-                || includeCount)
+            if (count >= 0)
             {
-                verbosity = (includeCount) ? Verbosity.Minimal : Verbosity.Detailed;
+                if (verbosity >= Verbosity.Detailed
+                    || includeCount)
+                {
+                    verbosity = (includeCount) ? Verbosity.Minimal : Verbosity.Detailed;
 
-                ConsoleOut.Write("  ", Colors.Message_OK, verbosity);
-                ConsoleOut.Write(count.ToString("n0"), Colors.Message_OK, verbosity);
-                ConsoleOut.WriteIf(maxReason == MaxReason.CountExceedsMax, "+", Colors.Message_OK, verbosity);
+                    ConsoleOut.Write("  ", Colors.Message_OK, verbosity);
+                    ConsoleOut.Write(count.ToString("n0"), Colors.Message_OK, verbosity);
+                    ConsoleOut.WriteIf(maxReason == MaxReason.CountExceedsMax, "+", Colors.Message_OK, verbosity);
+                }
             }
 
             ConsoleOut.WriteLine(Verbosity.Minimal);

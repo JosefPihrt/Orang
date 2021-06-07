@@ -2,19 +2,11 @@
 
 namespace Orang.CommandLine
 {
-    internal sealed class ReplaceCommandOptions : CommonFindCommandOptions
+    internal sealed class ReplaceCommandOptions : CommonReplaceCommandOptions
     {
         internal ReplaceCommandOptions()
         {
         }
-
-        public string? Input { get; internal set; }
-
-        public bool DryRun { get; internal set; }
-
-        public ReplaceOptions ReplaceOptions { get; internal set; } = null!;
-
-        public bool Interactive { get; internal set; }
 
         protected override void WriteDiagnosticCore()
         {

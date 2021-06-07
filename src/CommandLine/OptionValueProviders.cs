@@ -90,6 +90,16 @@ namespace Orang.CommandLine
                 OptionValues.Part,
                 OptionValues.PatternOptions_Negative);
 
+        public static OptionValueProvider PatternOptions_Word_Provider { get; }
+            = PatternOptionsProvider.WithoutValues(
+                OptionValueProviderNames.PatternOptions_Word,
+                OptionValues.Group,
+                OptionValues.Length,
+                OptionValues.PatternOptions_Negative,
+                OptionValues.Part,
+                OptionValues.PatternOptions_RightToLeft
+        );
+
         public static OptionValueProvider ExtensionOptionsProvider { get; } = new OptionValueProvider(
             MetaValues.ExtensionOptions,
             OptionValues.PatternOptions_CaseSensitive,
@@ -107,13 +117,13 @@ namespace Orang.CommandLine
             SimpleOptionValue.Create(
                 RegexOptions.CultureInvariant,
                 shortValue: "ci",
-                helpValue: "c[ulture]-i[nvariant]",
+                helpValue: "c[ulture-]i[nvariant]",
                 description: "Ignore cultural differences between languages."),
             SimpleOptionValue.Create(
                 RegexOptions.ECMAScript,
                 value: "ecma-script",
                 shortValue: "es",
-                helpValue: "e[cma]-s[cript]",
+                helpValue: "e[cma-]s[cript]",
                 description: "Enable ECMAScript-compliant behavior for the expression."),
             SimpleOptionValue.Create(
                 RegexOptions.ExplicitCapture,
@@ -212,7 +222,7 @@ namespace Orang.CommandLine
             SimpleOptionValue.Create(FileSystemAttributes.NotContentIndexed, shortValue: "", hidden: true),
             SimpleOptionValue.Create(FileSystemAttributes.Offline, shortValue: ""),
             SimpleOptionValue.Create(FileSystemAttributes.ReadOnly),
-            SimpleOptionValue.Create(FileSystemAttributes.ReparsePoint, shortValue: "rp", helpValue: "r[eparse]-p[oint]"),
+            SimpleOptionValue.Create(FileSystemAttributes.ReparsePoint, shortValue: "rp", helpValue: "r[eparse-]p[oint]"),
             SimpleOptionValue.Create(FileSystemAttributes.SparseFile, shortValue: "", hidden: true),
             SimpleOptionValue.Create(FileSystemAttributes.System),
             SimpleOptionValue.Create(FileSystemAttributes.Temporary, shortValue: "")
@@ -474,6 +484,10 @@ namespace Orang.CommandLine
                 shortValue: "ct",
                 helpValue: "c[reation-]t[ime]",
                 description: "Sort items by creation time."),
+            SimpleOptionValue.Create(
+                SortFlags.CultureInvariant,
+                shortValue: "ci",
+                description: "Ignore cultural differences between languages."),
             SimpleOptionValue.Create(SortFlags.Descending, description: "Sort items in descending order."),
             OptionValues.MaxCount,
             SimpleOptionValue.Create(

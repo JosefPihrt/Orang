@@ -60,6 +60,8 @@ namespace Orang.CommandLine
 
         public ContentDisplayStyle ContentDisplayStyle => Format.ContentDisplayStyle;
 
+        public bool OmitContent => ContentDisplayStyle == ContentDisplayStyle.Omit;
+
         public PathDisplayStyle PathDisplayStyle => Format.PathDisplayStyle;
 
         public bool OmitPath => PathDisplayStyle == PathDisplayStyle.Omit;

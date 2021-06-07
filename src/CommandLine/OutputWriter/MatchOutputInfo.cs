@@ -174,14 +174,14 @@ namespace Orang
         }
 
         public static MatchOutputInfo Create(
-            List<CaptureInfo> splits,
+            List<ICapture> splits,
             OutputCaptions? captions = null,
             string? prefixSeparator = null)
         {
             int maxIndex = 0;
             int maxLength = 0;
 
-            foreach (CaptureInfo capture in splits)
+            foreach (ICapture capture in splits)
             {
                 maxIndex = Math.Max(maxIndex, capture.Index);
                 maxLength = Math.Max(maxLength, capture.Length);
@@ -227,7 +227,7 @@ namespace Orang
         }
 
         public string GetText(
-            CaptureInfo capture,
+            ICapture capture,
             int matchNumber,
             string? groupName)
         {

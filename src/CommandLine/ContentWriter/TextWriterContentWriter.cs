@@ -2,50 +2,65 @@
 
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace Orang.CommandLine
 {
-    internal class TextWriterContentWriter : ContentWriter
+    internal class TextWriterContentWriter : ContentWriter, IReportReplacement
     {
-        private readonly TextWriter _textWriter;
+        private readonly TextWriter? _textWriter;
         private int _writerIndex;
 
         public TextWriterContentWriter(
             string input,
-            ReplaceOptions replaceOptions,
-            TextWriter textWriter,
-            ContentWriterOptions options) : base(input, options)
+            IReplacer replacer,
+            ContentWriterOptions options,
+            TextWriter? textWriter = null,
+            SpellcheckState? spellcheckState = null) : base(input, options)
         {
-            ReplaceOptions = replaceOptions;
+            Replacer = replacer;
             _textWriter = textWriter;
+            SpellcheckState = spellcheckState;
         }
 
-        public ReplaceOptions ReplaceOptions { get; }
+        public IReplacer Replacer { get; }
+
+        public SpellcheckState? SpellcheckState { get; }
+
+        public int ReplacementCount { get; private set; }
 
         protected override ValueWriter ValueWriter => throw new NotSupportedException();
 
         protected override void WriteStartMatches()
         {
+            ReplacementCount = 0;
             _writerIndex = 0;
         }
 
-        protected override void WriteStartMatch(CaptureInfo capture)
+        protected override void WriteStartMatch(ICapture capture)
         {
         }
 
-        protected override void WriteMatch(CaptureInfo capture)
+        protected override void WriteMatch(ICapture capture)
         {
-            _textWriter.Write(Input.AsSpan(_writerIndex, capture.Index - _writerIndex));
+            if (SpellcheckState?.Data.IgnoredValues.Contains(capture.Value) == true)
+                return;
 
-            string result = ReplaceOptions.Replace((Match)capture.Capture!);
+            string result = Replacer.Replace(capture);
 
-            _textWriter.Write(result);
+            if (result != null)
+            {
+                _textWriter?.Write(Input.AsSpan(_writerIndex, capture.Index - _writerIndex));
+                _textWriter?.Write(result);
 
-            _writerIndex = capture.Index + capture.Length;
+                _writerIndex = capture.Index + capture.Length;
+
+                ReplacementCount++;
+            }
+
+            SpellcheckState?.ProcessReplacement(Input, capture, result);
         }
 
-        protected override void WriteEndMatch(CaptureInfo capture)
+        protected override void WriteEndMatch(ICapture capture)
         {
         }
 
@@ -55,20 +70,22 @@ namespace Orang.CommandLine
 
         protected override void WriteEndMatches()
         {
-            _textWriter.Write(Input.AsSpan(_writerIndex, Input.Length - _writerIndex));
+            if (ReplacementCount > 0)
+                _textWriter?.Write(Input.AsSpan(_writerIndex, Input.Length - _writerIndex));
         }
 
-        protected override void WriteStartReplacement(Match match, string result)
+        protected override void WriteStartReplacement(ICapture capture, string? result)
         {
         }
 
-        protected override void WriteEndReplacement(Match match, string result)
+        protected override void WriteEndReplacement(ICapture capture, string? result)
         {
         }
 
         public override void Dispose()
         {
-            _textWriter.Dispose();
+            if (ReplacementCount > 0)
+                _textWriter?.Dispose();
         }
     }
 }

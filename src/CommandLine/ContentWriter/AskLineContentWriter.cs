@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Text.RegularExpressions;
-
 namespace Orang.CommandLine
 {
     internal class AskLineContentWriter : LineContentWriter
@@ -16,7 +14,7 @@ namespace Orang.CommandLine
 
         public bool Ask { get; set; }
 
-        protected override void WriteStartMatch(CaptureInfo capture)
+        protected override void WriteStartMatch(ICapture capture)
         {
             ResultStorage?.Add(capture.Value);
 
@@ -57,7 +55,7 @@ namespace Orang.CommandLine
             WriteStartLine(_solIndex, capture.Index);
         }
 
-        protected override void WriteEndMatch(CaptureInfo capture)
+        protected override void WriteEndMatch(ICapture capture)
         {
             int endIndex = capture.Index + capture.Length;
 

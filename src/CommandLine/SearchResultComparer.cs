@@ -8,7 +8,9 @@ namespace Orang.CommandLine
 {
     internal abstract class SearchResultComparer : Comparer<SearchResult>
     {
-        public static SearchResultComparer Name { get; } = new SearchResultNameComparer();
+        public static SearchResultComparer Name { get; } = new SearchResultNameComparer(cultureInvariant: false);
+
+        public static SearchResultComparer Name_CultureInvariant { get; } = new SearchResultNameComparer(cultureInvariant: true);
 
         public static SearchResultComparer CreationTime { get; } = new SearchResultCreationTimeComparer();
 
@@ -16,12 +18,21 @@ namespace Orang.CommandLine
 
         public static SearchResultComparer Size { get; } = new SearchResultSizeComparer();
 
-        public static SearchResultComparer Match { get; } = new SearchResultMatchComparer();
+        public static SearchResultComparer Match { get; } = new SearchResultMatchComparer(cultureInvariant: false);
+
+        public static SearchResultComparer Match_CultureInvariant { get; } = new SearchResultMatchComparer(cultureInvariant: true);
 
         public override abstract int Compare(SearchResult? x, SearchResult? y);
 
         private class SearchResultNameComparer : SearchResultComparer
         {
+            public SearchResultNameComparer(bool cultureInvariant)
+            {
+                StringComparison = (cultureInvariant) ? StringComparison.InvariantCulture : StringComparison.CurrentCulture;
+            }
+
+            public StringComparison StringComparison { get; }
+
             public override int Compare(SearchResult? x, SearchResult? y)
             {
                 if (object.ReferenceEquals(x, y))
@@ -72,7 +83,7 @@ namespace Orang.CommandLine
                         return -1;
                     }
 
-                    int diff = string.Compare(path1, i1, path2, i2, Math.Min(l1, l2), StringComparison.CurrentCulture);
+                    int diff = string.Compare(path1, i1, path2, i2, Math.Min(l1, l2), StringComparison);
 
                     if (diff != 0)
                         return diff;
@@ -155,6 +166,13 @@ namespace Orang.CommandLine
 
         private class SearchResultMatchComparer : SearchResultComparer
         {
+            public SearchResultMatchComparer(bool cultureInvariant)
+            {
+                StringComparison = (cultureInvariant) ? StringComparison.InvariantCulture : StringComparison.CurrentCulture;
+            }
+
+            public StringComparison StringComparison { get; }
+
             public override int Compare(SearchResult? x, SearchResult? y)
             {
                 if (object.ReferenceEquals(x, y))
@@ -169,7 +187,7 @@ namespace Orang.CommandLine
                 return string.Compare(
                     x.FileMatch.NameMatch!.Value,
                     y.FileMatch.NameMatch!.Value,
-                    StringComparison.CurrentCulture);
+                    StringComparison);
             }
         }
     }

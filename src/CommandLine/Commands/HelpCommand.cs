@@ -55,7 +55,7 @@ namespace Orang.CommandLine
                 Command? command = CommandLoader.LoadCommand(typeof(HelpCommand).Assembly, commandName);
 
                 if (command == null)
-                    throw new ArgumentException($"Command '{commandName}' does not exist.", nameof(commandName));
+                    throw new InvalidOperationException($"Command '{commandName}' does not exist.");
 
                 WriteCommandHelp(command, includeValues: includeValues, filter: filter);
             }

@@ -81,7 +81,8 @@ namespace Orang.CommandLine
 
             if (options.AskMode == AskMode.Value
                 && (contentDisplayStyle == ContentDisplayStyle.AllLines
-                    || contentDisplayStyle == ContentDisplayStyle.UnmatchedLines))
+                    || contentDisplayStyle == ContentDisplayStyle.UnmatchedLines
+                    || contentDisplayStyle == ContentDisplayStyle.Omit))
             {
                 string helpValue = OptionValueProviders.ContentDisplayStyleProvider
                     .GetValue(contentDisplayStyle.Value.ToString())

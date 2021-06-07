@@ -34,7 +34,7 @@ namespace Orang.CommandLine
             {
                 return !Options.OmitPath
                     || (ContentFilter != null
-                        && Options.ContentDisplayStyle != ContentDisplayStyle.Omit
+                        && !Options.OmitContent
                         && ConsoleOut.Verbosity > Verbosity.Minimal);
             }
         }
@@ -186,7 +186,7 @@ namespace Orang.CommandLine
         {
             if (!fileMatch.IsDirectory
                 && ContentFilter?.IsNegative == false
-                && Options.ContentDisplayStyle != ContentDisplayStyle.Omit
+                && !Options.OmitContent
                 && ShouldLog(Verbosity.Normal))
             {
                 string indent = GetPathIndent(baseDirectoryPath);
@@ -247,7 +247,7 @@ namespace Orang.CommandLine
             }
         }
 
-        protected void WriteMatches(ContentWriter writer, IEnumerable<Capture> captures, SearchContext context)
+        protected virtual void WriteMatches(ContentWriter writer, IEnumerable<Capture> captures, SearchContext context)
         {
             try
             {

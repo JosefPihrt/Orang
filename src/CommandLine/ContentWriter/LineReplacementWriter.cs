@@ -2,11 +2,10 @@
 
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace Orang.CommandLine
 {
-    internal class LineReplacementWriter : LineContentWriter
+    internal class LineReplacementWriter : LineContentWriter, IReportReplacement
     {
         private readonly TextWriter? _textWriter;
         private int _writerIndex;
@@ -15,15 +14,21 @@ namespace Orang.CommandLine
 
         public LineReplacementWriter(
             string input,
-            ReplaceOptions replaceOptions,
+            IReplacer replacer,
             ContentWriterOptions options,
-            TextWriter? textWriter = null) : base(input, options)
+            TextWriter? textWriter = null,
+            SpellcheckState? spellcheckState = null) : base(input, options)
         {
-            ReplaceOptions = replaceOptions;
+            Replacer = replacer;
             _textWriter = textWriter;
+            SpellcheckState = spellcheckState;
         }
 
-        public ReplaceOptions ReplaceOptions { get; }
+        public IReplacer Replacer { get; }
+
+        public SpellcheckState? SpellcheckState { get; }
+
+        public int ReplacementCount { get; private set; }
 
         protected override ValueWriter ValueWriter
         {
@@ -50,53 +55,72 @@ namespace Orang.CommandLine
 
         protected override void WriteStartMatches()
         {
+            ReplacementCount = 0;
             _writerIndex = 0;
 
             base.WriteStartMatches();
         }
 
-        protected override void WriteNonEmptyMatchValue(CaptureInfo capture)
+        protected override void WriteNonEmptyMatchValue(ICapture capture)
         {
             if (Options.HighlightMatch)
                 base.WriteNonEmptyMatchValue(capture);
         }
 
-        protected override void WriteNonEmptyReplacementValue(string result)
+        protected override void WriteNonEmptyReplacementValue(
+            string result,
+            in ConsoleColors colors,
+            in ConsoleColors boundaryColors)
         {
-            ReplacementValueWriter.Write(result, Symbols, ReplacementColors, ReplacementBoundaryColors);
+            ReplacementValueWriter.Write(result, Symbols, colors, boundaryColors);
         }
 
-        protected override void WriteEndMatch(CaptureInfo capture)
+        protected override void WriteMatch(ICapture capture)
         {
-            var match = (Match)capture.Capture!;
+            if (SpellcheckState?.Data.IgnoredValues.Contains(capture.Value) == true)
+                return;
 
-            string result = ReplaceOptions.Replace(match);
+            base.WriteMatch(capture);
+        }
 
-            WriteReplacement(match, result);
+        protected override void WriteEndMatch(ICapture capture)
+        {
+            string result = Replacer.Replace(capture);
+
+            WriteReplacement(capture, result);
 
             base.WriteEndMatch(capture);
         }
 
-        protected override void WriteEndReplacement(Match match, string result)
+        protected override void WriteEndReplacement(ICapture capture, string? result)
         {
-            _textWriter?.Write(Input.AsSpan(_writerIndex, match.Index - _writerIndex));
-            _textWriter?.Write(result);
+            if (result != null)
+            {
+                _textWriter?.Write(Input.AsSpan(_writerIndex, capture.Index - _writerIndex));
+                _textWriter?.Write(result);
 
-            _writerIndex = match.Index + match.Length;
+                _writerIndex = capture.Index + capture.Length;
 
-            base.WriteEndReplacement(match, result);
+                ReplacementCount++;
+            }
+
+            SpellcheckState?.ProcessReplacement(Input, capture, result, lineNumber: (ValueWriter as LineNumberValueWriter)?.LineNumber);
+
+            base.WriteEndReplacement(capture, result);
         }
 
         protected override void WriteEndMatches()
         {
-            _textWriter?.Write(Input.AsSpan(_writerIndex, Input.Length - _writerIndex));
+            if (ReplacementCount > 0)
+                _textWriter?.Write(Input.AsSpan(_writerIndex, Input.Length - _writerIndex));
 
             base.WriteEndMatches();
         }
 
         public override void Dispose()
         {
-            _textWriter?.Dispose();
+            if (ReplacementCount > 0)
+                _textWriter?.Dispose();
         }
     }
 }

@@ -76,10 +76,7 @@ namespace Orang.CommandLine
             {
                 string newName = Path.GetFileName(newPath);
 
-                string? newName2 = ConsoleHelpers.ReadUserInput("New name: ", newName, indent);
-
-                if (newName2 == null)
-                    throw new OperationCanceledException();
+                string newName2 = ConsoleHelpers.ReadUserInput(newName, indent + "New name: ");
 
                 newPath = newPath.Substring(0, newPath.Length - newName.Length) + newName2;
 

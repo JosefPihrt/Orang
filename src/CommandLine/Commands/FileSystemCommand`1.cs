@@ -90,6 +90,10 @@ namespace Orang.CommandLine
 
         protected abstract void WriteSummary(SearchTelemetry telemetry, Verbosity verbosity);
 
+        protected virtual void WriteBeforeSummary()
+        {
+        }
+
         protected sealed override CommandResult ExecuteCore(CancellationToken cancellationToken = default)
         {
             List<SearchResult>? results = null;
@@ -203,6 +207,8 @@ namespace Orang.CommandLine
 
             stopwatch.Stop();
 
+            WriteBeforeSummary();
+
             if (ShouldWriteSummary())
             {
                 if (context.Progress != null)
@@ -247,7 +253,7 @@ namespace Orang.CommandLine
                     pathDisplayStyle = PathDisplayStyle.Full;
                 }
 
-                results = SortHelpers.SortResults(context.Results!, sortOptions.Descriptors, pathDisplayStyle);
+                results = SortHelpers.SortResults(context.Results!, sortOptions, pathDisplayStyle);
 
                 if (sortOptions.MaxCount > 0)
                     results = results.Take(sortOptions.MaxCount);

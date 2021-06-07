@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using static Orang.Logger;
@@ -134,37 +135,29 @@ namespace Orang.CommandLine
             }
         }
 
-        public static string? ReadUserInput(
-            string prompt,
-            string defaultValue,
-            string? indent = null)
-        {
-            while (true)
-            {
-                string? s = ReadUserInput(defaultValue, indent + prompt);
-
-                if (s == null)
-                    ConsoleOut.WriteLine();
-
-                return s;
-            }
-        }
-
-        public static string? ReadUserInput(string defaultValue, string? prompt = null)
+        public static string ReadUserInput(string defaultValue, string? prompt = null)
         {
             bool treatControlCAsInput = Console.TreatControlCAsInput;
 
-            Console.TreatControlCAsInput = true;
+            try
+            {
+                Console.TreatControlCAsInput = true;
 
-            string? input = ReadUserInputImpl(defaultValue, prompt ?? "");
-
-            Console.TreatControlCAsInput = treatControlCAsInput;
-
-            return input;
+                return ReadUserInput(defaultValue, prompt ?? "", -1);
+            }
+            finally
+            {
+                Console.TreatControlCAsInput = treatControlCAsInput;
+            }
         }
 
-        public static string? ReadUserInputImpl(string defaultValue, string prompt)
+        public static string ReadUserInput(string defaultValue, string prompt, int position)
         {
+            prompt ??= "";
+
+            if (position > prompt.Length)
+                throw new ArgumentOutOfRangeException(nameof(position), position, "");
+
             Console.Write(prompt);
 
             int initTop = Console.CursorTop;
@@ -174,10 +167,37 @@ namespace Orang.CommandLine
 
             Console.Write(defaultValue);
 
+            if (position >= 0)
+                MoveCursorLeft(defaultValue.Length - position);
+
             ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
             while (keyInfo.Key != ConsoleKey.Enter)
             {
+#if DEBUG
+                if (keyInfo.KeyChar == '\0')
+                {
+                    Debug.Write(keyInfo.Key);
+                }
+                else
+                {
+                    Debug.Write((int)keyInfo.KeyChar);
+
+                    if (keyInfo.KeyChar >= 32)
+                    {
+                        Debug.Write(" ");
+                        Debug.Write(keyInfo.KeyChar);
+                    }
+                }
+
+                if (keyInfo.Modifiers != 0)
+                {
+                    Debug.Write(" ");
+                    Debug.Write(keyInfo.Modifiers);
+                }
+
+                Debug.WriteLine("");
+#endif
                 switch (keyInfo.Key)
                 {
                     case ConsoleKey.LeftArrow:
@@ -201,27 +221,7 @@ namespace Orang.CommandLine
                                     i--;
                                 }
 
-                                int offset = index - i;
-
-                                int left = Console.CursorLeft;
-                                int top = Console.CursorTop;
-
-                                while (true)
-                                {
-                                    if (offset < left)
-                                    {
-                                        left -= offset;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        offset -= left;
-                                        left = Console.WindowWidth;
-                                        top--;
-                                    }
-                                }
-
-                                Console.SetCursorPosition(left, top);
+                                MoveCursorLeft(index - i);
                                 break;
                             }
 
@@ -257,29 +257,7 @@ namespace Orang.CommandLine
                                     i++;
                                 }
 
-                                int offset = i + 1 - index;
-
-                                int left = Console.CursorLeft;
-                                int top = Console.CursorTop;
-
-                                while (true)
-                                {
-                                    int right = Console.WindowWidth - left;
-
-                                    if (offset < right)
-                                    {
-                                        left += offset;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        offset -= right;
-                                        left = 0;
-                                        top++;
-                                    }
-                                }
-
-                                Console.SetCursorPosition(left, top);
+                                MoveCursorRight(i + 1 - index);
                                 break;
                             }
 
@@ -296,23 +274,12 @@ namespace Orang.CommandLine
                         }
                     case ConsoleKey.Home:
                         {
-                            int left = (Console.CursorTop == initTop)
-                                ? prompt.Length
-                                : 0;
-
-                            Console.SetCursorPosition(left, Console.CursorTop);
+                            Console.SetCursorPosition(initLeft, initTop);
                             break;
                         }
                     case ConsoleKey.End:
                         {
-                            int remainingLineCount = Console.WindowWidth - Console.CursorLeft;
-                            int remainingCharCount = buffer.Count - GetIndex();
-
-                            int left = (remainingCharCount > remainingLineCount)
-                                ? Console.WindowWidth - 1
-                                : Console.CursorLeft + remainingCharCount;
-
-                            Console.SetCursorPosition(left, Console.CursorTop);
+                            MoveCursorRight(buffer.Count - GetIndex());
                             break;
                         }
                     case ConsoleKey.Backspace:
@@ -368,20 +335,19 @@ namespace Orang.CommandLine
                         }
                     case ConsoleKey.Escape:
                         {
-                            Console.SetCursorPosition(initLeft, initTop);
-                            Console.Write(new string(' ', buffer.Count));
-                            Console.SetCursorPosition(initLeft, initTop);
+                            Reset(useDefaultValue: buffer.Count == 0);
+                            break;
+                        }
+                    case ConsoleKey.PageDown:
+                        {
+                            if (keyInfo.Modifiers != ConsoleModifiers.Control)
+                                Reset();
 
-                            if (string.Equals(new string(buffer.ToArray()), defaultValue, StringComparison.Ordinal))
-                            {
-                                buffer.Clear();
-                            }
-                            else if (buffer.Count > 0)
-                            {
-                                Console.Write(defaultValue);
-                                buffer = defaultValue.ToList();
-                            }
-
+                            break;
+                        }
+                    case ConsoleKey.UpArrow:
+                        {
+                            Reset();
                             break;
                         }
                     default:
@@ -439,6 +405,74 @@ namespace Orang.CommandLine
                 index += Console.CursorLeft;
 
                 return index;
+            }
+
+            static void MoveCursorLeft(int count)
+            {
+                int left = Console.CursorLeft;
+                int top = Console.CursorTop;
+
+                while (true)
+                {
+                    if (count < left)
+                    {
+                        left -= count;
+                        break;
+                    }
+                    else
+                    {
+                        count -= left;
+                        left = Console.WindowWidth;
+                        top--;
+                    }
+                }
+
+                Console.SetCursorPosition(left, top);
+            }
+
+            static void MoveCursorRight(int offset)
+            {
+                int left = Console.CursorLeft;
+                int top = Console.CursorTop;
+
+                while (true)
+                {
+                    int right = Console.WindowWidth - left;
+
+                    if (offset < right)
+                    {
+                        left += offset;
+                        break;
+                    }
+                    else
+                    {
+                        offset -= right;
+                        left = 0;
+                        top++;
+                    }
+                }
+
+                Console.SetCursorPosition(left, top);
+            }
+
+            void Reset(bool useDefaultValue = false)
+            {
+                Console.SetCursorPosition(initLeft, initTop);
+                Console.Write(new string(' ', buffer.Count));
+                Console.SetCursorPosition(initLeft, initTop);
+
+                if (useDefaultValue)
+                {
+                    Console.Write(defaultValue);
+                    buffer = defaultValue.ToList();
+
+                    if (position >= 0)
+                        MoveCursorLeft(defaultValue.Length - position);
+                }
+                else
+                {
+                    buffer.Clear();
+                }
             }
         }
     }

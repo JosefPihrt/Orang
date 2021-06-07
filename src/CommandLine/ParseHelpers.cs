@@ -242,6 +242,7 @@ namespace Orang.CommandLine
                     case SortFlags.None:
                     case SortFlags.Ascending:
                     case SortFlags.Descending:
+                    case SortFlags.CultureInvariant:
                         {
                             break;
                         }
@@ -252,14 +253,17 @@ namespace Orang.CommandLine
                 }
             }
 
+            bool cultureInvariant = flags.Contains(SortFlags.CultureInvariant);
+
             if (descriptors != null)
             {
-                sortOptions = new SortOptions(descriptors.ToImmutableArray(), maxCount: maxCount);
+                sortOptions = new SortOptions(descriptors.ToImmutableArray(), cultureInvariant: cultureInvariant, maxCount: maxCount);
             }
             else
             {
                 sortOptions = new SortOptions(
                     ImmutableArray.Create(new SortDescriptor(SortProperty.Name, direction)),
+                    cultureInvariant: cultureInvariant,
                     maxCount: maxCount);
             }
 
