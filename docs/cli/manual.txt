@@ -1,4 +1,4 @@
-Orang Command-Line Tool version 0.2.0.1
+Orang Command-Line Tool version 0.2.1.0
 Usage: orang [command] [arguments]
 
 Main commands:
@@ -10,6 +10,7 @@ File System commands:
   delete         Deletes files and directories.
   move           Searches the file system for files and directories and move them to a destination directory.
   rename         Renames files and directories.
+  spellcheck     Searches the files' content for potential misspellings and typos.
 
 Regex commands:
   escape         Escapes special characters by replacing them with their escape codes.
@@ -179,7 +180,7 @@ Options:
   [    --char-group]                                 Treat character as if it is in the character group.
   [-f, --filter]      <PATTERN> [<PATTERN_OPTIONS>]  Regular expression to filter patterns (case-insensitive by default).
   [-h, --help]                                       Show command line help.
-  [-o, --options]     <REGEX_OPTIONS>                Regex options that should be used. Relevant values are [e]cma-[s]cript or [i]gnore-case.
+  [-o, --options]     <REGEX_OPTIONS>                Regex options that should be used. Relevant values are ecma-script or ignore-case.
   [-s, --section]     <SYNTAX_SECTIONS>              Syntax sections to filter.
   [-v, --verbosity]   <VERBOSITY>                    The amount of information to display in the log.
 
@@ -267,6 +268,7 @@ Options:
   [-h, --help]                                                       Show command line help.
   [-t, --highlight]           <HIGHLIGHT>                            Parts of the output to highlight.
   [-i, --include-directory]   <PATTERN> [<PATTERN_OPTIONS>]          Regular expression for a directory name.
+  [    --interactive]                                                Enable editing of a new name.
   [-m, --max-count]           <NUM>                                  Stop renaming after specified number is reached.
   [    --modify]              <REPLACE_MODIFY>                       Functions to modify result.
    -n, --name                 <PATTERN> [<PATTERN_OPTIONS>]          Regular expression for file or directory name.
@@ -304,6 +306,7 @@ Options:
   [-t, --highlight]           <HIGHLIGHT>                            Parts of the output to highlight.
   [-i, --include-directory]   <PATTERN> [<PATTERN_OPTIONS>]          Regular expression for a directory name.
   [    --input]               <INPUT> [<INPUT_OPTIONS>]              The input string to be searched.
+  [    --interactive]                                                Enable editing of a replacement.
   [-m, --max-count]           <MAX_OPTIONS>                          Stop searching after specified number is reached.
   [    --modify]              <REPLACE_MODIFY>                       Functions to modify result.
   [-n, --name]                <PATTERN> [<PATTERN_OPTIONS>]          Regular expression for file or directory name.
@@ -317,6 +320,46 @@ Options:
   [-r, --replacement]         <REPLACEMENT> [<REPLACEMENT_OPTIONS>]  Replacement pattern.
   [-s, --sort]                <SORT_OPTIONS>                         Sort matched files and directories.
   [-v, --verbosity]           <VERBOSITY>                            The amount of information to display in the log.
+
+----------
+
+Command: spellcheck
+
+Searches the files' content for potential misspellings and typos.
+
+Usage: orang spellcheck [<PATH>] [options]
+
+Arguments:
+  [<PATH>]  Path to one or more files and/or directories that should be searched.
+
+Options:
+  [    --ask]                 <ASK_MODE>                         Ask for permission after each file or value.
+  [-a, --attributes]          <ATTRIBUTES>                       File attributes that are required.
+  [-b, --attributes-to-skip]  <ATTRIBUTES>                       File attributes that should be skipped.
+  [    --case-sensitive]                                         Specifies case-sensitive matching.
+  [-c, --content]             <PATTERN> [<PATTERN_OPTIONS>]      Regular expression for files' content.
+  [-y, --display]             <DISPLAY_OPTIONS>                  Display of the results.
+  [-d, --dry-run]                                                Display which files should be updated but do not actually update any file.
+  [    --encoding]            <ENCODING>                         Encoding to use when a file does not contain BOM. Default encoding is UTF-8.
+  [-e, --extension]           EXT1[,EXT2] [<EXTENSION_OPTIONS>]  A filter for file extensions (case-insensitive by default).
+  [-h, --help]                                                   Show command line help.
+  [-t, --highlight]           <HIGHLIGHT>                        Parts of the output to highlight.
+  [-i, --include-directory]   <PATTERN> [<PATTERN_OPTIONS>]      Regular expression for a directory name.
+  [    --input]               <INPUT> [<INPUT_OPTIONS>]          The input string to be searched.
+  [    --interactive]                                            Enable editing of a replacement.
+  [-m, --max-count]           <MAX_OPTIONS>                      Stop searching after specified number is reached.
+  [    --min-word-length]                                        Specifies minimal word length to be checked. Default value is 3.
+  [-n, --name]                <PATTERN> [<PATTERN_OPTIONS>]      Regular expression for file or directory name.
+  [    --no-recurse]                                             Do not search subdirectories.
+  [-o, --output]              <PATH> [<OUTPUT_OPTIONS>]          Path to a file that should store output.
+  [    --paths]               <PATH>                             Path to one or more files and/or directories that should be searched.
+  [    --paths-from]          <FILE_PATH>                        Read the list of paths to search from a file. Paths should be separated by newlines.
+  [    --pipe]                <PIPE_MODE>                        Defines how to use redirected/piped input.
+  [    --progress]                                               Display dot (.) for every hundredth searched file or directory.
+  [-p, --properties]          <FILE_PROPERTIES>                  A filter for file properties.
+  [-s, --sort]                <SORT_OPTIONS>                     Sort matched files and directories.
+  [-v, --verbosity]           <VERBOSITY>                        The amount of information to display in the log.
+       --words                <PATH>                             Specified path to file and/or directory that contains list of allowed words.
 
 ----------
 
@@ -540,6 +583,7 @@ Values:
 <SORT_OPTIONS>
   ascending                   a   Sort items in ascending order.
   creation-time               ct  Sort items by creation time.
+  culture-invariant           ci  Ignore cultural differences between languages.
   descending                  d   Sort items in descending order.
   max-count=<NUM>             m   Show only <NUM> items.
   modified-time               mt  Sort items by last modified time.

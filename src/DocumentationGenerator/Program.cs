@@ -12,7 +12,6 @@ using DotMarkdown;
 using DotMarkdown.Linq;
 using Orang.CommandLine;
 using static DotMarkdown.Linq.MFactory;
-using System.Collections;
 using Orang.CommandLine.Help;
 
 namespace Orang.Documentation

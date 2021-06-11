@@ -38,9 +38,9 @@ Show command line help\.
 
 ##### `[-o|--options] <REGEX_OPTIONS>`
 
-Regex options that should be used\. Relevant values are \[e\]cma\-\[s\]cript or \[i\]gnore\-case\.
+Regex options that should be used\. Relevant values are ecma\-script or ignore\-case\.
 
-[\<REGEX_OPTIONS>](OptionValues.md#regex_options): `c[ompiled]`, `c[ulture]-i[nvariant]`, `e[cma]-s[cript]`, `n [explicit-capture]`, `i[gnore-case]`, `x [ignore-pattern-whitespace]`, `m[ultiline]`, `r[ight-to-left]`, `s[ingleline]`\.
+[\<REGEX_OPTIONS>](OptionValues.md#regex_options): `c[ompiled]`, `c[ulture-]i[nvariant]`, `e[cma-]s[cript]`, `n [explicit-capture]`, `i[gnore-case]`, `x [ignore-pattern-whitespace]`, `m[ultiline]`, `r[ight-to-left]`, `s[ingleline]`\.
 
 ##### `[-s|--section] <SYNTAX_SECTIONS>`
 

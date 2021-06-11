@@ -1,17 +1,17 @@
-﻿# `orang rename`
+﻿# `orang spellcheck`
 
-Renames files and directories\.
+Searches the files' content for potential misspellings and typos\.
 
 [Home](README.md#readme) &#x2022; [Synopsis](#Synopsis) &#x2022; [Arguments](#Arguments) &#x2022; [Options](#Options) &#x2022; [Samples](#Samples)
 
 ## Synopsis
 
 ```
-orang rename [<PATH>]
-[   --ask]
+orang spellcheck [<PATH>]
+[   --ask]                <ASK_MODE>
 [-a|--attributes]         <ATTRIBUTES>
 [-b|--attributes-to-skip] <ATTRIBUTES>
-[   --conflict]           <CONFLICT_RESOLUTION>
+[   --case-sensitive]
 [-c|--content]            <PATTERN> [<PATTERN_OPTIONS>]
 [-y|--display]            <DISPLAY_OPTIONS>
 [-d|--dry-run]
@@ -20,19 +20,21 @@ orang rename [<PATH>]
 [-h|--help]
 [-t|--highlight]          <HIGHLIGHT>
 [-i|--include-directory]  <PATTERN> [<PATTERN_OPTIONS>]
+[   --input]              <INPUT> [<INPUT_OPTIONS>]
 [   --interactive]
-[-m|--max-count]          <NUM>
-[   --modify]             <REPLACE_MODIFY>
- -n|--name                <PATTERN> [<PATTERN_OPTIONS>]
+[-m|--max-count]          <MAX_OPTIONS>
+[   --min-word-length]
+[-n|--name]               <PATTERN> [<PATTERN_OPTIONS>]
 [   --no-recurse]
 [-o|--output]             <PATH> [<OUTPUT_OPTIONS>]
 [   --paths]              <PATH>
 [   --paths-from]         <FILE_PATH>
+[   --pipe]               <PIPE_MODE>
 [   --progress]
 [-p|--properties]         <FILE_PROPERTIES>
-[-r|--replacement]        <REPLACEMENT> [<REPLACEMENT_OPTIONS>]
 [-s|--sort]               <SORT_OPTIONS>
 [-v|--verbosity]          <VERBOSITY>
+    --words               <PATH>
 ```
 
 ## Arguments
@@ -43,9 +45,11 @@ Path to one or more files and/or directories that should be searched\.
 
 ## Options
 
-##### `[--ask]`
+##### `[--ask] <ASK_MODE>`
 
-Ask for a permission to rename file or directory\.
+Ask for permission after each file or value\.
+
+[\<ASK_MODE>](OptionValues.md#ask_mode): `f[ile]`, `v[alue]`\.
 
 ##### `[-a|--attributes] <ATTRIBUTES>`
 
@@ -59,27 +63,25 @@ File attributes that should be skipped\.
 
 [\<ATTRIBUTES>](OptionValues.md#attributes): `archive`, `compressed`, `e[mpty]`, `encrypted`, `h[idden]`, `normal`, `offline`, `r[ead-only]`, `r[eparse-]p[oint]`, `s[ystem]`, `temporary`\.
 
-##### `[--conflict] <CONFLICT_RESOLUTION>`
+##### `[--case-sensitive]`
 
-Defines how to resolve conflict when a file/directory already exists\.
-
-[\<CONFLICT_RESOLUTION>](OptionValues.md#conflict_resolution): `a[sk]`, `o[verwrite]`, `suffix`, `s[kip]`\.
+Specifies case\-sensitive matching\.
 
 ##### `[-c|--content] <PATTERN> [<PATTERN_OPTIONS>]`
 
 Regular expression for files' content\.
 
-[\<PATTERN_OPTIONS>](OptionValues.md#pattern_options): `compiled`, `c[ulture-]i[nvariant]`, `e[cma-]s[cript]`, `e[nds-]w[ith]`, `e[quals]`, `n [explicit-capture]`, `f[rom-file]`, `g[roup]=<GROUP_NAME>`, `i[gnore-case]`, `x [ignore-pattern-whitespace]`, `li[st]`, `length=<NUM>`, `l[ist-]s[eparator]`, `l[iteral]`, `m[ultiline]`, `ne[gative]`, `r[ight-to-left]`, `s[ingleline]`, `s[tarts-]w[ith]`, `timeout=<NUM>`, `w[hole-]l[ine]`, `w[hole-word]`\.
+[\<PATTERN_OPTIONS>](OptionValues.md#pattern_options): `compiled`, `c[ulture-]i[nvariant]`, `e[cma-]s[cript]`, `e[nds-]w[ith]`, `e[quals]`, `n [explicit-capture]`, `f[rom-file]`, `i[gnore-case]`, `x [ignore-pattern-whitespace]`, `li[st]`, `length=<NUM>`, `l[ist-]s[eparator]`, `l[iteral]`, `m[ultiline]`, `r[ight-to-left]`, `s[ingleline]`, `s[tarts-]w[ith]`, `timeout=<NUM>`, `w[hole-]l[ine]`, `w[hole-word]`\.
 
 ##### `[-y|--display] <DISPLAY_OPTIONS>`
 
 Display of the results\.
 
-[\<DISPLAY_OPTIONS>](OptionValues.md#display_options): `c[reation-]t[ime]`, `indent=<INDENT>`, `m[odified-]t[ime]`, `no-align`, `p[ath]=`[\<PATH_DISPLAY>](OptionValues.md#path_display), `s[ize]`, `s[eparator]=<SEPARATOR>`, `su[mmary]`\.
+[\<DISPLAY_OPTIONS>](OptionValues.md#display_options): `c[ontent]=`[\<CONTENT_DISPLAY>](OptionValues.md#content_display), `co[ntext]=<NUM>`, `b [context-before]=<NUM>`, `a [context-after]=<NUM>`, `c[ount]`, `c[reation-]t[ime]`, `indent=<INDENT>`, `l[ine-number]`, `m[odified-]t[ime]`, `no-align`, `p[ath]=`[\<PATH_DISPLAY>](OptionValues.md#path_display), `s[ize]`, `s[eparator]=<SEPARATOR>`, `su[mmary]`, `trim-line`\.
 
 ##### `[-d|--dry-run]`
 
-Display which files/directories should be renamed but do not actually rename any file/directory\.
+Display which files should be updated but do not actually update any file\.
 
 ##### `[--encoding] <ENCODING>`
 
@@ -99,31 +101,33 @@ Show command line help\.
 
 Parts of the output to highlight\.
 
-[\<HIGHLIGHT>](OptionValues.md#highlight): `n[one]`, `m[atch]`, `r[eplacement]`, `e[mpty]`\.
+[\<HIGHLIGHT>](OptionValues.md#highlight): `n[one]`, `m[atch]`, `r[eplacement]`, `e[mpty-]m[atch]`, `e[mpty-]r[eplacement]`, `e[mpty]`, `b[oundary]`, `t[ab]`, `c[arriage-]r[eturn]`, `l[ine]f[eed]`, `newline`, `space`\.
 
 ##### `[-i|--include-directory] <PATTERN> [<PATTERN_OPTIONS>]`
 
 Regular expression for a directory name\.
 
+##### `[--input] <INPUT> [<INPUT_OPTIONS>]`
+
+The input string to be searched\.
+
 ##### `[--interactive]`
 
-Enable editing of a new name\.
+Enable editing of a replacement\.
 
-##### `[-m|--max-count] <NUM>`
+##### `[-m|--max-count] <MAX_OPTIONS>`
 
-Stop renaming after specified number is reached\.
+Stop searching after specified number is reached\.
 
-##### `[--modify] <REPLACE_MODIFY>`
+[\<MAX_OPTIONS>](OptionValues.md#max_options): `<NUM>`, `m[atches]=<NUM>`\.
 
-Functions to modify result\.
+##### `[--min-word-length]`
 
-[\<REPLACE_MODIFY>](OptionValues.md#replace_modify): `ci [culture-invariant]`, `tl [to-lower]`, `tu [to-upper]`, `t[rim]`, `te [trim-end]`, `ts [trim-start]`\.
+Specifies minimal word length to be checked\. Default value is 3\.
 
-##### `-n|--name <PATTERN> [<PATTERN_OPTIONS>]`
+##### `[-n|--name] <PATTERN> [<PATTERN_OPTIONS>]`
 
 Regular expression for file or directory name\.
-
-[\<PATTERN_OPTIONS>](OptionValues.md#pattern_options): `compiled`, `c[ulture-]i[nvariant]`, `e[cma-]s[cript]`, `e[nds-]w[ith]`, `e[quals]`, `n [explicit-capture]`, `f[rom-file]`, `i[gnore-case]`, `x [ignore-pattern-whitespace]`, `li[st]`, `length=<NUM>`, `l[ist-]s[eparator]`, `l[iteral]`, `m[ultiline]`, `p[art]=`[\<NAME_PART>](OptionValues.md#name_part), `r[ight-to-left]`, `s[ingleline]`, `s[tarts-]w[ith]`, `timeout=<NUM>`, `w[hole-]l[ine]`, `w[hole-word]`\.
 
 ##### `[--no-recurse]`
 
@@ -141,6 +145,12 @@ Path to one or more files and/or directories that should be searched\.
 
 Read the list of paths to search from a file\. Paths should be separated by newlines\.
 
+##### `[--pipe] <PIPE_MODE>`
+
+Defines how to use redirected/piped input\.
+
+[\<PIPE_MODE>](OptionValues.md#pipe_mode): `t[ext]`, `p[aths]`\.
+
 ##### `[--progress]`
 
 Display dot \(\.\) for every hundredth searched file or directory\.
@@ -150,10 +160,6 @@ Display dot \(\.\) for every hundredth searched file or directory\.
 A filter for file properties\.
 
 [\<FILE_PROPERTIES>](OptionValues.md#file_properties): `c[reation-]t[ime]`, `m[odified-]t[ime]`, `s[ize]=<NUM>`\.
-
-##### `[-r|--replacement] <REPLACEMENT> [<REPLACEMENT_OPTIONS>]`
-
-Replacement pattern\.
 
 ##### `[-s|--sort] <SORT_OPTIONS>`
 
@@ -167,51 +173,20 @@ The amount of information to display in the log\.
 
 [\<VERBOSITY>](OptionValues.md#verbosity): `q[uiet]`, `m[inimal]`, `n[ormal]`, `d[etailed]`, `di[agnostic]`\.
 
+##### `--words <PATH>`
+
+Specified path to file and/or directory that contains list of allowed words\.
+
 ## Redirected/Piped Input
 
-Redirected/piped input will be used as a list of paths separated with newlines.
+Redirected/piped input will be used either as a text to be searched (default) or as a list of paths separated with newlines (when `--pipe p[aths]` is specified.
 
-## Samples
+## List of Allowed Words
 
-### Sample
-
-Remove suffix "-foo" from all files in a current directory.
-
-#### Syntax
-
-```
-orang rename ^
- --name "\-foo$" part=name-without-extension ^
- --replacement ""
-```
-
-#### Short Syntax
-
-```
-orang rename ^
- -n "\-foo$" p=w ^
- -r ""
-```
-
-Note: Syntax `--replacement ""` or `-r ""` can be omitted.
-
-### Sample
-
-Normalize file extensions to lowercase.
-
-#### Syntax
-
-```
-orang rename ^
- --name ".*" equals part=extension ^
- --modify to-lower
-```
-
-#### Short Syntax
-
-```
-orang rename -n ".*" e p=e ^
- --modify tl
-```
+* It is required to specify one or more wordlists (parameter `--words`).
+* Wordlist is defined as a text file that contains list of values separated with newlines.
+* Each value is either a valid word (for example `misspell`) or a fix in a format `<ERROR>: <FIX>` (for example `mispell: misspell`).
+* Word matching is case-insensitive by default (use option `--case-sensitive` to specify case-sensitive matching).
+* It is recommended to use [Wordb](https://github.com/JosefPihrt/Wordb/tree/main/data) wordlists that are specifically tailored to be used for spellchecking.
 
 *\(Generated with [DotMarkdown](http://github.com/JosefPihrt/DotMarkdown)\)*

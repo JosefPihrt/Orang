@@ -16,6 +16,7 @@ Search, replace, rename and delete files and its content using the power of \.NE
 | [move](move-command.md)                   | Searches the file system for files and directories and move them to a destination directory\.         |
 | [rename](rename-command.md)               | Renames files and directories\.                                                                       |
 | [replace](replace-command.md)             | Searches the file system for files and replaces its content\.                                         |
+| [spellcheck](spellcheck-command.md)       | Searches the files' content for potential misspellings and typos\.                                    |
 | [split](split-command.md)                 | Splits the input string into an list of substrings at the positions defined by a regular expression\. |
 
 
@@ -25,7 +26,7 @@ Code | Comment
 --- | ---
 0 | Match found
 1 | No match found
-2 | Error occured or execution canceled
+2 | Error occurred or execution canceled
 
 ## Redirected/Piped Input
 

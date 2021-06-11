@@ -1,3 +1,9 @@
+## 0.2.1 (2021-06-08)
+
+* Add command `spellcheck` ([commit](https://github.com/JosefPihrt/Roslynator/commit/6d815be953b0d01b9f777d4a6323cb26cc944c33))
+* Add option `--interactive` (applies to `rename` and `replace` commands) ([commit](https://github.com/JosefPihrt/Roslynator/commit/79f51787c6422087ecd408d97641c39b64770e47))
+* Add value `culture-invariant` to option `--sort` ([commit](https://github.com/JosefPihrt/Roslynator/commit/3bf8db68ad480d96b43992f6d143c6668ea58638))
+
 ## 0.2.0 (2021-01-30)
 
 ## 0.2.0-rc (2021-01-04)

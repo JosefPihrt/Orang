@@ -4,6 +4,6 @@ namespace Orang.CommandLine
 {
     internal static class PackageInfo
     {
-        public const string Version = "0.2.0";
+        public const string Version = "0.2.1";
     }
 }

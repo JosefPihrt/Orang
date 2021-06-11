@@ -22,7 +22,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentationGenerator", "D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{3A93F055-6756-4074-8F4C-E8858963604C}"
 	ProjectSection(SolutionItems) = preProject
-		..\docs\cli\AllowedValues.md = ..\docs\cli\AllowedValues.md
 		..\docs\cli\copy-command.md = ..\docs\cli\copy-command.md
 		..\docs\cli\delete-command.md = ..\docs\cli\delete-command.md
 		..\docs\cli\escape-command.md = ..\docs\cli\escape-command.md
@@ -32,9 +31,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{3A93F055-6
 		..\docs\cli\list-patterns-command.md = ..\docs\cli\list-patterns-command.md
 		..\docs\cli\match-command.md = ..\docs\cli\match-command.md
 		..\docs\cli\move-command.md = ..\docs\cli\move-command.md
+		..\docs\cli\OptionValues.md = ..\docs\cli\OptionValues.md
 		..\docs\cli\README.md = ..\docs\cli\README.md
 		..\docs\cli\rename-command.md = ..\docs\cli\rename-command.md
 		..\docs\cli\replace-command.md = ..\docs\cli\replace-command.md
+		..\docs\cli\spellcheck-command.md = ..\docs\cli\spellcheck-command.md
 		..\docs\cli\split-command.md = ..\docs\cli\split-command.md
 		..\docs\cli\sync-command.md = ..\docs\cli\sync-command.md
 	EndProjectSection

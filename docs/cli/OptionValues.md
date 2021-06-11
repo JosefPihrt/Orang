@@ -277,15 +277,16 @@
 
 ## \<SORT\_OPTIONS>
 
-| Value             |     | Description                        |
-| ----------------- | --- | ---------------------------------- |
-| ascending         | a   | Sort items in ascending order\.    |
-| creation\-time    | ct  | Sort items by creation time\.      |
-| descending        | d   | Sort items in descending order\.   |
-| max\-count=\<NUM> | m   | Show only \<NUM> items\.           |
-| modified\-time    | mt  | Sort items by last modified time\. |
-| name              | n   | Sort items by full name\.          |
-| size              | s   | Sort items by size\.               |
+| Value              |     | Description                                     |
+| ------------------ | --- | ----------------------------------------------- |
+| ascending          | a   | Sort items in ascending order\.                 |
+| creation\-time     | ct  | Sort items by creation time\.                   |
+| culture\-invariant | ci  | Ignore cultural differences between languages\. |
+| descending         | d   | Sort items in descending order\.                |
+| max\-count=\<NUM>  | m   | Show only \<NUM> items\.                        |
+| modified\-time     | mt  | Sort items by last modified time\.              |
+| name               | n   | Sort items by full name\.                       |
+| size               | s   | Sort items by size\.                            |
 
 ## \<SORT\_PROPERTY>
 

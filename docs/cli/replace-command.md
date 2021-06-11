@@ -20,6 +20,7 @@ orang replace [<PATH>]
 [-t|--highlight]          <HIGHLIGHT>
 [-i|--include-directory]  <PATTERN> [<PATTERN_OPTIONS>]
 [   --input]              <INPUT> [<INPUT_OPTIONS>]
+[   --interactive]
 [-m|--max-count]          <MAX_OPTIONS>
 [   --modify]             <REPLACE_MODIFY>
 [-n|--name]               <PATTERN> [<PATTERN_OPTIONS>]
@@ -53,13 +54,13 @@ Ask for permission after each file or value\.
 
 File attributes that are required\.
 
-[\<ATTRIBUTES>](OptionValues.md#attributes): `archive`, `compressed`, `d[irectory]`, `e[mpty]`, `encrypted`, `f[ile]`, `h[idden]`, `normal`, `offline`, `r[ead-only]`, `r[eparse]-p[oint]`, `s[ystem]`, `temporary`\.
+[\<ATTRIBUTES>](OptionValues.md#attributes): `archive`, `compressed`, `d[irectory]`, `e[mpty]`, `encrypted`, `f[ile]`, `h[idden]`, `normal`, `offline`, `r[ead-only]`, `r[eparse-]p[oint]`, `s[ystem]`, `temporary`\.
 
 ##### `[-b|--attributes-to-skip] <ATTRIBUTES>`
 
 File attributes that should be skipped\.
 
-[\<ATTRIBUTES>](OptionValues.md#attributes): `archive`, `compressed`, `e[mpty]`, `encrypted`, `h[idden]`, `normal`, `offline`, `r[ead-only]`, `r[eparse]-p[oint]`, `s[ystem]`, `temporary`\.
+[\<ATTRIBUTES>](OptionValues.md#attributes): `archive`, `compressed`, `e[mpty]`, `encrypted`, `h[idden]`, `normal`, `offline`, `r[ead-only]`, `r[eparse-]p[oint]`, `s[ystem]`, `temporary`\.
 
 ##### `-c|--content <PATTERN> [<PATTERN_OPTIONS>]`
 
@@ -104,6 +105,10 @@ Regular expression for a directory name\.
 ##### `[--input] <INPUT> [<INPUT_OPTIONS>]`
 
 The input string to be searched\.
+
+##### `[--interactive]`
+
+Enable editing of a replacement\.
 
 ##### `[-m|--max-count] <MAX_OPTIONS>`
 
@@ -161,7 +166,7 @@ Replacement pattern\.
 
 Sort matched files and directories\.
 
-[\<SORT_OPTIONS>](OptionValues.md#sort_options): `a[scending]`, `c[reation-]t[ime]`, `d[escending]`, `m[ax-count]=<NUM>`, `m[odified-]t[ime]`, `n[ame]`, `s[ize]`\.
+[\<SORT_OPTIONS>](OptionValues.md#sort_options): `a[scending]`, `c[reation-]t[ime]`, `ci [culture-invariant]`, `d[escending]`, `m[ax-count]=<NUM>`, `m[odified-]t[ime]`, `n[ame]`, `s[ize]`\.
 
 ##### `[-v|--verbosity] <VERBOSITY>`
 
