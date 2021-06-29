@@ -49,7 +49,8 @@ namespace Orang.CommandLine
                     var captureInfo = new SpellingCapture(
                         spellingMatch.Value,
                         capture.Index + spellingMatch.Index,
-                        containingValue: spellingMatch.Parent);
+                        containingValue: spellingMatch.Parent,
+                        containingValueIndex: spellingMatch.ParentIndex);
 
                     if (filteredSpans == null)
                         filteredSpans = GetFilteredSpans(groups, cancellationToken);
@@ -141,17 +142,36 @@ namespace Orang.CommandLine
             if (!ShouldLog(Verbosity.Normal))
                 return;
 
-            List<NewWord> newWords = SpellcheckState.NewWords;
-
-            if (newWords.Count == 0)
-                return;
-
             var isFirst = true;
             bool isDetailed = ShouldLog(Verbosity.Detailed);
             StringComparer comparer = StringComparer.InvariantCulture;
             string contentIndent = (Options.OmitContent) ? "" : ((Options.OmitPath) ? "  " : "    ");
 
-            foreach (IGrouping<string, NewWord> grouping in newWords
+            if (ShouldLog(Verbosity.Normal))
+            {
+                foreach (IGrouping<string, SpellingFixResult> grouping in SpellcheckState.Results
+                    .Where(f => !f.HasFix && f.ContainingValue != null)
+                    .GroupBy(f => f.ContainingValue!, comparer)
+                    .OrderBy(f => f.Key, comparer))
+                {
+                    if (isFirst)
+                    {
+                        WriteLine(Verbosity.Normal);
+                        WriteLine("Words containing unknown words:", Verbosity.Normal);
+                        isFirst = false;
+                    }
+
+                    WriteLine(grouping.Key, Verbosity.Normal);
+
+                    if (isDetailed)
+                        WriteMatchingLines(grouping, comparer, contentIndent, Colors.Match, displayContainingValue: true);
+                }
+            }
+
+            isFirst = true;
+
+            foreach (IGrouping<string, SpellingFixResult> grouping in SpellcheckState.Results
+                .Where(f => !f.HasFix)
                 .GroupBy(f => f.Value, comparer)
                 .OrderBy(f => f.Key, comparer))
             {
@@ -163,8 +183,6 @@ namespace Orang.CommandLine
                 }
 
                 Write(grouping.Key, Verbosity.Normal);
-
-                var isFix = false;
 
                 if (SpellcheckState.Data.Fixes.TryGetValue(grouping.Key, out ImmutableHashSet<SpellingFix>? possibleFixes))
                 {
@@ -178,77 +196,107 @@ namespace Orang.CommandLine
                     {
                         Write(": ", Colors.ContextLine, Verbosity.Normal);
 
-                        WriteLine(
+                        Write(
                             string.Join(", ", fixes.Select(f => TextUtility.SetTextCasing(f.Value, TextUtility.GetTextCasing(grouping.Key)))),
                             Colors.Replacement,
                             Verbosity.Normal);
-
-                        isFix = true;
                     }
                 }
 
-                if (!isFix)
-                    WriteLine(Verbosity.Normal);
+                WriteLine(Verbosity.Normal);
 
                 if (isDetailed)
-                {
-                    foreach (IGrouping<string?, NewWord> grouping2 in grouping
-                        .GroupBy(f => f.FilePath)
-                        .OrderBy(f => f.Key, comparer))
-                    {
-                        if (!Options.OmitPath)
-                        {
-                            Write("  ", Verbosity.Detailed);
-                            WriteLine(grouping2.Key, Colors.Matched_Path, Verbosity.Detailed);
-                        }
-
-                        if (!Options.OmitContent)
-                        {
-                            foreach (NewWord newWord in grouping2.OrderBy(f => f.LineNumber))
-                            {
-                                Write(contentIndent, Verbosity.Detailed);
-
-                                if (newWord.LineNumber != null)
-                                {
-                                    Write(newWord.LineNumber.Value.ToString(), Colors.LineNumber, Verbosity.Detailed);
-                                    Write(" ", Verbosity.Detailed);
-                                }
-
-                                string line = newWord.Line;
-                                string value = newWord.Value;
-                                int lineCharIndex = newWord.LineCharIndex;
-                                int endIndex = lineCharIndex + value.Length;
-
-                                Write(line.Substring(0, lineCharIndex), Verbosity.Detailed);
-                                Out?.Write(">>>", Verbosity.Detailed);
-                                Write(line.Substring(lineCharIndex, value.Length), Colors.Match, Verbosity.Detailed);
-                                Out?.Write("<<<", Verbosity.Detailed);
-                                WriteLine(line[endIndex..], Verbosity.Detailed);
-                            }
-                        }
-                    }
-                }
+                    WriteMatchingLines(grouping, comparer, contentIndent, Colors.Match);
             }
 
-            if (ShouldLog(Verbosity.Detailed))
+            WriteResults(SpellingFixKind.Predefined, "Auto fixes:", contentIndent, comparer, isDetailed: isDetailed);
+            WriteResults(SpellingFixKind.User, "User-applied fixes:", contentIndent, comparer, isDetailed: isDetailed);
+        }
+
+        private void WriteResults(
+            SpellingFixKind kind,
+            string heading,
+            string indent,
+            StringComparer comparer,
+            bool isDetailed)
+        {
+            var isFirst = true;
+
+            foreach (IGrouping<string, SpellingFixResult> grouping in SpellcheckState.Results
+                .Where(f => f.Kind == kind)
+                .OrderBy(f => f.Value)
+                .ThenBy(f => f.Replacement)
+                .GroupBy(f => $"{f.Value}: {f.Replacement}"))
             {
-                isFirst = true;
-
-                foreach (string containingValue in newWords
-                    .Select(f => f.ContainingValue)
-                    .Where(f => f != null)
-                    .Select(f => f!)
-                    .Distinct()
-                    .OrderBy(f => f))
+                if (isFirst)
                 {
-                    if (isFirst)
-                    {
-                        WriteLine(Verbosity.Normal);
-                        WriteLine("Words containing unknown words:", Verbosity.Normal);
-                        isFirst = false;
-                    }
+                    WriteLine(Verbosity.Normal);
+                    WriteLine(heading, Verbosity.Normal);
+                    isFirst = false;
+                }
 
-                    WriteLine(containingValue, Verbosity.Normal);
+                WriteLine(grouping.Key, Verbosity.Normal);
+
+                if (isDetailed)
+                    WriteMatchingLines(grouping, comparer, indent, Colors.Replacement);
+            }
+        }
+
+        private void WriteMatchingLines(
+            IGrouping<string, SpellingFixResult> grouping,
+            StringComparer comparer,
+            string indent,
+            ConsoleColors colors,
+            bool displayContainingValue = false)
+        {
+            foreach (IGrouping<string?, SpellingFixResult> grouping2 in grouping
+                .GroupBy(f => f.FilePath)
+                .OrderBy(f => f.Key, comparer))
+            {
+                if (!Options.OmitPath)
+                {
+                    Write("  ", Verbosity.Detailed);
+                    WriteLine(grouping2.Key, Colors.Matched_Path, Verbosity.Detailed);
+                }
+
+                if (!Options.OmitContent)
+                {
+                    foreach (SpellingFixResult result in grouping2.OrderBy(f => f.LineNumber))
+                    {
+                        Write(indent, Verbosity.Detailed);
+
+                        if (result.LineNumber != null)
+                        {
+                            Write(result.LineNumber.Value.ToString(), Colors.LineNumber, Verbosity.Detailed);
+                            Write(" ", Verbosity.Detailed);
+                        }
+
+                        int lineStartIndex = result.LineStartIndex;
+                        int lineEndIndex = result.LineEndIndex;
+
+                        string value;
+                        int index;
+                        int endIndex;
+
+                        if (displayContainingValue)
+                        {
+                            value = result.ContainingValue!;
+                            index = result.ContainingValueIndex;
+                            endIndex = result.ContainingValueIndex + value.Length;
+                        }
+                        else
+                        {
+                            value = result.Replacement ?? result.Value;
+                            index = result.Index;
+                            endIndex = result.Index + result.Length;
+                        }
+
+                        Write(result.Input.AsSpan(lineStartIndex, index - lineStartIndex), Verbosity.Detailed);
+                        Out?.Write(">>>", Verbosity.Detailed);
+                        Write(value, colors, Verbosity.Detailed);
+                        Out?.Write("<<<", Verbosity.Detailed);
+                        WriteLine(result.Input.AsSpan(endIndex, lineEndIndex - endIndex), Verbosity.Detailed);
+                    }
                 }
             }
         }
@@ -257,7 +305,7 @@ namespace Orang.CommandLine
         public void SaveNewValues(
             SpellingData spellingData,
             FixList originalFixList,
-            List<NewWord> newWords,
+            List<SpellingFixResult> results,
             string? newWordsPath = null,
             string? newFixesPath = null,
             string? outputPath = null,
@@ -316,7 +364,7 @@ namespace Orang.CommandLine
             if (newWordsPath != null)
             {
                 HashSet<string> newValues = spellingData.IgnoredValues
-                    .Concat(newWords.Select(f => f.Value))
+                    .Concat(results.Select(f => f.Value))
                     .Except(spellingData.Fixes.Items.Select(f => f.Key), WordList.DefaultComparer)
                     .ToHashSet(comparer);
 
@@ -337,7 +385,7 @@ namespace Orang.CommandLine
                     possibleNewFixes.AddRange(possibleFixes.Select(f => FixList.GetItemText(value, f)));
                 }
 
-                IEnumerable<string> compoundWords = newWords
+                IEnumerable<string> compoundWords = results
                     .Select(f => f.ContainingValue)
                     .Where(f => f != null)
                     .Select(f => f!);
@@ -346,43 +394,40 @@ namespace Orang.CommandLine
             }
 
             if (outputPath != null
-                && newWords.Count > 0)
+                && results.Count > 0)
             {
                 using (var writer = new StreamWriter(outputPath, false, Encoding.UTF8))
                 {
-                    foreach (IGrouping<string, NewWord> grouping in newWords
+                    foreach (IGrouping<string, SpellingFixResult> grouping in results
                         .GroupBy(f => f.Value, comparer)
                         .OrderBy(f => f.Key, comparer))
                     {
                         writer.WriteLine(grouping.Key);
 
-                        foreach (IGrouping<string?, NewWord> grouping2 in grouping
+                        foreach (IGrouping<string?, SpellingFixResult> grouping2 in grouping
                             .GroupBy(f => f.FilePath)
                             .OrderBy(f => f.Key, comparer))
                         {
                             writer.Write("  ");
                             writer.WriteLine(grouping2.Key);
 
-                            foreach (NewWord newWord in grouping2.OrderBy(f => f.LineNumber))
+                            foreach (SpellingFixResult result in grouping2.OrderBy(f => f.LineNumber))
                             {
                                 writer.Write("    ");
 
-                                if (newWord.LineNumber != null)
+                                if (result.LineNumber != null)
                                 {
-                                    writer.Write(newWord.LineNumber.Value);
+                                    writer.Write(result.LineNumber.Value);
                                     writer.Write(" ");
                                 }
 
-                                string line = newWord.Line;
-                                string value = newWord.Value;
-                                int lineCharIndex = newWord.LineCharIndex;
-                                int endIndex = lineCharIndex + value.Length;
+                                int endIndex = result.Index + result.Length;
 
-                                writer.Write(line.AsSpan(0, lineCharIndex));
+                                writer.Write(result.Input.AsSpan(result.LineStartIndex, result.Index - result.LineStartIndex));
                                 writer.Write(">>>");
-                                writer.Write(line.AsSpan(lineCharIndex, value.Length));
+                                writer.Write(result.Value, Colors.Match);
                                 writer.Write("<<<");
-                                writer.WriteLine(line.AsSpan(endIndex, line.Length - endIndex));
+                                writer.WriteLine(result.Input.AsSpan(endIndex, result.LineEndIndex - endIndex));
                             }
                         }
                     }
@@ -390,5 +435,6 @@ namespace Orang.CommandLine
             }
         }
 #endif
+
     }
 }

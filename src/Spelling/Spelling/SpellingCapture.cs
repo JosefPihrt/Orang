@@ -7,11 +7,12 @@ namespace Orang.Spelling
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class SpellingCapture : ICapture
     {
-        public SpellingCapture(string value, int index, string? containingValue = null)
+        public SpellingCapture(string value, int index, string? containingValue = null, int containingValueIndex = -1)
         {
             Value = value;
             Index = index;
             ContainingValue = containingValue;
+            ContainingValueIndex = containingValueIndex;
         }
 
         public string Value { get; }
@@ -21,6 +22,8 @@ namespace Orang.Spelling
         public int Length => Value.Length;
 
         public string? ContainingValue { get; }
+
+        public int ContainingValueIndex { get; }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebuggerDisplay => $"{Index}  {Length}  {Value}";

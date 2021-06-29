@@ -112,8 +112,9 @@ namespace Orang
             {
                 ConsoleColors tmp = Colors;
                 Colors = colors;
-                WriteLine(value);
+                Write(value);
                 Colors = tmp;
+                WriteLine();
             }
             else
             {
@@ -133,8 +134,9 @@ namespace Orang
             {
                 ConsoleColors tmp = Colors;
                 Colors = colors;
-                WriteLine(buffer);
+                Write(buffer);
                 Colors = tmp;
+                WriteLine();
             }
             else
             {

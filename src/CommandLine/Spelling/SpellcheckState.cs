@@ -29,7 +29,7 @@ namespace Orang.CommandLine
 
         internal FixList OriginalFixes { get; }
 
-        public List<NewWord> NewWords { get; } = new List<NewWord>();
+        public List<SpellingFixResult> Results { get; } = new List<SpellingFixResult>();
 
         public string? CurrentPath { get; set; }
 
@@ -60,11 +60,13 @@ namespace Orang.CommandLine
 
         public void ProcessReplacement(string input, ICapture capture, string? newValue, int? lineNumber = null, bool isUserInput = false)
         {
+            SpellingFix fix = default;
+
             if (newValue != null)
             {
                 if (!string.Equals(capture.Value, newValue, StringComparison.Ordinal))
                 {
-                    var fix = new SpellingFix(newValue, (isUserInput) ? SpellingFixKind.User : SpellingFixKind.Predefined);
+                    fix = new SpellingFix(newValue, (isUserInput) ? SpellingFixKind.User : SpellingFixKind.Predefined);
 
                     if (fix.Kind != SpellingFixKind.Predefined
                         && (fix.Kind != SpellingFixKind.User
@@ -78,59 +80,17 @@ namespace Orang.CommandLine
                 else
                 {
                     Data = Data.AddIgnoredValue(capture.Value);
-                    AddNewWord(input, (SpellingCapture)capture, lineNumber);
                 }
             }
-            else
-            {
-                AddNewWord(input, (SpellingCapture)capture, lineNumber);
-            }
-        }
 
-        private void AddNewWord(string input, SpellingCapture capture, int? lineNumber = null)
-        {
-            int lineCharIndex = GetLineCharIndex(input, capture.Index);
-            int startIndex = capture.Index - lineCharIndex;
-            int endIndex = FindEndOfLine(input, capture.Index + capture.Length);
-
-            var newWord = new NewWord(
-                capture.Value,
-                input[startIndex..endIndex],
-                lineCharIndex,
+            var result = new SpellingFixResult(
+                input,
+                (SpellingCapture)capture,
+                fix,
                 lineNumber,
-                CurrentPath,
-                capture.ContainingValue);
+                CurrentPath);
 
-            NewWords.Add(newWord);
-
-            static int GetLineCharIndex(string input, int index)
-            {
-                int count = 0;
-                while (index > 0
-                    && input[index - 1] != '\n')
-                {
-                    index--;
-                    count++;
-                }
-
-                return count;
-            }
-
-            static int FindEndOfLine(string input, int index)
-            {
-                while (index < input.Length)
-                {
-                    if (input[index] == '\r'
-                        || input[index] == '\n')
-                    {
-                        return index;
-                    }
-
-                    index++;
-                }
-
-                return input.Length;
-            }
+            Results.Add(result);
         }
     }
 }

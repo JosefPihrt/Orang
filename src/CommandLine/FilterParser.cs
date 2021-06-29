@@ -193,10 +193,18 @@ namespace Orang.CommandLine
                     }
             }
 
-            if ((patternOptions & PatternOptions.FromFile) != 0
-                && !FileSystemHelpers.TryReadAllText(pattern, out pattern, ex => WriteError(ex)))
+            if ((patternOptions & PatternOptions.FromFile) != 0)
             {
-                return false;
+                if (!FileSystemHelpers.TryReadAllText(pattern, out pattern, ex => WriteError(ex)))
+                    return false;
+
+                if (pattern.Length == 0
+                    && (patternOptions & PatternOptions.List) != 0
+                    && allowNull)
+                {
+                    pattern = null;
+                    return true;
+                }
             }
 
             pattern = BuildPattern(pattern, patternOptions, separator);

@@ -57,7 +57,19 @@ namespace Orang
             Out?.Write(value, verbosity: verbosity);
         }
 
+        public static void Write(ReadOnlySpan<char> value, Verbosity verbosity)
+        {
+            ConsoleOut.Write(value, verbosity: verbosity);
+            Out?.Write(value, verbosity: verbosity);
+        }
+
         public static void Write(string? value, in ConsoleColors colors, Verbosity verbosity)
+        {
+            ConsoleOut.Write(value, colors, verbosity);
+            Out?.Write(value, verbosity: verbosity);
+        }
+
+        public static void Write(ReadOnlySpan<char> value, in ConsoleColors colors, Verbosity verbosity)
         {
             ConsoleOut.Write(value, colors, verbosity);
             Out?.Write(value, verbosity: verbosity);
@@ -154,6 +166,12 @@ namespace Orang
         }
 
         public static void WriteLine(string? value, Verbosity verbosity)
+        {
+            ConsoleOut.WriteLine(value, verbosity: verbosity);
+            Out?.WriteLine(value, verbosity: verbosity);
+        }
+
+        public static void WriteLine(ReadOnlySpan<char> value, Verbosity verbosity)
         {
             ConsoleOut.WriteLine(value, verbosity: verbosity);
             Out?.WriteLine(value, verbosity: verbosity);
