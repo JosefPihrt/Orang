@@ -339,12 +339,6 @@ namespace Orang.CommandLine
 
                 progress?.SetBaseDirectoryPath(path);
 
-                if (Options.DisplayRelativePath
-                    && Options.IncludeBaseDirectory)
-                {
-                    WriteLine(path, Colors.BasePath, Verbosity.Minimal);
-                }
-
                 try
                 {
                     ExecuteDirectory(path, context);
@@ -456,9 +450,7 @@ namespace Orang.CommandLine
 
         private string GetPathIndent()
         {
-            return (Options.DisplayRelativePath && Options.IncludeBaseDirectory)
-                ? Options.Indent
-                : "";
+            return "";
         }
 
         protected void WriteProperties(SearchContext context, FileMatch fileMatch, ColumnWidths? columnWidths)

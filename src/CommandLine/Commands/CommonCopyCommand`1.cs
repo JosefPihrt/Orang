@@ -14,6 +14,12 @@ namespace Orang.CommandLine
     {
         protected CommonCopyCommand(TOptions options) : base(options)
         {
+            if (ShouldLog(Verbosity.Minimal))
+            {
+                PathWriter = new PathWriter(
+                    pathColors: default,
+                    relativePath: Options.DisplayRelativePath);
+            }
         }
 
         private string Target => Options.Target;
@@ -25,6 +31,8 @@ namespace Orang.CommandLine
         }
 
         protected HashSet<string>? IgnoredPaths { get; set; }
+
+        private PathWriter? PathWriter { get; }
 
         protected override void OnSearchCreating(FileSystemSearch search)
         {
@@ -164,13 +172,7 @@ namespace Orang.CommandLine
 
             if (!Options.OmitPath)
             {
-                LogHelpers.WritePath(
-                    destinationPath,
-                    basePath: Target,
-                    relativePath: Options.DisplayRelativePath,
-                    colors: default,
-                    indent: indent,
-                    verbosity: Verbosity.Minimal);
+                PathWriter?.WritePath(destinationPath, Target, indent);
 
                 WriteLine(Verbosity.Minimal);
             }
@@ -375,7 +377,7 @@ namespace Orang.CommandLine
             string path,
             string indent)
         {
-            LogHelpers.WriteFileError(ex, path, relativePath: Options.DisplayRelativePath, indent: indent);
+            LogHelpers.WriteFileError(ex, path, indent: indent);
         }
     }
 }

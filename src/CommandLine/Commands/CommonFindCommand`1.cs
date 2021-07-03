@@ -20,6 +20,13 @@ namespace Orang.CommandLine
 
         protected CommonFindCommand(TOptions options) : base(options)
         {
+            if (ShouldLog(Verbosity.Minimal))
+            {
+                PathWriter = new PathWriter(
+                    pathColors: Colors.Matched_Path,
+                    matchColors: (Options.HighlightMatch) ? Colors.Match_Path : default,
+                    relativePath: Options.DisplayRelativePath);
+            }
         }
 
         public Filter? ContentFilter => Options.ContentFilter;
@@ -27,6 +34,8 @@ namespace Orang.CommandLine
         private OutputSymbols Symbols => _symbols ??= OutputSymbols.Create(Options.HighlightOptions);
 
         protected AskMode AskMode { get; set; }
+
+        private PathWriter? PathWriter { get; }
 
         public override bool CanEndProgress
         {
@@ -72,7 +81,7 @@ namespace Orang.CommandLine
                     return Options.PathDisplayStyle switch
                     {
                         PathDisplayStyle.Full => Options.Indent,
-                        PathDisplayStyle.Relative => (Options.IncludeBaseDirectory) ? Options.DoubleIndent : Options.Indent,
+                        PathDisplayStyle.Relative => Options.Indent,
                         PathDisplayStyle.Omit => "",
                         _ => throw new InvalidOperationException(),
                     };
@@ -328,7 +337,7 @@ namespace Orang.CommandLine
             ColumnWidths? columnWidths,
             bool includeNewline)
         {
-            WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths, Colors.Match_Path);
+            WritePath(context, fileMatch, baseDirectoryPath, indent, columnWidths);
 
             if (includeNewline)
                 WriteLine(Verbosity.Minimal);
@@ -339,8 +348,7 @@ namespace Orang.CommandLine
             FileMatch fileMatch,
             string? baseDirectoryPath,
             string indent,
-            ColumnWidths? columnWidths,
-            ConsoleColors matchColors)
+            ColumnWidths? columnWidths)
         {
             if (Options.PathDisplayStyle == PathDisplayStyle.Match
                 && fileMatch.NameMatch != null
@@ -349,19 +357,12 @@ namespace Orang.CommandLine
                 if (ShouldLog(Verbosity.Minimal))
                 {
                     Write(indent, Verbosity.Minimal);
-                    Write(fileMatch.NameMatch.Value, (Options.HighlightMatch) ? matchColors : default, Verbosity.Minimal);
+                    Write(fileMatch.NameMatch.Value, (Options.HighlightMatch) ? Colors.Match_Path : default, Verbosity.Minimal);
                 }
             }
             else
             {
-                LogHelpers.WritePath(
-                    fileMatch,
-                    baseDirectoryPath,
-                    relativePath: Options.DisplayRelativePath,
-                    colors: Colors.Matched_Path,
-                    matchColors: (Options.HighlightMatch) ? matchColors : default,
-                    indent: indent,
-                    verbosity: Verbosity.Minimal);
+                PathWriter?.WritePath(fileMatch, baseDirectoryPath, indent);
             }
 
             WriteProperties(context, fileMatch, columnWidths);

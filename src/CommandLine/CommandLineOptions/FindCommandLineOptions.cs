@@ -142,8 +142,7 @@ namespace Orang.CommandLine
                 fileProperties: format.FileProperties,
                 indent: format.Indent,
                 separator: format.Separator,
-                alignColumns: format.AlignColumns,
-                includeBaseDirectory: format.IncludeBaseDirectory);
+                alignColumns: format.AlignColumns);
 
             return true;
         }

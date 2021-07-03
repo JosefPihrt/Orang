@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Orang.FileSystem;
 using Orang.Text.RegularExpressions;
 using static Orang.Logger;
@@ -59,26 +57,18 @@ namespace Orang.CommandLine
         public static void WriteFileError(
             Exception ex,
             string? path = null,
-            string? basePath = null,
-            bool relativePath = false,
-            ConsoleColors colors = default,
             string? indent = null,
             Verbosity verbosity = Verbosity.Normal)
         {
-            if (colors.IsDefault)
-                colors = Colors.Message_Warning;
-
             string message = ex.Message;
 
-            WriteLine($"{indent}ERROR: {message}", colors, verbosity);
+            WriteLine($"{indent}ERROR: {message}", Colors.Message_Warning, verbosity);
 
             if (!string.IsNullOrEmpty(path)
                 && !string.IsNullOrEmpty(message)
                 && !message.Contains(path, FileSystemHelpers.Comparison))
             {
-                Write($"{indent}PATH: ", colors, verbosity);
-                WritePath(path, basePath, relativePath: relativePath, colors: colors, verbosity: verbosity);
-                WriteLine(verbosity);
+                WriteLine($"{indent}PATH: {path}", Colors.Message_Warning, verbosity);
             }
 #if DEBUG
             WriteLine($"{indent}STACK TRACE:", verbosity);
@@ -287,154 +277,6 @@ namespace Orang.CommandLine
             Write(count, colors, verbosity);
 
             return nameWidth + countWidth + 2;
-        }
-
-        public static void WritePath(
-            FileMatch fileMatch,
-            string? basePath,
-            bool relativePath,
-            in ConsoleColors colors,
-            in ConsoleColors matchColors,
-            string indent,
-            Verbosity verbosity = Verbosity.Quiet)
-        {
-            string path = fileMatch.Path;
-            int matchIndex = fileMatch.Index;
-
-            (int startIndex, bool isWritten) = WritePathImpl(
-                path,
-                basePath,
-                relativePath,
-                colors,
-                stopAtMatch: !matchColors.IsDefault,
-                matchIndex,
-                indent,
-                verbosity);
-
-            if (!isWritten)
-            {
-                int matchLength = fileMatch.Length;
-
-                Write(path, startIndex, matchIndex - startIndex, colors: colors, verbosity);
-                Write(path, matchIndex, matchLength, matchColors, verbosity);
-                Write(path, matchIndex + matchLength, path.Length - matchIndex - matchLength, colors: colors, verbosity);
-            }
-        }
-
-        public static void WritePath(
-            FileMatch fileMatch,
-            List<ReplaceItem> items,
-            string? basePath,
-            bool relativePath,
-            in ConsoleColors colors,
-            in ConsoleColors matchColors,
-            in ConsoleColors replaceColors,
-            string indent,
-            Verbosity verbosity = Verbosity.Quiet)
-        {
-            string path = fileMatch.Path;
-            int matchIndex = fileMatch.NameSpan.Start + fileMatch.Index;
-
-            (int startIndex, bool isWritten) = WritePathImpl(
-                path,
-                basePath,
-                relativePath,
-                colors,
-                stopAtMatch: true,
-                matchIndex,
-                indent,
-                verbosity);
-
-            if (!isWritten)
-            {
-                foreach (ReplaceItem item in items)
-                {
-                    Match match = item.Match;
-
-                    Write(path, startIndex, fileMatch.NameSpan.Start + match.Index - startIndex);
-
-                    if (!matchColors.IsDefault)
-                        Write(match.Value, matchColors);
-
-                    Write(item.Value, replaceColors);
-
-                    startIndex = fileMatch.NameSpan.Start + match.Index + match.Length;
-                }
-
-                Write(path, startIndex, path.Length - startIndex);
-            }
-        }
-
-        public static void WritePath(
-            string path,
-            string? basePath = null,
-            bool relativePath = false,
-            in ConsoleColors colors = default,
-            string? indent = null,
-            Verbosity verbosity = Verbosity.Quiet)
-        {
-            WritePathImpl(path, basePath, relativePath, colors, indent: indent, verbosity: verbosity);
-        }
-
-        private static (int startIndex, bool isWritten) WritePathImpl(
-            string path,
-            string? basePath,
-            bool relativePath,
-            in ConsoleColors colors,
-            bool stopAtMatch = false,
-            int matchIndex = -1,
-            string? indent = null,
-            Verbosity verbosity = Verbosity.Quiet)
-        {
-            if (!ShouldLog(verbosity))
-                return (-1, true);
-
-            Write(indent, verbosity);
-
-            if (string.Equals(path, basePath, FileSystemHelpers.Comparison))
-            {
-                Debug.Assert(matchIndex == -1);
-                Write((relativePath) ? "." : path, colors, verbosity);
-                return (-1, true);
-            }
-
-            int startIndex = 0;
-
-            if (basePath != null
-                && path.Length > basePath.Length
-                && path.StartsWith(basePath, FileSystemHelpers.Comparison))
-            {
-                startIndex = basePath.Length;
-
-                if (FileSystemHelpers.IsDirectorySeparator(path[startIndex]))
-                    startIndex++;
-            }
-
-            if (matchIndex >= 0
-                && stopAtMatch)
-            {
-                if (matchIndex < startIndex)
-                {
-                    startIndex = matchIndex;
-
-                    Write(path, 0, startIndex, Colors.BasePath, verbosity);
-                }
-                else if (!relativePath)
-                {
-                    Write(path, 0, startIndex, Colors.BasePath, verbosity);
-                }
-
-                return (startIndex, false);
-            }
-            else
-            {
-                if (!relativePath)
-                    Write(path, 0, startIndex, Colors.BasePath, verbosity);
-
-                Write(path, startIndex, path.Length - startIndex, colors: colors, verbosity);
-
-                return (startIndex, true);
-            }
         }
     }
 }

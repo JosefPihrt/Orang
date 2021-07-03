@@ -12,8 +12,6 @@ namespace Orang.CommandLine
 {
     internal abstract class FileSystemCommandOptions : CommonRegexCommandOptions
     {
-        private string? _doubleIndent;
-
         internal FileSystemCommandOptions()
         {
         }
@@ -69,10 +67,6 @@ namespace Orang.CommandLine
         public bool DisplayRelativePath => PathDisplayStyle == PathDisplayStyle.Relative;
 
         public string Indent => Format.Indent;
-
-        internal string DoubleIndent => _doubleIndent ??= Indent + Indent;
-
-        internal bool IncludeBaseDirectory => Format.IncludeBaseDirectory;
 
         internal MatchOutputInfo? CreateOutputInfo(string input, Match match, Filter filter)
         {

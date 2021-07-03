@@ -440,6 +440,11 @@ namespace Orang.FileSystem
             return size;
         }
 
+        public static bool ContainsInvalidFileNameChars(string path)
+        {
+            return ContainsInvalidFileNameChars(path, 0);
+        }
+
         public static bool ContainsInvalidFileNameChars(string path, int startIndex)
         {
             for (int i = startIndex; i < path.Length; i++)

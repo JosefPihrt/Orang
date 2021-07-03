@@ -18,8 +18,7 @@ namespace Orang.CommandLine
             IEnumerable<FileProperty>? fileProperties = null,
             string? indent = null,
             string? separator = null,
-            bool alignColumns = true,
-            bool includeBaseDirectory = false)
+            bool alignColumns = true)
         {
             ContentDisplayStyle = contentDisplayStyle;
             PathDisplayStyle = pathDisplayStyle;
@@ -30,7 +29,6 @@ namespace Orang.CommandLine
             Indent = indent ?? DefaultIndent;
             Separator = separator;
             AlignColumns = alignColumns;
-            IncludeBaseDirectory = includeBaseDirectory;
         }
 
         public ContentDisplayStyle ContentDisplayStyle { get; }
@@ -50,8 +48,6 @@ namespace Orang.CommandLine
         public string? Separator { get; }
 
         public bool AlignColumns { get; }
-
-        public bool IncludeBaseDirectory { get; }
 
         public bool Includes(LineDisplayOptions options) => (LineOptions & options) == options;
 

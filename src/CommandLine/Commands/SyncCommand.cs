@@ -579,11 +579,13 @@ namespace Orang.CommandLine
 
         private void WritePathPrefix(string path, string prefix, ConsoleColors colors, string indent)
         {
-            Write(indent, Verbosity.Minimal);
-            Write(prefix, colors, Verbosity.Minimal);
-            Write(" ", Verbosity.Minimal);
-            LogHelpers.WritePath(path, verbosity: Verbosity.Minimal);
-            WriteLine(Verbosity.Minimal);
+            if (ShouldLog(Verbosity.Minimal))
+            {
+                Write(indent, Verbosity.Minimal);
+                Write(prefix, colors, Verbosity.Minimal);
+                Write(" ", Verbosity.Minimal);
+                WriteLine(path, verbosity: Verbosity.Minimal);
+            }
         }
 
         protected override void WriteError(SearchContext context, Exception ex, string path, string indent)

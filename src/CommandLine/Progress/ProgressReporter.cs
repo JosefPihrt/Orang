@@ -66,8 +66,6 @@ namespace Orang.FileSystem
             LogHelpers.WriteFileError(
                 value.Exception!,
                 value.Path,
-                basePath: BaseDirectoryPath,
-                colors: Colors.Message_Warning,
                 indent: Indent,
                 verbosity: Verbosity.Detailed);
         }

@@ -81,7 +81,6 @@ namespace Orang.CommandLine
 
         protected override void WriteEndReplacement(ICapture capture, string? result)
         {
-            //TODO: x
             bool isUserInput = IsInteractive
                 && (capture is RegexCapture
                     || result == null)
