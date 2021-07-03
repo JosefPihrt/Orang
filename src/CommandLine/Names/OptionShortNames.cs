@@ -23,7 +23,6 @@ namespace Orang.CommandLine
         public const char Output = 'o';
         public const char Properties = 'p';
         public const char Replacement = 'r';
-        public const char Right = 'r';
         public const char Section = 's';
         public const char Sort = 's';
         public const char Target = 'g';

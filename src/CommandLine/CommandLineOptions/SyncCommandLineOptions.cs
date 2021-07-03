@@ -28,14 +28,12 @@ namespace Orang.CommandLine
                 + "but do not actually copy/delete any file or directory.")]
         public bool DryRun { get; set; }
 
-        //TODO: rename Right > Second
         [Option(
-            shortName: OptionShortNames.Right,
-            longName: OptionNames.Right,
+            longName: OptionNames.Second,
             Required = true,
-            HelpText = "A right (second) directory to be synchronized with the left (first) directory.",
+            HelpText = "A directory to be synchronized with the first directory.",
             MetaValue = MetaValues.DirectoryPath)]
-        public string Right { get; set; } = null!;
+        public string Second { get; set; } = null!;
 
         public bool TryParse(SyncCommandOptions options)
         {
@@ -62,14 +60,14 @@ namespace Orang.CommandLine
                 return false;
             }
 
-            if (!TryEnsureFullPath(Right, out string? rightDirectory))
+            if (!TryEnsureFullPath(Second, out string? secondDirectory))
                 return false;
 
             if (!TryParseAsEnum(
                 Conflict,
                 OptionNames.Conflict,
                 out SyncConflictResolution conflictResolution,
-                defaultValue: SyncConflictResolution.LeftWins,
+                defaultValue: SyncConflictResolution.FirstWins,
                 provider: OptionValueProviders.SyncConflictResolutionProvider))
             {
                 return false;
@@ -78,7 +76,7 @@ namespace Orang.CommandLine
             options.SearchTarget = SearchTarget.All;
             options.CompareOptions = compareOptions;
             options.DryRun = DryRun;
-            options.Target = rightDirectory;
+            options.Target = secondDirectory;
             options.ConflictResolution = conflictResolution;
             options.AskMode = (Ask) ? AskMode.File : AskMode.None;
 

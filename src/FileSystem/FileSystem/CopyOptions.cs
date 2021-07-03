@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Orang.FileSystem
 {
-    //TODO: IgnoredAttributes, AllowedTimeDiff
+    //TODO: (sync) IgnoredAttributes, AllowedTimeDiff
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class CopyOptions
     {

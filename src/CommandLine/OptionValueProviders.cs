@@ -559,8 +559,8 @@ namespace Orang.CommandLine
 
         public static OptionValueProvider SyncConflictResolutionProvider { get; } = new OptionValueProvider(MetaValues.SyncConflictResolution,
             SimpleOptionValue.Create(SyncConflictResolution.Ask, description: ""),
-            SimpleOptionValue.Create(SyncConflictResolution.LeftWins, description: ""),
-            SimpleOptionValue.Create(SyncConflictResolution.RightWins, description: "")
+            SimpleOptionValue.Create(SyncConflictResolution.FirstWins, description: ""),
+            SimpleOptionValue.Create(SyncConflictResolution.SecondWins, description: "")
         );
 
         public static OptionValueProvider PipeMode { get; } = new OptionValueProvider(

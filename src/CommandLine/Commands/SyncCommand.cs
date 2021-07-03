@@ -16,7 +16,7 @@ namespace Orang.CommandLine
         CommonCopyCommand<SyncCommandOptions>,
         INotifyDirectoryChanged
     {
-        private bool _isRightToLeft;
+        private bool _isSecondToFirst;
         private HashSet<string>? _destinationPaths;
         private HashSet<string>? _ignoredPaths;
         private DirectoryData? _directoryData;
@@ -58,30 +58,30 @@ namespace Orang.CommandLine
 
             try
             {
-                _isRightToLeft = false;
+                _isSecondToFirst = false;
                 base.ExecuteDirectory(directoryPath, context);
             }
             finally
             {
-                _isRightToLeft = true;
+                _isSecondToFirst = true;
             }
 
             _ignoredPaths = _destinationPaths;
             _destinationPaths = null;
 
-            string rightDirectory = directoryPath;
+            string secondDirectory = directoryPath;
             directoryPath = Options.Target;
 
             Options.Paths = ImmutableArray.Create(new PathInfo(directoryPath, PathOrigin.None));
-            Options.Target = rightDirectory;
+            Options.Target = secondDirectory;
 
-            if (ConflictResolution == SyncConflictResolution.LeftWins)
+            if (ConflictResolution == SyncConflictResolution.FirstWins)
             {
-                ConflictResolution = SyncConflictResolution.RightWins;
+                ConflictResolution = SyncConflictResolution.SecondWins;
             }
-            else if (ConflictResolution == SyncConflictResolution.RightWins)
+            else if (ConflictResolution == SyncConflictResolution.SecondWins)
             {
-                ConflictResolution = SyncConflictResolution.LeftWins;
+                ConflictResolution = SyncConflictResolution.FirstWins;
             }
 
             base.ExecuteDirectory(directoryPath, context);
@@ -118,9 +118,9 @@ namespace Orang.CommandLine
                 {
                     if (directoryExists)
                     {
-                        Debug.Assert(!_isRightToLeft);
+                        Debug.Assert(!_isSecondToFirst);
 
-                        if (_isRightToLeft)
+                        if (_isSecondToFirst)
                             return;
 
                         if (FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.IgnoredAttributes))
@@ -129,9 +129,9 @@ namespace Orang.CommandLine
                 }
                 else if (fileExists)
                 {
-                    Debug.Assert(!_isRightToLeft);
+                    Debug.Assert(!_isSecondToFirst);
 
-                    if (_isRightToLeft)
+                    if (_isSecondToFirst)
                         return;
 
                     int diff = FileSystemHelpers.CompareLastWriteTimeUtc(
@@ -151,7 +151,7 @@ namespace Orang.CommandLine
 
                 if (preferLeft == null)
                 {
-                    if (!_isRightToLeft
+                    if (!_isSecondToFirst
                         && !isDirectory)
                     {
                         if (fileExists)
@@ -198,15 +198,14 @@ namespace Orang.CommandLine
                         }
                         else
                         {
-                            string leftPrefix = GetPrefix(invert: _isRightToLeft);
-                            string rightPrefix = GetPrefix(invert: !_isRightToLeft);
+                            string firstPrefix = GetPrefix(invert: _isSecondToFirst);
+                            string secondPrefix = GetPrefix(invert: !_isSecondToFirst);
 
-                            WritePathPrefix((_isRightToLeft) ? destinationPath : sourcePath, leftPrefix, default, indent);
-                            WritePathPrefix((_isRightToLeft) ? sourcePath : destinationPath, rightPrefix, default, indent);
+                            WritePathPrefix((_isSecondToFirst) ? destinationPath : sourcePath, firstPrefix, default, indent);
+                            WritePathPrefix((_isSecondToFirst) ? sourcePath : destinationPath, secondPrefix, default, indent);
                         }
 
-                        //TODO: 
-                        DialogResult dialogResult = ConsoleHelpers.Ask("Prefer left directory?", indent);
+                        DialogResult dialogResult = ConsoleHelpers.Ask("Prefer first directory?", indent);
 
                         switch (dialogResult)
                         {
@@ -218,7 +217,7 @@ namespace Orang.CommandLine
                             case DialogResult.YesToAll:
                                 {
                                     preferLeft = true;
-                                    ConflictResolution = SyncConflictResolution.LeftWins;
+                                    ConflictResolution = SyncConflictResolution.FirstWins;
                                     break;
                                 }
                             case DialogResult.No:
@@ -229,7 +228,7 @@ namespace Orang.CommandLine
                             case DialogResult.NoToAll:
                                 {
                                     preferLeft = false;
-                                    ConflictResolution = SyncConflictResolution.RightWins;
+                                    ConflictResolution = SyncConflictResolution.SecondWins;
                                     break;
                                 }
                             case DialogResult.None:
@@ -247,14 +246,14 @@ namespace Orang.CommandLine
                                 }
                         }
 
-                        if (_isRightToLeft)
+                        if (_isSecondToFirst)
                             preferLeft = !preferLeft;
                     }
-                    else if (ConflictResolution == SyncConflictResolution.LeftWins)
+                    else if (ConflictResolution == SyncConflictResolution.FirstWins)
                     {
                         preferLeft = true;
                     }
-                    else if (ConflictResolution == SyncConflictResolution.RightWins)
+                    else if (ConflictResolution == SyncConflictResolution.SecondWins)
                     {
                         preferLeft = false;
                     }
@@ -269,7 +268,7 @@ namespace Orang.CommandLine
                     return;
                 }
 
-                preferLeft ??= !_isRightToLeft;
+                preferLeft ??= !_isSecondToFirst;
 
                 if (isDirectory)
                 {
@@ -482,7 +481,7 @@ namespace Orang.CommandLine
             string destinationPath,
             string indent)
         {
-            //TODO: File.Exists(renamePath) ?
+            //TODO: (sync) File.Exists(renamePath)?
             string renamePath = Path.Combine(Path.GetDirectoryName(destinationPath)!, Path.GetFileName(sourcePath));
 
             WritePath(context, destinationPath, OperationKind.Rename, indent);

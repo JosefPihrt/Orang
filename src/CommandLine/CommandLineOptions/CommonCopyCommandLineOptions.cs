@@ -25,7 +25,7 @@ namespace Orang.CommandLine
             MetaValue = MetaValues.CompareOptions)]
         public IEnumerable<string> Compare { get; set; } = null!;
 
-        //TODO: rename?
+        //TODO: (sync) rename IgnoredAttributes
         [Option(
             longName: OptionNames.IgnoredAttributes,
             HelpText = "File attributes that should be ignored during comparison.",
