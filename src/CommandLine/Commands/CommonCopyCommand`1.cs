@@ -49,13 +49,11 @@ namespace Orang.CommandLine
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
         {
-            if (Options.TargetNormalized == null)
-                Options.TargetNormalized = Target.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-
+            string targetNormalized = Target.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             string pathNormalized = directoryPath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
-            if (FileSystemHelpers.IsSubdirectory(Options.TargetNormalized, pathNormalized)
-                || FileSystemHelpers.IsSubdirectory(pathNormalized, Options.TargetNormalized))
+            if (FileSystemHelpers.IsSubdirectory(targetNormalized, pathNormalized)
+                || FileSystemHelpers.IsSubdirectory(pathNormalized, targetNormalized))
             {
                 WriteWarning("Source directory cannot be subdirectory of a destination directory or vice versa.");
                 return;

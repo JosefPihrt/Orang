@@ -54,11 +54,21 @@ namespace Orang.CommandLine
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
         {
-            _destinationPaths = new HashSet<string>(FileSystemHelpers.Comparer);
+            bool secondExists = Directory.Exists(Options.Target);
+
+            if (secondExists)
+                _destinationPaths = new HashSet<string>(FileSystemHelpers.Comparer);
 
             try
             {
                 _isSecondToFirst = false;
+
+                if (Options.ConflictResolution == SyncConflictResolution.FirstWins
+                    && !secondExists)
+                {
+                    CreateDirectory(Options.Target);
+                }
+
                 base.ExecuteDirectory(directoryPath, context);
             }
             finally
@@ -66,25 +76,28 @@ namespace Orang.CommandLine
                 _isSecondToFirst = true;
             }
 
-            _ignoredPaths = _destinationPaths;
-            _destinationPaths = null;
-
-            string secondDirectory = directoryPath;
-            directoryPath = Options.Target;
-
-            Options.Paths = ImmutableArray.Create(new PathInfo(directoryPath, PathOrigin.None));
-            Options.Target = secondDirectory;
-
-            if (ConflictResolution == SyncConflictResolution.FirstWins)
+            if (secondExists)
             {
-                ConflictResolution = SyncConflictResolution.SecondWins;
-            }
-            else if (ConflictResolution == SyncConflictResolution.SecondWins)
-            {
-                ConflictResolution = SyncConflictResolution.FirstWins;
-            }
+                _ignoredPaths = _destinationPaths;
+                _destinationPaths = null;
 
-            base.ExecuteDirectory(directoryPath, context);
+                string secondDirectory = directoryPath;
+                directoryPath = Options.Target;
+
+                Options.Paths = ImmutableArray.Create(new PathInfo(directoryPath, PathOrigin.None));
+                Options.Target = secondDirectory;
+
+                if (ConflictResolution == SyncConflictResolution.FirstWins)
+                {
+                    ConflictResolution = SyncConflictResolution.SecondWins;
+                }
+                else if (ConflictResolution == SyncConflictResolution.SecondWins)
+                {
+                    ConflictResolution = SyncConflictResolution.FirstWins;
+                }
+
+                base.ExecuteDirectory(directoryPath, context);
+            }
 
             _ignoredPaths = null;
         }
@@ -132,18 +145,21 @@ namespace Orang.CommandLine
                     if (_isSecondToFirst)
                         return;
 
-                    int diff = FileSystemHelpers.CompareLastWriteTimeUtc(
-                        sourcePath,
-                        destinationPath,
-                        Options.AllowedTimeDiff);
+                    if ((Options.CompareOptions & FileCompareOptions.ModifiedTime) != 0)
+                    {
+                        int diff = FileSystemHelpers.CompareLastWriteTimeUtc(
+                            sourcePath,
+                            destinationPath,
+                            Options.AllowedTimeDiff);
 
-                    if (diff > 0)
-                    {
-                        preferLeft = true;
-                    }
-                    else if (diff < 0)
-                    {
-                        preferLeft = false;
+                        if (diff > 0)
+                        {
+                            preferLeft = true;
+                        }
+                        else if (diff < 0)
+                        {
+                            preferLeft = false;
+                        }
                     }
                 }
 
@@ -246,7 +262,15 @@ namespace Orang.CommandLine
                         }
 
                         if (_isSecondToFirst)
+                        {
                             preferLeft = !preferLeft;
+                        }
+                        else
+                        {
+                            string directoryPath = Path.GetDirectoryName(destinationPath)!;
+
+                            CreateDirectory(directoryPath);
+                        }
                     }
                     else if (ConflictResolution == SyncConflictResolution.FirstWins)
                     {
