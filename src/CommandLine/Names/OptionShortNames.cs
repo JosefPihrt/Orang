@@ -25,6 +25,7 @@ namespace Orang.CommandLine
         public const char Replacement = 'r';
         public const char Section = 's';
         public const char Sort = 's';
+        public const char Target = 'g';
         public const char Values = 'v';
         public const char Verbosity = 'v';
     }

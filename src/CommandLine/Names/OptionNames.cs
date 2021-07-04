@@ -10,6 +10,7 @@ namespace Orang.CommandLine
 {
     internal static class OptionNames
     {
+        public const string AllowedTimeDiff = "allowed-time-diff";
         public const string Ask = "ask";
         public const string Attributes = "attributes";
         public const string AttributesToSkip = "attributes-to-skip";
@@ -18,6 +19,7 @@ namespace Orang.CommandLine
         public const string Conflict = "conflict";
         public const string Content = "content";
         public const string ContentOnly = "content-only";
+        public const string DetectRename = "detect-rename";
         public const string Display = "display";
         public const string DryRun = "dry-run";
         public const string Encoding = "encoding";
@@ -30,6 +32,7 @@ namespace Orang.CommandLine
         public const string Highlight = "highlight";
         public const string CharGroup = "char-group";
         public const string IgnoreCase = "ignore-case";
+        public const string IgnoredAttributes = "ignored-attributes";
         public const string IncludeDirectory = "include-directory";
         public const string IncludingBom = "including-bom";
         public const string Input = "input";
@@ -39,6 +42,7 @@ namespace Orang.CommandLine
         public const string MinWordLength = "min-word-length";
         public const string Modifier = "modifier";
         public const string Modify = "modify";
+        public const string SyncMode = "sync-mode";
         public const string Name = "name";
         public const string NoGroups = "no-groups";
         public const string NoRecurse = "no-recurse";
@@ -51,6 +55,7 @@ namespace Orang.CommandLine
         public const string Progress = "progress";
         public const string Properties = "properties";
         public const string Replacement = "replacement";
+        public const string Second = "second";
         public const string Section = "section";
         public const string Sort = "sort";
         public const string Target = "target";

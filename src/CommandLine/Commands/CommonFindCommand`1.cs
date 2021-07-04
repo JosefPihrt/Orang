@@ -179,7 +179,8 @@ namespace Orang.CommandLine
             }
             else
             {
-                EndProgress(context);
+                if (CanEndProgress)
+                    EndProgress(context);
 
                 ExecuteMatchWithContentCore(fileMatch, context, writerOptions, baseDirectoryPath);
             }

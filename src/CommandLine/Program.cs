@@ -117,7 +117,8 @@ namespace Orang.CommandLine
                     SpellcheckCommandLineOptions,
                     RenameCommandLineOptions,
                     ReplaceCommandLineOptions,
-                    SplitCommandLineOptions
+                    SplitCommandLineOptions,
+                    SyncCommandLineOptions
                     >(args);
 
                 parserResult.WithNotParsed(_ =>
@@ -155,6 +156,7 @@ namespace Orang.CommandLine
                 return parserResult.MapResult(
                     (CopyCommandLineOptions options) => Copy(options),
                     (MoveCommandLineOptions options) => Move(options),
+                    (SyncCommandLineOptions options) => Sync(options),
                     (DeleteCommandLineOptions options) => Delete(options),
                     (EscapeCommandLineOptions options) => Escape(options),
                     (FindCommandLineOptions options) => Find(options),
@@ -340,6 +342,16 @@ namespace Orang.CommandLine
                 return ExitCodes.Error;
 
             return Execute(new SpellcheckCommand(options), commandLineOptions);
+        }
+
+        private static int Sync(SyncCommandLineOptions commandLineOptions)
+        {
+            var options = new SyncCommandOptions();
+
+            if (!commandLineOptions.TryParse(options))
+                return 1;
+
+            return Execute(new SyncCommand(options), commandLineOptions);
         }
 
         private static int Rename(RenameCommandLineOptions commandLineOptions)

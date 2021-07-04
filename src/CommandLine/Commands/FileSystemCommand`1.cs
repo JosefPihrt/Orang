@@ -379,8 +379,7 @@ namespace Orang.CommandLine
         {
             if (context.Progress?.ProgressReported == true
                 && ConsoleOut.Verbosity >= Verbosity.Minimal
-                && context.Results == null
-                && CanEndProgress)
+                && context.Results == null)
             {
                 ConsoleOut.WriteLine();
                 context.Progress.ProgressReported = false;
@@ -409,7 +408,8 @@ namespace Orang.CommandLine
             }
             else
             {
-                EndProgress(context);
+                if (CanEndProgress)
+                    EndProgress(context);
 
                 ExecuteMatchCore(fileMatch, context, baseDirectoryPath, columnWidths: null);
             }
@@ -419,10 +419,12 @@ namespace Orang.CommandLine
             string directoryPath,
             SearchContext context)
         {
+            var notifyDirectoryChanged = this as INotifyDirectoryChanged;
+
             return GetMatches(
                 directoryPath: directoryPath,
                 context: context,
-                notifyDirectoryChanged: default(INotifyDirectoryChanged));
+                notifyDirectoryChanged: notifyDirectoryChanged);
         }
 
         protected IEnumerable<FileMatch> GetMatches(

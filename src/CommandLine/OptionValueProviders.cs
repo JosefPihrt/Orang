@@ -542,6 +542,12 @@ namespace Orang.CommandLine
                 OptionValues.ConflictResolution_Suffix
         );
 
+        public static OptionValueProvider ConflictResolutionProvider_Sync { get; } = new OptionValueProvider(OptionValueProviderNames.ConflictResolution_Sync,
+            OptionValues.ConflictResolution_Ask,
+            OptionValues.ConflictResolution_Overwrite,
+            OptionValues.ConflictResolution_Skip
+        );
+
         public static OptionValueProvider FileCompareOptionsProvider { get; } = new OptionValueProvider(
             MetaValues.CompareOptions,
             SimpleOptionValue.Create(FileCompareOptions.None, description: "Compare files only by name."),
@@ -553,6 +559,12 @@ namespace Orang.CommandLine
                 helpValue: "m[odified-]t[ime]",
                 description: "Compare time a file was last modified."),
             SimpleOptionValue.Create(FileCompareOptions.Size, description: "Compare file size.")
+        );
+
+        public static OptionValueProvider SyncConflictResolutionProvider { get; } = new OptionValueProvider(MetaValues.SyncConflictResolution,
+            SimpleOptionValue.Create(SyncConflictResolution.Ask, description: ""),
+            SimpleOptionValue.Create(SyncConflictResolution.FirstWins, description: ""),
+            SimpleOptionValue.Create(SyncConflictResolution.SecondWins, description: "")
         );
 
         public static OptionValueProvider PipeMode { get; } = new OptionValueProvider(

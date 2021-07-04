@@ -39,7 +39,10 @@ namespace Orang.CommandLine
         public const string ReplaceModify = "<REPLACE_MODIFY>";
         public const string SortOptions = "<SORT_OPTIONS>";
         public const string SortProperty = "<SORT_PROPERTY>";
+        public const string SyncConflictResolution = "<SYNC_CONFLICT_RESOLUTION>";
+        public const string SyncMode = "<SYNC_MODE>";
         public const string SyntaxSections = "<SYNTAX_SECTIONS>";
+        public const string TimeSpan = "<TIME_SPAN>";
         public const string Verbosity = "<VERBOSITY>";
     }
 }

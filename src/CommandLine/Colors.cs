@@ -27,6 +27,11 @@ namespace Orang
         public static ConsoleColors Split { get; } = new ConsoleColors(ConsoleColor.Black, ConsoleColor.Green);
         public static ConsoleColors SplitBoundary { get; } = new ConsoleColors(ConsoleColor.Green);
         public static ConsoleColors Symbol { get; } = new ConsoleColors(ConsoleColor.Red);
+        public static ConsoleColors Sync_Add { get; } = new ConsoleColors(ConsoleColor.Black, ConsoleColor.Green);
+        public static ConsoleColors Sync_Error { get; } = new ConsoleColors(ConsoleColor.Black, ConsoleColor.Yellow);
+        public static ConsoleColors Sync_Delete { get; } = new ConsoleColors(ConsoleColor.Black, ConsoleColor.Magenta);
+        public static ConsoleColors Sync_Update { get; } = new ConsoleColors(ConsoleColor.Black, ConsoleColor.Cyan);
+        public static ConsoleColors Sync_Rename { get; } = new ConsoleColors(ConsoleColor.Black, ConsoleColor.Cyan);
         public static ConsoleColors Syntax { get; } = new ConsoleColors(ConsoleColor.Green);
     }
 }

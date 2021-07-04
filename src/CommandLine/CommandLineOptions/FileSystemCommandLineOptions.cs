@@ -288,7 +288,7 @@ namespace Orang.CommandLine
             return true;
         }
 
-        private FileAttributes GetFileAttributes(FileSystemAttributes attributes)
+        protected FileAttributes GetFileAttributes(FileSystemAttributes attributes)
         {
             FileAttributes fileAttributes = 0;
 

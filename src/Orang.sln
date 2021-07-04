@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{3A93F055-6
 		..\docs\cli\replace-command.md = ..\docs\cli\replace-command.md
 		..\docs\cli\spellcheck-command.md = ..\docs\cli\spellcheck-command.md
 		..\docs\cli\split-command.md = ..\docs\cli\split-command.md
+		..\docs\cli\sync-command.md = ..\docs\cli\sync-command.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{76ED7535-91B5-429C-A0FB-FDD8079B1568}"

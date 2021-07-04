@@ -22,7 +22,7 @@ namespace Orang.CommandLine
             }
         }
 
-        public string Target => Options.Target;
+        private string Target => Options.Target;
 
         public ConflictResolution ConflictResolution
         {
@@ -98,9 +98,6 @@ namespace Orang.CommandLine
                 destinationPath = Path.Combine(Target, fileName);
             }
 
-            if (IgnoredPaths?.Contains(sourcePath) == true)
-                return;
-
             try
             {
                 ExecuteOperation(context, sourcePath, destinationPath, fileMatch.IsDirectory, indent);
@@ -108,7 +105,7 @@ namespace Orang.CommandLine
             catch (Exception ex) when (ex is IOException
                 || ex is UnauthorizedAccessException)
             {
-                LogHelpers.WriteFileError(ex, sourcePath, indent: indent);
+                WriteError(context, ex, sourcePath, indent: indent);
             }
         }
 
@@ -132,7 +129,7 @@ namespace Orang.CommandLine
                 else if (directoryExists)
                 {
                     if (Options.StructureOnly
-                        && File.GetAttributes(sourcePath) == File.GetAttributes(destinationPath))
+                        && FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.IgnoredAttributes))
                     {
                         return null;
                     }
@@ -143,7 +140,12 @@ namespace Orang.CommandLine
             else if (fileExists)
             {
                 if (Options.CompareOptions != FileCompareOptions.None
-                    && FileSystemHelpers.FileEquals(sourcePath, destinationPath, Options.CompareOptions))
+                    && FileSystemHelpers.FileEquals(
+                        sourcePath,
+                        destinationPath,
+                        Options.CompareOptions,
+                        Options.IgnoredAttributes,
+                        Options.AllowedTimeDiff))
                 {
                     return null;
                 }
@@ -367,6 +369,15 @@ namespace Orang.CommandLine
                     Directory.CreateDirectory(destinationPath);
                 }
             }
+        }
+
+        protected virtual void WriteError(
+            SearchContext context,
+            Exception ex,
+            string path,
+            string indent)
+        {
+            LogHelpers.WriteFileError(ex, path, indent: indent);
         }
     }
 }
