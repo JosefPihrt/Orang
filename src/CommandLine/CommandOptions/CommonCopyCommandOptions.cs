@@ -20,6 +20,8 @@ namespace Orang.CommandLine
 
         public FileCompareOptions CompareOptions { get; internal set; }
 
+        public bool DetectRename { get; internal set; }
+
         public bool DryRun { get; internal set; }
 
         public bool Flat { get; internal set; }

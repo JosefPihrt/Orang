@@ -19,6 +19,7 @@ namespace Orang.CommandLine
         public const string Conflict = "conflict";
         public const string Content = "content";
         public const string ContentOnly = "content-only";
+        public const string DetectRename = "detect-rename";
         public const string Display = "display";
         public const string DryRun = "dry-run";
         public const string Encoding = "encoding";

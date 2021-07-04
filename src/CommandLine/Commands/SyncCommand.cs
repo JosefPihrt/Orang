@@ -129,8 +129,6 @@ namespace Orang.CommandLine
                 }
                 else if (fileExists)
                 {
-                    Debug.Assert(!_isSecondToFirst);
-
                     if (_isSecondToFirst)
                         return;
 
@@ -169,7 +167,8 @@ namespace Orang.CommandLine
                                     return;
                             }
                         }
-                        else if ((Options.CompareOptions & FileCompareOptions.Content) != 0)
+                        else if (Options.DetectRename
+                            && (Options.CompareOptions & FileCompareOptions.Content) != 0)
                         {
                             if (_directoryData == null)
                             {
@@ -481,7 +480,6 @@ namespace Orang.CommandLine
             string destinationPath,
             string indent)
         {
-            //TODO: (sync) File.Exists(renamePath)?
             string renamePath = Path.Combine(Path.GetDirectoryName(destinationPath)!, Path.GetFileName(sourcePath));
 
             WritePath(context, destinationPath, OperationKind.Rename, indent);

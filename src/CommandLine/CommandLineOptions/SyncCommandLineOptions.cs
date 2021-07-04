@@ -22,6 +22,11 @@ namespace Orang.CommandLine
         public string Conflict { get; set; } = null!;
 
         [Option(
+            longName: OptionNames.DetectRename,
+            HelpText = "")]
+        public bool DetectRename { get; set; }
+
+        [Option(
             shortName: OptionShortNames.DryRun,
             longName: OptionNames.DryRun,
             HelpText = "Display which files or directories should be copied/deleted "
@@ -76,6 +81,7 @@ namespace Orang.CommandLine
             options.SearchTarget = SearchTarget.All;
             options.CompareOptions = compareOptions;
             options.DryRun = DryRun;
+            options.DetectRename = DetectRename;
             options.Target = secondDirectory;
             options.ConflictResolution = conflictResolution;
             options.AskMode = (Ask) ? AskMode.File : AskMode.None;

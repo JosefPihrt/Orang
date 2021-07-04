@@ -218,7 +218,7 @@ namespace Orang.FileSystem
 
             TimeSpan diff = dateTime1 - dateTime2;
 
-            if (diff.Duration() < allowedDiff.Value)
+            if (diff.Duration() <= allowedDiff.Value)
                 return 0;
 
             Debug.Assert(dateTime1.CompareTo(dateTime2) == ((diff.Ticks > 0) ? 1 : -1));
