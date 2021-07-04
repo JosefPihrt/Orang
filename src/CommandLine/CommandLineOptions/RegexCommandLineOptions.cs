@@ -120,7 +120,8 @@ namespace Orang.CommandLine
                 OptionNames.Modify,
                 modifier,
                 out ModifyOptions? modifyOptions,
-                out bool aggregateOnly))
+                out bool aggregateOnly,
+                out bool _))
             {
                 return false;
             }

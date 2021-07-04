@@ -2,11 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Orang.CommandLine;
 using static Orang.CommandLine.LogHelpers;
 using static Orang.Logger;
+using Orang.FileSystem;
 
 namespace Orang.Aggregation
 {
@@ -45,7 +48,7 @@ namespace Orang.Aggregation
             ModifyOptions modifyOptions = Options.ModifyOptions;
 
             bool shouldCreate = modifyOptions.HasFunction(ModifyFunctions.Except_Intersect_Group)
-                || (modifyOptions.Aggregate
+                || ((modifyOptions.Aggregate || Options.SaveAggregatedValues)
                     && (modifyOptions.Modifier != null
                         || modifyOptions.HasFunction(ModifyFunctions.Enumerable)));
 
@@ -70,6 +73,47 @@ namespace Orang.Aggregation
         }
 
         public void WriteAggregatedValues(CancellationToken cancellationToken)
+        {
+            PathInfo pathInfo = Options.Paths[0];
+
+            bool savingAggregatedValues = Options.SaveAggregatedValues
+                && pathInfo.Origin != PathOrigin.CurrentDirectory
+                && File.Exists(pathInfo.Path);
+
+            if (savingAggregatedValues)
+            {
+                TextWriterWithVerbosity? originalOut = Out;
+
+                try
+                {
+                    using (var stream = new FileStream(pathInfo.Path, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    using (var writer = new StreamWriter(stream, Encoding.UTF8))
+                    {
+                        if (originalOut != null)
+                        {
+                            var writer2 = new TextWriter<TextWriter, TextWriter>(originalOut.Writer, writer);
+                            Out = new TextWriterWithVerbosity(writer2) { Verbosity = originalOut.Verbosity };
+                        }
+                        else
+                        {
+                            Out = new TextWriterWithVerbosity(writer) { Verbosity = Verbosity.Normal };
+                        }
+
+                        WriteAggregatedValuesImpl(savingAggregatedValues, cancellationToken);
+                    }
+                }
+                finally
+                {
+                    Out = originalOut;
+                }
+            }
+            else
+            {
+                WriteAggregatedValuesImpl(savingAggregatedValues, cancellationToken);
+            }
+        }
+
+        private void WriteAggregatedValuesImpl(bool savingAggregatedValues, CancellationToken cancellationToken)
         {
             int count = 0;
 
@@ -130,7 +174,19 @@ namespace Orang.Aggregation
                     if (!Options.AggregateOnly)
                     {
                         ConsoleOut.WriteLineIf(ShouldWriteLine(ConsoleOut.Verbosity));
-                        Out?.WriteLineIf(ShouldWriteLine(Out.Verbosity));
+
+                        if (Out != null
+                            && ShouldWriteLine(Out.Verbosity))
+                        {
+                            if (Out.Writer is TextWriter<TextWriter, TextWriter> writer2)
+                            {
+                                writer2.Writer1.WriteLine();
+                            }
+                            else if (!savingAggregatedValues)
+                            {
+                                Out.WriteLine();
+                            }
+                        }
                     }
 
                     do

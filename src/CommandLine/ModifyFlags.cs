@@ -26,5 +26,6 @@ namespace Orang.CommandLine
         IgnoreCase = 1 << 13,
         CultureInvariant = 1 << 14,
         AggregateOnly = 1 << 15,
+        Save = 1 << 16,
     }
 }
