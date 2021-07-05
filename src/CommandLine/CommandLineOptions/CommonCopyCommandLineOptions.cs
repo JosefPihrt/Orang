@@ -12,19 +12,19 @@ namespace Orang.CommandLine
     internal abstract class CommonCopyCommandLineOptions : CommonFindCommandLineOptions
     {
         public override ContentDisplayStyle DefaultContentDisplayStyle => ContentDisplayStyle.Omit;
-#if DEBUG
-        [Option(
-            longName: OptionNames.AllowedTimeDiff,
-            HelpText = "Syntax is d|[d.]hh:mm[:ss[.ff]].",
-            MetaValue = MetaValues.TimeSpan)]
-        public string AllowedTimeDiff { get; set; } = null!;
-#endif
+
         [Option(
             longName: OptionNames.Compare,
             HelpText = "File properties to be compared.",
             MetaValue = MetaValues.CompareOptions)]
         public IEnumerable<string> Compare { get; set; } = null!;
 #if DEBUG
+        [Option(
+            longName: OptionNames.AllowedTimeDiff,
+            HelpText = "Syntax is d|[d.]hh:mm[:ss[.ff]].",
+            MetaValue = MetaValues.TimeSpan)]
+        public string AllowedTimeDiff { get; set; } = null!;
+
         [Option(
             longName: OptionNames.IgnoredAttributes,
             HelpText = "File attributes that should be ignored during comparison.",
