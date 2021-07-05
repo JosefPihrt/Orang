@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Josef Pihrt. All rights reserved. Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using CommandLine;
 using Orang.FileSystem;
 using static Orang.CommandLine.ParseHelpers;
@@ -10,6 +11,12 @@ namespace Orang.CommandLine
     [CommandGroup("File System", 1)]
     internal sealed class SyncCommandLineOptions : CommonCopyCommandLineOptions
     {
+        [Value(
+            index: 0,
+            HelpText = "Paths to two directories that should be synchronized.",
+            MetaName = ArgumentMetaNames.Path)]
+        public override IEnumerable<string> Path { get; set; } = null!;
+
         [Option(
             longName: OptionNames.Ask,
             HelpText = "Ask for a permission to synchronize file or directory.")]

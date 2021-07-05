@@ -63,7 +63,7 @@ namespace Orang.CommandLine
             {
                 _isSecondToFirst = false;
 
-                if (Options.ConflictResolution == SyncConflictResolution.FirstWins
+                if (ConflictResolution == SyncConflictResolution.FirstWins
                     && !secondExists)
                 {
                     CreateDirectory(Options.Target);
