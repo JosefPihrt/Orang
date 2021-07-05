@@ -33,13 +33,6 @@ namespace Orang.CommandLine
                 + "but do not actually copy/delete any file or directory.")]
         public bool DryRun { get; set; }
 
-        [Option(
-            longName: OptionNames.Second,
-            Required = true,
-            HelpText = "A directory to be synchronized with the first directory.",
-            MetaValue = MetaValues.DirectoryPath)]
-        public string Second { get; set; } = null!;
-
         public bool TryParse(SyncCommandOptions options)
         {
             var baseOptions = (CommonCopyCommandOptions)options;
@@ -49,9 +42,9 @@ namespace Orang.CommandLine
 
             options = (SyncCommandOptions)baseOptions;
 
-            if (options.Paths.Length > 1)
+            if (options.Paths.Length != 2)
             {
-                Logger.WriteError("More than one source directory cannot be synchronized.");
+                Logger.WriteError("It is required to specify two directories to be synchronized.");
                 return false;
             }
 
@@ -64,9 +57,6 @@ namespace Orang.CommandLine
             {
                 return false;
             }
-
-            if (!TryEnsureFullPath(Second, out string? secondDirectory))
-                return false;
 
             if (!TryParseAsEnum(
                 Conflict,
@@ -82,7 +72,7 @@ namespace Orang.CommandLine
             options.CompareOptions = compareOptions;
             options.DryRun = DryRun;
             options.DetectRename = DetectRename;
-            options.Target = secondDirectory;
+            options.Target = options.Paths[1].Path;
             options.ConflictResolution = conflictResolution;
             options.AskMode = (Ask) ? AskMode.File : AskMode.None;
 
