@@ -548,7 +548,7 @@ namespace Orang.CommandLine
 
         protected override void ExecuteOperation(string sourcePath, string destinationPath)
         {
-            File.Copy(sourcePath, destinationPath);
+            throw new NotSupportedException();
         }
 
         protected override void ExecuteFile(string filePath, SearchContext context)
@@ -630,7 +630,7 @@ namespace Orang.CommandLine
         {
             base.WriteSummary(telemetry, verbosity);
 
-            ConsoleColors colors = (Options.DryRun) ? Colors.Message_DryRun : default;
+            ConsoleColors colors = (DryRun) ? Colors.Message_DryRun : default;
 
             WriteCount("Added", telemetry.AddedCount, colors, verbosity: verbosity);
             Write("  ", verbosity);
