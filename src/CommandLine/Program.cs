@@ -349,7 +349,7 @@ namespace Orang.CommandLine
             var options = new SyncCommandOptions();
 
             if (!commandLineOptions.TryParse(options))
-                return 1;
+                return ExitCodes.Error;
 
             return Execute(new SyncCommand(options), commandLineOptions);
         }
