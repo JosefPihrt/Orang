@@ -136,7 +136,7 @@ namespace Orang.CommandLine
                         if (_isSecondToFirst)
                             return;
 
-                        if (FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.IgnoredAttributes))
+                        if (FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.NoCompareAttributes))
                             return;
                     }
                 }
@@ -176,7 +176,7 @@ namespace Orang.CommandLine
                                     sourcePath,
                                     destinationPath,
                                     Options.CompareOptions,
-                                    Options.IgnoredAttributes,
+                                    Options.NoCompareAttributes,
                                     Options.AllowedTimeDiff);
 
                                 if (diffProperty == FileCompareOptions.None)

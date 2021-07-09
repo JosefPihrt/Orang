@@ -127,7 +127,7 @@ namespace Orang.CommandLine
                 else if (directoryExists)
                 {
                     if (Options.StructureOnly
-                        && FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.IgnoredAttributes))
+                        && FileSystemHelpers.AttributeEquals(sourcePath, destinationPath, Options.NoCompareAttributes))
                     {
                         return null;
                     }
@@ -142,7 +142,7 @@ namespace Orang.CommandLine
                         sourcePath,
                         destinationPath,
                         Options.CompareOptions,
-                        Options.IgnoredAttributes,
+                        Options.NoCompareAttributes,
                         Options.AllowedTimeDiff))
                 {
                     return null;
