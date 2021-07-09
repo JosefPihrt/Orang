@@ -10,9 +10,11 @@ namespace Orang.CommandLine
 
         new public SyncConflictResolution ConflictResolution { get; internal set; }
 
-        //TODO: (sync) SyncCommandOptions.WriteDiagnosticCore
+        public bool DetectRename { get; internal set; }
+
         protected override void WriteDiagnosticCore()
         {
+            DiagnosticWriter.WriteSyncCommand(this);
         }
     }
 }

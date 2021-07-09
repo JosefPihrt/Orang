@@ -54,7 +54,7 @@ namespace Orang.CommandLine
             if (!TryParseAsEnumFlags(
                 IgnoredAttributes,
                 OptionNames.IgnoredAttributes,
-                out FileSystemAttributes ignoredAttributes,
+                out FileSystemAttributes noCompareAttributes,
                 provider: OptionValueProviders.FileSystemAttributesToSkipProvider))
             {
                 return false;
@@ -72,7 +72,7 @@ namespace Orang.CommandLine
             }
 
             options.AllowedTimeDiff = allowedTimeDiff;
-            options.IgnoredAttributes = GetFileAttributes(ignoredAttributes);
+            options.NoCompareAttributes = GetFileAttributes(noCompareAttributes);
 #endif
             options.NameFilter = nameFilter;
             options.NamePart = namePart;

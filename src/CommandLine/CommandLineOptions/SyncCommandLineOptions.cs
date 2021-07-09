@@ -27,12 +27,12 @@ namespace Orang.CommandLine
             HelpText = "Action to choose if a file or directory exists in one directory and it is missing in the second directory.",
             MetaValue = MetaValues.SyncConflictResolution)]
         public string Conflict { get; set; } = null!;
-
+#if DEBUG
         [Option(
             longName: OptionNames.DetectRename,
-            HelpText = "")]
+            HelpText = "Detect if the file was only renamed.")]
         public bool DetectRename { get; set; }
-
+#endif
         [Option(
             shortName: OptionShortNames.DryRun,
             longName: OptionNames.DryRun,
@@ -78,11 +78,12 @@ namespace Orang.CommandLine
             options.SearchTarget = SearchTarget.All;
             options.CompareOptions = compareOptions;
             options.DryRun = DryRun;
-            options.DetectRename = DetectRename;
             options.Target = options.Paths[1].Path;
             options.ConflictResolution = conflictResolution;
             options.AskMode = (Ask) ? AskMode.File : AskMode.None;
-
+#if DEBUG
+            options.DetectRename = DetectRename;
+#endif
             return true;
         }
     }

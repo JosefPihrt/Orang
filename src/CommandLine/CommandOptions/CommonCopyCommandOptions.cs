@@ -16,11 +16,9 @@ namespace Orang.CommandLine
 
         public TimeSpan AllowedTimeDiff { get; internal set; }
 
-        public FileAttributes IgnoredAttributes { get; internal set; }
+        public FileAttributes NoCompareAttributes { get; internal set; }
 
         public FileCompareOptions CompareOptions { get; internal set; }
-
-        public bool DetectRename { get; internal set; }
 
         public bool DryRun { get; internal set; }
 
