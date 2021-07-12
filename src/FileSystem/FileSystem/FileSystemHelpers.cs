@@ -228,6 +228,12 @@ namespace Orang.FileSystem
 
         internal static bool IsSubdirectory(string basePath, string path)
         {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                basePath = basePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+                path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            }
+
             return path.Length > basePath.Length
                 && (IsDirectorySeparator(basePath[^1])
                     || IsDirectorySeparator(path[basePath.Length]))

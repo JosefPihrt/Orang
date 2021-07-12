@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Orang.FileSystem;
+using Orang.Text.RegularExpressions;
 using static Orang.Logger;
 
 namespace Orang.CommandLine
@@ -43,19 +46,20 @@ namespace Orang.CommandLine
             }
         }
 
+        protected override NameFilter? CreateAdditionalDirectoryFilter()
+        {
+            return FileSystem.NameFilter.CreateFromDirectoryPath(Target, isNegative: true);
+        }
+
         protected abstract string GetQuestionText(bool isDirectory);
 
         protected abstract void ExecuteOperation(string sourcePath, string destinationPath);
 
         protected override void ExecuteDirectory(string directoryPath, SearchContext context)
         {
-            string targetNormalized = Target.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-            string pathNormalized = directoryPath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-
-            if (FileSystemHelpers.IsSubdirectory(targetNormalized, pathNormalized)
-                || FileSystemHelpers.IsSubdirectory(pathNormalized, targetNormalized))
+            if (FileSystemHelpers.IsSubdirectory(Target, directoryPath))
             {
-                WriteWarning("Source directory cannot be subdirectory of a destination directory or vice versa.");
+                WriteWarning("Source directory cannot be subdirectory of a destination directory.");
                 return;
             }
 
