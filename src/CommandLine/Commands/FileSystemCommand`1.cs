@@ -50,14 +50,21 @@ namespace Orang.CommandLine
                 attributesToSkip: Options.AttributesToSkip,
                 emptyOption: Options.EmptyOption);
 
-            NameFilter? directoryFilter = null;
+            var directoryFilters = new List<NameFilter>();
 
             if (Options.DirectoryFilter != null)
             {
-                directoryFilter = new NameFilter(
+                var directoryFilter = new NameFilter(
                     name: Options.DirectoryFilter,
                     part: Options.DirectoryNamePart);
+
+                directoryFilters.Add(directoryFilter);
             }
+
+            NameFilter? additionalDirectoryFilter = CreateAdditionalDirectoryFilter();
+
+            if (additionalDirectoryFilter != null)
+                directoryFilters.Add(additionalDirectoryFilter);
 
             var options = new FileSystemSearchOptions(
                 searchTarget: Options.SearchTarget,
@@ -66,13 +73,18 @@ namespace Orang.CommandLine
 
             var search = new FileSystemSearch(
                 filter: filter,
-                directoryFilter: directoryFilter,
+                directoryFilters: directoryFilters,
                 searchProgress: ProgressReporter,
                 options: options);
 
             OnSearchCreating(search);
 
             return search;
+        }
+
+        protected virtual NameFilter? CreateAdditionalDirectoryFilter()
+        {
+            return null;
         }
 
         protected abstract void ExecuteDirectory(string directoryPath, SearchContext context);
