@@ -149,22 +149,22 @@ namespace Orang.FileSystem
                     += (object sender, DirectoryChangedEventArgs e) => currentDirectory = e.NewName;
             }
 
-            MatchKind matchKind = (DirectoryFilters.Any()) ? MatchKind.Unknown : MatchKind.Success;
+            MatchStatus matchStatus = (DirectoryFilters.Any()) ? MatchStatus.Unknown : MatchStatus.Success;
 
             foreach (NameFilter directoryFilter in DirectoryFilters.Where(f => !f.IsNegative))
             {
                 if (IsMatch(directoryPath, directoryFilter))
                 {
-                    matchKind = MatchKind.Success;
+                    matchStatus = MatchStatus.Success;
                 }
                 else
                 {
-                    matchKind = MatchKind.FailFromPositive;
+                    matchStatus = MatchStatus.FailFromPositive;
                     break;
                 }
             }
 
-            var directory = new Directory(directoryPath, matchKind);
+            var directory = new Directory(directoryPath, matchStatus);
 
             while (true)
             {
@@ -226,22 +226,22 @@ namespace Orang.FileSystem
                         {
                             currentDirectory = di.Current;
 
-                            matchKind = (_allDirectoryFiltersArePositive && directory.IsSuccess)
-                                ? MatchKind.Success
-                                : MatchKind.Unknown;
+                            matchStatus = (_allDirectoryFiltersArePositive && directory.IsSuccess)
+                                ? MatchStatus.Success
+                                : MatchStatus.Unknown;
 
                             if (!directory.IsFail
                                 && SearchTarget != SearchTarget.Files
                                 && Part != FileNamePart.Extension)
                             {
-                                if (matchKind == MatchKind.Unknown
+                                if (matchStatus == MatchStatus.Unknown
                                     && DirectoryFilters.Any())
                                 {
-                                    matchKind = IncludeDirectory(currentDirectory);
+                                    matchStatus = IncludeDirectory(currentDirectory);
                                 }
 
-                                if (matchKind == MatchKind.Success
-                                    || matchKind == MatchKind.Unknown)
+                                if (matchStatus == MatchStatus.Success
+                                    || matchStatus == MatchStatus.Unknown)
                                 {
                                     FileMatch? match = MatchDirectory(currentDirectory);
 
@@ -258,14 +258,14 @@ namespace Orang.FileSystem
                             if (currentDirectory != null
                                 && RecurseSubdirectories)
                             {
-                                if (matchKind == MatchKind.Unknown
+                                if (matchStatus == MatchStatus.Unknown
                                     && DirectoryFilters.Any())
                                 {
-                                    matchKind = IncludeDirectory(currentDirectory);
+                                    matchStatus = IncludeDirectory(currentDirectory);
                                 }
 
-                                if (matchKind != MatchKind.FailFromNegative)
-                                    subdirectories!.Enqueue(new Directory(currentDirectory, matchKind));
+                                if (matchStatus != MatchStatus.FailFromNegative)
+                                    subdirectories!.Enqueue(new Directory(currentDirectory, matchStatus));
                             }
 
                             cancellationToken.ThrowIfCancellationRequested();
@@ -506,17 +506,17 @@ namespace Orang.FileSystem
             return (new FileMatch(span, match, directoryInfo, isDirectory: true), null);
         }
 
-        private MatchKind IncludeDirectory(string path)
+        private MatchStatus IncludeDirectory(string path)
         {
             Debug.Assert(DirectoryFilters.Any());
 
             foreach (NameFilter filter in DirectoryFilters)
             {
                 if (!IsMatch(path, filter))
-                    return (filter.IsNegative) ? MatchKind.FailFromNegative : MatchKind.FailFromPositive;
+                    return (filter.IsNegative) ? MatchStatus.FailFromNegative : MatchStatus.FailFromPositive;
             }
 
-            return MatchKind.Success;
+            return MatchStatus.Success;
         }
 
         public static bool IsMatch(string directoryPath, NameFilter filter)
@@ -767,25 +767,25 @@ namespace Orang.FileSystem
         [DebuggerDisplay("{DebuggerDisplay,nq}")]
         private readonly struct Directory
         {
-            public Directory(string path, MatchKind kind)
+            public Directory(string path, MatchStatus status)
             {
                 Path = path;
-                Kind = kind;
+                Status = status;
             }
 
             public string Path { get; }
 
-            public MatchKind Kind { get; }
+            public MatchStatus Status { get; }
 
-            public bool IsSuccess => Kind == MatchKind.Success;
+            public bool IsSuccess => Status == MatchStatus.Success;
 
-            public bool IsFail => Kind == MatchKind.FailFromPositive || Kind == MatchKind.FailFromNegative;
+            public bool IsFail => Status == MatchStatus.FailFromPositive || Status == MatchStatus.FailFromNegative;
 
             [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             private string DebuggerDisplay => Path;
         }
 
-        private enum MatchKind
+        private enum MatchStatus
         {
             Unknown = 0,
             Success = 1,
